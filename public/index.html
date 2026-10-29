@@ -160,14 +160,15 @@ wallet();
 document.querySelectorAll(".examples button").forEach((b) => b.addEventListener("click", () => { $("question").value = b.textContent; $("question").focus(); }));
 
 function stepRow(s, live) {
-  const input = s.input?.query || s.input?.url || "";
+  const input = s.input?.query || s.input?.url || (s.input && Object.keys(s.input).length ? JSON.stringify(s.input) : "");
+  const why = s.why ? `<div class="q">${esc(s.why)}</div>` : "";
   let pay = "";
   if (s.payment?.tx) pay = `<div class="pay"><span class="paid">paid ${usd(s.payment.priceUsd)}</span> · ${tx(s.payment.tx)}</div>`;
   else if (s.payment?.note) pay = `<div class="pay">${esc(s.payment.note)}</div>`;
   if (s.error) pay += `<div class="pay err">${esc(s.error.slice(0, 120))}</div>`;
   if (s.skipped) pay += `<div class="pay">${esc(s.skipped)}</div>`;
-  const n = s.documents ? ` · ${s.documents.length} read` : "";
-  return `<li class="${live ? "live" : ""}"><div><div class="src">${esc(LABEL[s.tool] || s.tool)} <span class="q">from ${esc(s.seller)}${n}</span></div><div class="q">${esc(input)}</div>${pay}</div></li>`;
+  const n = s.documents ? ` · ${s.documents.length} read` : typeof s.items === "number" ? ` · ${s.items} items` : "";
+  return `<li class="${live ? "live" : ""}"><div><div class="src">${esc(LABEL[s.tool] || s.tool)} <span class="q">from ${esc(s.seller)}${n}</span></div><div class="q">${esc(input)}</div>${why}${pay}</div></li>`;
 }
 
 function render(run) {

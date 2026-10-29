@@ -21,9 +21,14 @@ claim can be traced, and the model work runs on open NVIDIA models.
 
 ## How a brief is made
 
-1. **Plan (Nemotron 3 Ultra).** The question goes to `nvidia/Nemotron-3-Ultra-550b-a55b` with a
-   closed list of sources. It returns up to six steps as strict JSON (`response_format:
-   json_schema`). Code drops any step that names a source outside the list.
+1. **Plan (Nemotron 3 Ultra).** The question goes to `nvidia/Nemotron-3-Ultra-550b-a55b` with the
+   live catalog: every product's id, price, inputs and the fields of the items it returns
+   (`lib/catalog.mjs`). It writes a plan of paid steps and code moves (merge, dedupe, filter,
+   rank, top, for_each). Code corrects a product id written one letter off the shelf, checks
+   every step against the shelf and the budget (`lib/planner.mjs`, `checkPlan`), and refuses a
+   plan that reads a field a product does not return. A plan that fails the check twice falls
+   back to a fixed list of five sources (`lib/tools.mjs`, `PLANNER=fixed`). No move ever
+   writes a sentence or a number.
 2. **Buy and read.** Each step runs against its source. Paid sources answer `402 Payment
    Required`; the agent signs a USDC authorization on Base (x402), retries, and keeps the
    transaction hash it gets back. A per-run spend ceiling stops the run before it overspends.
@@ -80,8 +85,15 @@ Or from the command line:
 node cli.mjs "What is the current evidence that GLP-1 drugs reduce the risk of Alzheimer's disease?" "a neuroscience researcher"
 ```
 
-Optional settings: `MAX_SPEND_USD` (per-run ceiling, default 0.50), `MAX_STEPS` (default 6),
-`PLANNER_MODEL`, `WORKER_MODEL`, `WRITER_MODEL`, `TOKEN_FACTORY_BASE_URL`.
+Optional settings: `MAX_SPEND_USD` (per-run ceiling, default 0.50), `PLANNER` (`catalog`, the
+default, or `fixed`), `CATALOG_URL` (any marketplace that publishes its products as a list with
+an id, a price, a description, an example input and input options; Sippar's free catalog by
+default), `MAX_STEPS`, `MAX_DOCS`, `PLANNER_MODEL`, `WORKER_MODEL`, `WRITER_MODEL`,
+`TOKEN_FACTORY_BASE_URL`.
+
+Nuru pays whatever a 402 names. Today that is USDC on Base; the x402 protocol is asset-agnostic,
+so a seller that names a euro e-money token under MiCA (EURC, EURAU) is a seller-side setting,
+not a change to Nuru.
 
 ## The same agent in any harness
 
@@ -93,8 +105,10 @@ NVIDIA OpenShell on a Nebius AI Cloud VM on 2026-10-29. Read `skills/README.md` 
 ## Files
 
 - `lib/agent.mjs`: the run (plan, buy, quote, write, account)
+- `lib/planner.mjs`: the plan format, the code check, the six moves (ported from Sippar's planner, MIT)
+- `lib/catalog.mjs`: the catalog Nuru plans over, read free from Sippar or any marketplace
 - `lib/tf.mjs`: Nemotron on Token Factory, with token accounting
-- `lib/tools.mjs`: the closed source list
+- `lib/tools.mjs`: the fixed source list (the fallback)
 - `lib/pay.mjs`: the agent wallet and x402 payments
 - `server.mjs`, `public/index.html`: the page, with the run streamed as it happens
 
