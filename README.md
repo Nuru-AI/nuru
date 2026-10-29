@@ -1,6 +1,7 @@
-# Sippar Research Agent
+# Sippar Agent: pay per call, from any harness
 
-An agent that researches a question the way a careful analyst would, and pays for what it reads.
+A Nemotron agent that researches a question the way a careful analyst would, and pays for what
+it reads. The same door it buys from serves any harness; `skills/` and `harness/` show how.
 NVIDIA Nemotron plans the reading on Nebius Token Factory. The agent's own wallet buys each source
 per call, in USDC on Base. Nemotron pulls quotes from what was bought, code checks every quote
 word for word, and Nemotron writes a short brief. Each point in the brief opens to its quote, its
@@ -11,8 +12,8 @@ Built for the Nebius x NVIDIA Global AI Hackathon, Best Apps and Agents track.
 ## Why it matters
 
 Agents are becoming the heaviest readers on the web. A single research question turns into
-dozens of model calls and many source reads, so the work an agent does grows with the question,
-not with the number of people asking. This project shows that loop running end to end with
+dozens of model calls and many source reads, so the work an agent does grows with the question
+rather than with the number of people asking. This project shows that loop running end to end with
 real money: the publisher of a source is paid for the read, the reader gets a brief where every
 claim can be traced, and the model work runs on open NVIDIA models.
 
