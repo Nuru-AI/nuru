@@ -12,9 +12,9 @@ without a card, or over plain HTTP, the data is in the response.
 
 ## Families this agent uses
 
-- **Web search**: Tavily's live search, unchanged, with Tavily's own answer. Sippar pays Tavily
-  through Tavily's own pay-per-call door, and through a reseller of Tavily search when that door
-  does not settle; the source line says which. Input `{ "query": "..." }`.
+- **Web search**: Tavily's live search, unchanged, with Tavily's own answer. Sippar reaches
+  Tavily through a reseller of Tavily search while Tavily's own pay-per-call door does not
+  settle; the source line says so. Input `{ "query": "..." }`.
 - **Page text**: the clean text of one URL. Input `{ "url": "..." }`.
 - **News**: the past week's articles for a search, or the day's top stories; headline, publisher,
   date, link, snippet; no article text. Keywords, not sentences.

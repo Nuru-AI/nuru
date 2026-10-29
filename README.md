@@ -46,9 +46,10 @@ claim can be traced, and the model work runs on open NVIDIA models.
 
 Sippar connects agents to the data and services they trust and settles each call on chain. This
 project uses Sippar's public endpoints the same way any agent can, with no account: a request
-answers 402, the agent pays, the source is named on the response. Sippar pays Tavily through
-Tavily's own pay-per-call door, and through a reseller of Tavily search when that door does not
-settle; the response says which.
+answers 402, the agent pays, the source is named on the response. Tavily's own pay-per-call
+door did not settle during the build, so Sippar reaches Tavily through a reseller of Tavily
+search today and the response says so; paying Tavily directly per search is first on the
+roadmap.
 
 ## NVIDIA Nemotron on Nebius Token Factory
 

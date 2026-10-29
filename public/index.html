@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Sippar Research Agent</title>
+<title>Sippar Agent</title>
 <meta name="description" content="Ask a research question. NVIDIA Nemotron plans the reading, an agent wallet pays each source per call, and every claim in the brief links to its quote and its payment.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -94,7 +94,7 @@ footer { border-top: 1px solid var(--line); color: var(--grey); font-size: 14px;
     <div class="brand">
       <a href="https://sippar.network" aria-label="Sippar home"><img src="brand/sippar-wordmark.svg" alt="Sippar" width="88" height="19"></a>
       <span class="pdiv" aria-hidden="true"></span>
-      <span class="ptitle">Research Agent</span>
+      <span class="ptitle">Sippar Agent</span>
     </div>
     <span class="walletchip" id="wallet" title="The agent's own wallet on Base">wallet <b id="bal">…</b></span>
   </div>
@@ -142,7 +142,7 @@ footer { border-top: 1px solid var(--line); color: var(--grey); font-size: 14px;
 </main>
 
 <footer>
-  <div class="wrap">Reasoning by NVIDIA Nemotron on Nebius Token Factory. Web search by Tavily. Paid sources bought per call through Sippar, in USDC on Base. Dataconomy articles are read with the publisher's agreement and the publisher is paid per read.</div>
+  <div class="wrap">Reasoning by NVIDIA Nemotron on Nebius Token Factory. Every source, web search included, bought per call through Sippar, in USDC on Base; the source is named on each response. Dataconomy articles are read with the publisher's agreement and the publisher is paid per read.</div>
 </footer>
 
 <script>
@@ -185,7 +185,7 @@ function render(run) {
     if (open) { box.innerHTML = ""; return; }
     btn.setAttribute("aria-expanded", "true");
     const s = docStep(c.doc);
-    const paid = s?.payment?.tx ? `Bought for ${usd(s.payment.priceUsd)} from ${esc(s.seller)}, payment ${tx(s.payment.tx)}` : `Found with ${esc(s?.seller || "Tavily")} ${esc(LABEL[s?.tool] ? LABEL[s.tool].toLowerCase() : "")}, on Tavily's API key`;
+    const paid = s?.payment?.tx ? `Bought for ${usd(s.payment.priceUsd)} from ${esc(s.seller)}, payment ${tx(s.payment.tx)}` : `Found with ${esc(s?.seller || "Tavily")} ${esc(LABEL[s?.tool] ? LABEL[s.tool].toLowerCase() : "")}, not charged`;
     box.innerHTML = `<div class="evidence"><q>${esc(c.quote)}</q><div class="meta"><a href="${esc(c.url)}" target="_blank" rel="noopener">${esc(c.publisher || c.url)}</a> · quote checked word for word in the source · ${paid}</div></div>`;
   }));
   const L = run.ledger;
