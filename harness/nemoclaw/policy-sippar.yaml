@@ -1,0 +1,18 @@
+# The network policy block for Sippar's door, as applied on 2026-10-29 (policy version 4).
+# `openshell policy update --add-endpoint sippar.network:443:full:rest:enforce` writes the endpoints
+# part; the `binaries` part is what the egress proxy actually checks (NVIDIA/NemoClaw#307).
+network_policies:
+  allow_sippar_network_443:
+    name: allow_sippar_network_443
+    endpoints:
+      - host: sippar.network
+        port: 443
+        protocol: rest
+        enforcement: enforce
+        access: full
+    binaries:
+      - path: /usr/local/bin/hermes
+      - path: /usr/bin/python3*
+      - path: /opt/hermes/.venv/bin/python
+      - path: /opt/hermes/.venv/bin/python3
+      - path: /usr/bin/curl

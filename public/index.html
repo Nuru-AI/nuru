@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sippar Research Agent</title>
+<meta name="description" content="Ask a research question. NVIDIA Nemotron plans the reading, an agent wallet pays each source per call, and every claim in the brief links to its quote and its payment.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+@font-face { font-family: "Orbitron"; src: url("brand/orbitron-v35-latin-700.woff2") format("woff2"); font-weight: 700; font-display: swap; }
+:root {
+  --navy: #0E1A38; --navy-deep: #08102B; --panel: #142140; --line: #24325a;
+  --copper: #D4A074; --copper-mute: #8C6849; --paper: #F4EFE6; --ink-muted: #A9B3C9; --grey: #94A0B8;
+  --ok: #8FCBA0; --warn: #E2B26B;
+  --r: 10px;
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--navy); color: var(--paper); font: 16px/1.6 Inter, system-ui, sans-serif; }
+a { color: var(--copper); }
+a:focus-visible, button:focus-visible, textarea:focus-visible, input:focus-visible, select:focus-visible { outline: 2px solid var(--copper); outline-offset: 2px; }
+.wrap { max-width: 1180px; margin: 0 auto; padding: 0 24px; }
+header { border-bottom: 1px solid var(--line); background: var(--navy-deep); }
+header .wrap { display: flex; align-items: center; justify-content: space-between; height: 64px; gap: 16px; }
+.brand { display: flex; align-items: center; gap: 14px; min-width: 0; }
+.brand a { display: inline-flex; align-items: center; min-height: 44px; }
+.brand img { height: 19px; display: block; }
+.pdiv { width: 1px; height: 22px; background: var(--line); }
+.ptitle { font-family: Orbitron, sans-serif; font-weight: 700; font-size: 13px; letter-spacing: .14em; text-transform: uppercase; color: var(--ink-muted); white-space: nowrap; }
+.walletchip { font: 500 13px/1 "JetBrains Mono", monospace; color: var(--ink-muted); border: 1px solid var(--line); border-radius: 999px; padding: 9px 12px; white-space: nowrap; }
+.walletchip b { color: var(--paper); font-weight: 500; }
+@media (max-width: 560px) { .ptitle { font-size: 10px; letter-spacing: .08em; } .brand { gap: 10px; } }
+@media (max-width: 374px) { .ptitle, .pdiv { display: none; } }
+
+.ask { padding-top: 48px; padding-bottom: 32px; }
+h1 { font-size: clamp(28px, 4vw, 40px); line-height: 1.15; margin: 0 0 12px; font-weight: 600; letter-spacing: -.01em; max-width: 22ch; }
+.lede { color: var(--ink-muted); max-width: 62ch; margin: 0 0 28px; }
+form { display: grid; gap: 12px; max-width: 760px; }
+label { font-size: 14px; color: var(--ink-muted); }
+textarea, input { width: 100%; background: var(--panel); color: var(--paper); border: 1px solid var(--line); border-radius: var(--r); padding: 14px 16px; font: inherit; }
+textarea { min-height: 84px; resize: vertical; }
+.row { display: grid; grid-template-columns: 1fr auto; gap: 12px; align-items: end; }
+button.primary { background: var(--copper); color: var(--navy-deep); border: 0; border-radius: var(--r); padding: 0 22px; min-height: 50px; font: 600 16px Inter, sans-serif; cursor: pointer; }
+button.primary[disabled] { opacity: .5; cursor: progress; }
+.hint { font-size: 14px; color: var(--grey); }
+.examples { display: flex; flex-wrap: wrap; gap: 8px; }
+.examples button { background: transparent; color: var(--ink-muted); border: 1px solid var(--line); border-radius: 999px; padding: 8px 14px; min-height: 40px; font: 14px Inter, sans-serif; cursor: pointer; }
+.err { color: var(--warn); }
+
+.result { display: grid; grid-template-columns: minmax(0, 1fr) 380px; gap: 40px; padding-top: 8px; padding-bottom: 64px; }
+@media (max-width: 960px) { .result { grid-template-columns: 1fr; } }
+.brief h2 { font-size: 26px; line-height: 1.25; margin: 0 0 12px; font-weight: 600; }
+.brief .summary { color: var(--paper); font-size: 18px; max-width: 68ch; }
+.points { list-style: none; padding: 0; margin: 24px 0; display: grid; gap: 14px; max-width: 72ch; }
+.points li { padding-left: 18px; border-left: 2px solid var(--copper-mute); }
+.cite { display: inline-flex; align-items: center; margin-left: 4px; padding: 1px 8px; border-radius: 6px; border: 1px solid var(--copper-mute); background: transparent; color: var(--copper); font: 500 13px/1.6 "JetBrains Mono", monospace; cursor: pointer; vertical-align: baseline; }
+.cite[aria-expanded="true"] { background: var(--copper); color: var(--navy-deep); }
+.evidence { margin: 10px 0 2px; padding: 12px 14px; background: var(--panel); border-radius: var(--r); font-size: 15px; }
+.evidence q { display: block; color: var(--paper); margin-bottom: 6px; }
+.evidence .meta { color: var(--ink-muted); font-size: 14px; }
+.gaps h3, .side h3 { font-size: 15px; font-weight: 600; margin: 28px 0 8px; color: var(--paper); }
+.gaps ul { color: var(--ink-muted); margin: 0; padding-left: 20px; max-width: 70ch; }
+
+.side { border-left: 1px solid var(--line); padding-left: 32px; }
+@media (max-width: 960px) { .side { border-left: 0; padding-left: 0; border-top: 1px solid var(--line); padding-top: 8px; } }
+.steps { list-style: none; counter-reset: s; padding: 0; margin: 0; display: grid; gap: 12px; }
+.steps li { counter-increment: s; display: grid; grid-template-columns: 28px 1fr; gap: 10px; font-size: 15px; }
+.steps li::before { content: counter(s); font: 500 13px/28px "JetBrains Mono", monospace; text-align: center; height: 28px; border-radius: 50%; border: 1px solid var(--line); color: var(--ink-muted); }
+.steps li.live::before { border-color: var(--copper); color: var(--copper); }
+.steps .src { color: var(--paper); font-weight: 500; }
+.steps .q { color: var(--ink-muted); }
+.steps .pay { font: 13px/1.5 "JetBrains Mono", monospace; color: var(--ink-muted); margin-top: 2px; word-break: break-all; }
+.steps .pay .paid { color: var(--ok); }
+.ledger { width: 100%; border-collapse: collapse; font-size: 14px; }
+.ledger td { padding: 6px 0; border-bottom: 1px solid var(--line); vertical-align: top; }
+.ledger td.n { text-align: right; font-family: "JetBrains Mono", monospace; font-variant-numeric: tabular-nums; white-space: nowrap; padding-left: 12px; }
+.ledger tr.total td { color: var(--paper); font-weight: 600; border-bottom: 0; }
+.models { color: var(--ink-muted); font-size: 14px; }
+.models div { display: flex; justify-content: space-between; gap: 12px; }
+.models span:last-child { font-family: "JetBrains Mono", monospace; white-space: nowrap; }
+.status { color: var(--ink-muted); font-size: 15px; min-height: 24px; }
+.status::before { content: ""; display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--copper); margin-right: 8px; vertical-align: middle; animation: pulse 1.2s ease-in-out infinite; }
+.status.idle::before { display: none; }
+@keyframes pulse { 50% { opacity: .25; } }
+@media (prefers-reduced-motion: reduce) { .status::before { animation: none; } }
+footer { border-top: 1px solid var(--line); color: var(--grey); font-size: 14px; padding: 20px 0 40px; }
+[hidden] { display: none !important; }
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <div class="brand">
+      <a href="https://sippar.network" aria-label="Sippar home"><img src="brand/sippar-wordmark.svg" alt="Sippar" width="88" height="19"></a>
+      <span class="pdiv" aria-hidden="true"></span>
+      <span class="ptitle">Research Agent</span>
+    </div>
+    <span class="walletchip" id="wallet" title="The agent's own wallet on Base">wallet <b id="bal">…</b></span>
+  </div>
+</header>
+
+<main id="main">
+  <section class="ask wrap">
+    <h1>A research brief where every claim shows what it cost</h1>
+    <p class="lede">Ask a question. NVIDIA Nemotron plans the reading, the agent's wallet pays each source per call, and every point in the brief opens to its quote, its source and its payment on Base.</p>
+    <form id="f">
+      <label for="question">Your question</label>
+      <textarea id="question" required maxlength="400" placeholder="What is the current evidence that GLP-1 drugs reduce the risk of Alzheimer's disease?"></textarea>
+      <div class="row">
+        <div>
+          <label for="reader">Who the brief is for</label>
+          <input id="reader" maxlength="80" value="a researcher">
+        </div>
+        <button class="primary" id="go" type="submit">Research it</button>
+      </div>
+      <div class="examples" aria-label="Example questions">
+        <button type="button">What is the current evidence that GLP-1 drugs reduce the risk of Alzheimer's disease?</button>
+        <button type="button">How are publishers getting paid when AI agents read their articles?</button>
+        <button type="button">What changed in open-weight model inference costs this year?</button>
+      </div>
+      <p class="hint">A brief takes about a minute and usually spends between $0.05 and $0.30 from the agent's wallet.</p>
+      <p class="err" id="err" role="alert" hidden></p>
+    </form>
+  </section>
+
+  <section class="wrap result" id="result" hidden aria-live="polite">
+    <article class="brief" id="brief">
+      <p class="status" id="status">Planning the reading with Nemotron</p>
+    </article>
+    <aside class="side" aria-label="How the brief was made">
+      <h3>The reading plan</h3>
+      <ol class="steps" id="steps"></ol>
+      <div id="ledgerbox" hidden>
+        <h3>Who was paid</h3>
+        <table class="ledger" id="ledger"></table>
+        <h3>Nemotron on Token Factory</h3>
+        <div class="models" id="models"></div>
+      </div>
+    </aside>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">Reasoning by NVIDIA Nemotron on Nebius Token Factory. Web search by Tavily. Paid sources bought per call through Sippar, in USDC on Base. Dataconomy articles are read with the publisher's agreement and the publisher is paid per read.</div>
+</footer>
+
+<script>
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const usd = (n) => n == null ? "" : "$" + Number(n).toFixed(Number(n) < 0.1 ? 3 : 2);
+const tx = (h) => `<a href="https://basescan.org/tx/${esc(h)}" target="_blank" rel="noopener">${esc(h.slice(0, 10))}…${esc(h.slice(-6))}</a>`;
+const LABEL = { web_search: "Web search", read_page: "Read a page", news: "News", dataconomy_search: "Dataconomy search", dataconomy_article: "Dataconomy article", papers: "Scholarly papers" };
+
+async function wallet() {
+  try { const w = await (await fetch("/api/wallet")).json(); $("bal").textContent = w.balanceUsd == null ? "unknown" : usd(w.balanceUsd); $("wallet").title = "The agent's own wallet on Base: " + w.address; } catch {}
+}
+wallet();
+
+document.querySelectorAll(".examples button").forEach((b) => b.addEventListener("click", () => { $("question").value = b.textContent; $("question").focus(); }));
+
+function stepRow(s, live) {
+  const input = s.input?.query || s.input?.url || "";
+  let pay = "";
+  if (s.payment?.tx) pay = `<div class="pay"><span class="paid">paid ${usd(s.payment.priceUsd)}</span> · ${tx(s.payment.tx)}</div>`;
+  else if (s.payment?.note) pay = `<div class="pay">${esc(s.payment.note)}</div>`;
+  if (s.error) pay += `<div class="pay err">${esc(s.error.slice(0, 120))}</div>`;
+  if (s.skipped) pay += `<div class="pay">${esc(s.skipped)}</div>`;
+  const n = s.documents ? ` · ${s.documents.length} read` : "";
+  return `<li class="${live ? "live" : ""}"><div><div class="src">${esc(LABEL[s.tool] || s.tool)} <span class="q">from ${esc(s.seller)}${n}</span></div><div class="q">${esc(input)}</div>${pay}</div></li>`;
+}
+
+function render(run) {
+  $("steps").innerHTML = run.steps.map((s) => stepRow(s)).join("");
+  const claims = Object.fromEntries(run.claims.map((c) => [c.id, c]));
+  const docStep = (docId) => run.steps.find((s) => (s.documents || []).some((d) => d.id === docId));
+  const b = run.brief;
+  $("brief").innerHTML = `<h2>${esc(b.title)}</h2><p class="summary">${esc(b.summary)}</p>
+    <ul class="points">${b.points.map((p, i) => `<li>${esc(p.text)} ${p.evidence.map((e) => `<button class="cite" aria-expanded="false" data-c="${esc(e)}" data-p="${i}">${esc(e)}</button>`).join("")}<div class="ev" id="ev${i}"></div></li>`).join("")}</ul>
+    ${b.gaps?.length ? `<div class="gaps"><h3>What the sources did not cover</h3><ul>${b.gaps.map((g) => `<li>${esc(g)}</li>`).join("")}</ul></div>` : ""}`;
+  $("brief").querySelectorAll(".cite").forEach((btn) => btn.addEventListener("click", () => {
+    const c = claims[btn.dataset.c]; const box = $("ev" + btn.dataset.p);
+    const open = btn.getAttribute("aria-expanded") === "true";
+    box.parentElement.querySelectorAll(".cite").forEach((x) => x.setAttribute("aria-expanded", "false"));
+    if (open) { box.innerHTML = ""; return; }
+    btn.setAttribute("aria-expanded", "true");
+    const s = docStep(c.doc);
+    const paid = s?.payment?.tx ? `Bought for ${usd(s.payment.priceUsd)} from ${esc(s.seller)}, payment ${tx(s.payment.tx)}` : `Found with ${esc(s?.seller || "Tavily")} ${esc(LABEL[s?.tool] ? LABEL[s.tool].toLowerCase() : "")}, on Tavily's API key`;
+    box.innerHTML = `<div class="evidence"><q>${esc(c.quote)}</q><div class="meta"><a href="${esc(c.url)}" target="_blank" rel="noopener">${esc(c.publisher || c.url)}</a> · quote checked word for word in the source · ${paid}</div></div>`;
+  }));
+  const L = run.ledger;
+  $("ledger").innerHTML = Object.entries(L.bySeller).map(([k, v]) => `<tr><td>${esc(k)}</td><td class="n">${usd(v)}</td></tr>`).join("") +
+    `<tr class="total"><td>${L.paidReads} paid reads</td><td class="n">${usd(L.spentUsd)}</td></tr>`;
+  $("models").innerHTML = Object.entries(run.nemotron.byModel).map(([m, u]) => `<div><span>${esc(m.split("/")[1])}</span><span>${u.calls} calls · ${(u.inputTokens + u.outputTokens).toLocaleString()} tokens</span></div>`).join("");
+  $("ledgerbox").hidden = false;
+  wallet();
+}
+
+const MSG = { "plan:start": "Planning the reading with Nemotron Ultra", "step:start": "Buying and reading sources", "read:start": "Nemotron Super is pulling quotes from each source", "write:start": "Nemotron Ultra is writing the brief" };
+
+$("f").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const question = $("question").value.trim(); if (!question) return;
+  $("err").hidden = true; $("go").disabled = true; $("go").textContent = "Researching";
+  $("result").hidden = false; $("steps").innerHTML = ""; $("ledgerbox").hidden = true;
+  $("brief").innerHTML = `<p class="status" id="status">Planning the reading with Nemotron Ultra</p>`;
+  const steps = [];
+  try {
+    const res = await fetch("/api/run", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ question, reader: $("reader").value }) });
+    if (!res.ok || !res.body) { throw new Error((await res.json().catch(() => ({}))).error || "The run could not start."); }
+    const reader = res.body.getReader(); const dec = new TextDecoder(); let buf = "";
+    for (;;) {
+      const { value, done } = await reader.read(); if (done) break;
+      buf += dec.decode(value, { stream: true });
+      let i; while ((i = buf.indexOf("\n\n")) >= 0) {
+        const chunk = buf.slice(0, i); buf = buf.slice(i + 2);
+        const ev = /event: (\w+)/.exec(chunk)?.[1]; const data = JSON.parse(/data: (.*)/s.exec(chunk)?.[1] || "{}");
+        if (ev === "progress") {
+          if (MSG[data.type] && $("status")) $("status").textContent = MSG[data.type];
+          if (data.type === "plan:done") { data.steps.forEach((s, k) => steps[k] = { ...s, seller: "" }); }
+          if (data.step) { steps[data.step.n - 1] = data.step; }
+          if (data.step || data.type === "plan:done") $("steps").innerHTML = steps.map((s, k) => stepRow(s, data.step && data.step.n === k + 1 && data.type === "step:start")).join("");
+        }
+        if (ev === "result") { const run = await (await fetch("/api/runs/" + data.id)).json(); history.replaceState(null, "", "?run=" + data.id); render(run); }
+        if (ev === "failed") throw new Error(data.error);
+      }
+    }
+  } catch (err) {
+    $("err").textContent = err.message; $("err").hidden = false; $("result").hidden = true;
+  } finally { $("go").disabled = false; $("go").textContent = "Research it"; }
+});
+
+const saved = new URLSearchParams(location.search).get("run");
+if (saved) fetch("/api/runs/" + saved).then((r) => r.ok ? r.json() : null).then((run) => { if (run) { $("result").hidden = false; $("question").value = run.question; $("reader").value = run.reader; render(run); } });
+</script>
+</body>
+</html>

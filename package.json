@@ -1,0 +1,16 @@
+{
+  "name": "paying-reader",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "license": "MIT",
+  "scripts": {
+    "start": "node server.mjs",
+    "run": "node cli.mjs"
+  },
+  "dependencies": {
+    "@x402/evm": "^2.29.0",
+    "@x402/fetch": "^2.29.0",
+    "viem": "^2.57.13"
+  }
+}

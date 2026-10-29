@@ -1,0 +1,11 @@
+
+# Append to ~/.hermes/config.yaml inside the sandbox (the provider block is written by NemoClaw's onboarding).
+mcp_servers:
+  sippar:
+    url: "https://sippar.network/mcp/protocol/pay"
+    auth: oauth
+    oauth:
+      flow: device
+    timeout: 240
+    tools:
+      include: ["list_products", "browse_products", "plan_workflow", "buy_product", "read_purchase", "my_budget", "redeem_pass", "save_reading"]
