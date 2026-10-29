@@ -1,7 +1,9 @@
-# Sippar Agent: pay per call, from any harness
+# Nuru: the agent that pays per sip and unlocks the web
 
-A Nemotron agent that researches a question the way a careful analyst would, and pays for what
-it reads. The same door it buys from serves any harness; `skills/` and `harness/` show how.
+Every source paid per call, every claim with a receipt. Nuru is a Nemotron agent, built on
+Sippar, that researches a question the way a careful analyst would and pays for what it reads.
+A sip is a hundredth of a cent. The same door it buys from serves any harness; `skills/` and
+`harness/` show how.
 NVIDIA Nemotron plans the reading on Nebius Token Factory. The agent's own wallet buys each source
 per call, in USDC on Base. Nemotron pulls quotes from what was bought, code checks every quote
 word for word, and Nemotron writes a short brief. Each point in the brief opens to its quote, its
