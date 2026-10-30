@@ -15,7 +15,7 @@ each product's price at the moment you ask.
 | You want to | Read |
 |---|---|
 | add the door to ChatGPT, Claude, Hermes, OpenClaw or LangGraph, and sign in once, from a browser or a box with no browser | [sippar-connect/SKILL.md](./sippar-connect/SKILL.md) |
-| pay: a Sippar pass bought by card, a capped budget, or the agent's own wallet over x402 | [sippar-pay/SKILL.md](./sippar-pay/SKILL.md) |
+| pay: a Sippar Unlock card bought by card, a capped budget, or the agent's own wallet over x402 | [sippar-pay/SKILL.md](./sippar-pay/SKILL.md) |
 | buy data per call: search, news, social, papers, a publisher's articles, what AI models say, and read the result | [sippar-data/SKILL.md](./sippar-data/SKILL.md) |
 | buy an image or a video clip and get the file back | [sippar-media/SKILL.md](./sippar-media/SKILL.md) |
 | run a workflow Sippar executes for you: a plan over the shelf, audience discovery, YouTube trends, competitor discovery | [sippar-workflows/SKILL.md](./sippar-workflows/SKILL.md) |

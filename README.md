@@ -35,8 +35,8 @@ publishes a catalog and pays whatever a seller's 402 names.
 
 1. Add the MCP server `https://sippar.network/mcp/protocol/pay` to ChatGPT, Claude or Hermes Agent
    ([skills/sippar-connect](skills/sippar-connect/SKILL.md)).
-2. Buy a Sippar pass by card at https://sippar.network/pass/, sign in once and redeem its code
-   ([skills/sippar-pay](skills/sippar-pay/SKILL.md)). The pass is the run's hard cap.
+2. Get a Sippar Unlock card, paid by card through Stripe, at https://sippar.network/unlock. Sign
+   in once and redeem its code ([skills/sippar-pay](skills/sippar-pay/SKILL.md)). The card is the run's hard cap.
 3. Ask for the job, for example "find the audience for Nebius AI Cloud"
    ([skills/sippar-workflows](skills/sippar-workflows/SKILL.md)).
 
