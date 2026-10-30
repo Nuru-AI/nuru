@@ -20,7 +20,10 @@ test("bought async: the 202, then collected with the exact payment header that p
     if (!r.headers.get("PAYMENT-SIGNATURE")) return offer(0.1);
     return new Response(JSON.stringify({ accepted: true, paymentTx: "0xtx", amountUSD: 0.1, settlementKey: "k", collect: { collectUrl: "https://door.test/sell/workflow-planner/collect" } }), { status: 202 });
   };
-  const r = await paidPostAsync(wallet, "https://door.test/sell/workflow-planner", { query: "x" }, { maxPriceUsd: 0.2, everyMs: 0, fetchImpl, sleep: async () => {} });
+  const bodies = [];
+  const keepBody = async (input, init) => { const r = input instanceof Request ? input : new Request(input, init); if (r.headers.get("PAYMENT-SIGNATURE") && !r.url.endsWith("/collect")) bodies.push(await r.clone().json()); return fetchImpl(r); };
+  const r = await paidPostAsync(wallet, "https://door.test/sell/workflow-planner", { query: "x", budget: "0.20" }, { bodyForPrice: (p) => ({ query: "x", budget: (0.30 - p).toFixed(2) }), maxPriceUsd: 0.2, everyMs: 0, fetchImpl: keepBody, sleep: async () => {} });
+  assert.equal(bodies[0].budget, "0.20", "the paid request carries the budget left after the quoted price");
   assert.equal(r.ok, true);
   assert.equal(r.collected, true);
   assert.equal(r.priceUsd, 0.1);
