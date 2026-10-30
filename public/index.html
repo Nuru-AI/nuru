@@ -58,9 +58,9 @@ label { font-size: 14px; font-weight: 600; color: var(--text-2); }
 textarea, input, select { width: 100%; background: var(--warm-white); color: var(--text); border: 1px solid var(--border); border-radius: var(--r); padding: 14px 16px; font: inherit; }
 textarea { min-height: 84px; resize: vertical; }
 textarea::placeholder { color: var(--text-3); }
-.row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto; gap: 12px; align-items: end; }
+.row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 12px; align-items: end; }
 select { appearance: none; min-height: 50px; padding-right: 40px; cursor: pointer; background-image: linear-gradient(45deg, transparent 50%, var(--text-2) 50%), linear-gradient(135deg, var(--text-2) 50%, transparent 50%); background-position: calc(100% - 20px) 50%, calc(100% - 15px) 50%; background-size: 5px 5px; background-repeat: no-repeat; }
-@media (max-width: 760px) { .row { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); } .row button.primary { grid-column: 1 / -1; } }
+
 @media (max-width: 520px) { .row { grid-template-columns: 1fr; } }
 button.primary { background: var(--navy); color: var(--copper); border: 1px solid var(--navy); border-radius: var(--r); padding: 0 22px; min-height: 50px; font: 700 16px var(--body); cursor: pointer; transition: transform 160ms var(--ease-out), background-color 150ms var(--ease-out); }
 button.primary:active { transform: scale(0.97); }
@@ -148,10 +148,6 @@ button.primary[disabled] { opacity: .5; cursor: progress; }
       <label for="question">Your question</label>
       <textarea id="question" required maxlength="400" placeholder="What is the current evidence that GLP-1 drugs reduce the risk of Alzheimer's disease?"></textarea>
       <div class="row">
-        <div>
-          <label for="reader">Who the brief is for</label>
-          <input id="reader" maxlength="80" value="a researcher">
-        </div>
         <div>
           <label for="model">Free model</label>
           <select id="model" aria-describedby="model-hint"><option value="nvidia/nemotron-3-ultra-550b">NVIDIA Nemotron 3 Ultra</option></select>
@@ -291,7 +287,7 @@ $("f").addEventListener("submit", async (e) => {
   $("brief").innerHTML = `<p class="status" id="status">Planning the reading</p>`;
   const steps = [];
   try {
-    const res = await fetch("/api/run", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ question, reader: $("reader").value, model: $("model").value }) });
+    const res = await fetch("/api/run", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ question, model: $("model").value }) });
     if (!res.ok || !res.body) { throw new Error((await res.json().catch(() => ({}))).error || "The run could not start."); }
     const reader = res.body.getReader(); const dec = new TextDecoder(); let buf = "";
     for (;;) {
@@ -322,7 +318,7 @@ const modelsReady = fetch("/api/models").then((r) => r.json()).then(({ default: 
 }).catch(() => {});
 
 const saved = new URLSearchParams(location.search).get("run");
-if (saved) fetch("/api/runs/" + saved).then((r) => r.ok ? r.json() : null).then(async (run) => { if (run) { $("result").hidden = false; $("question").value = run.question; $("reader").value = run.reader; await modelsReady; if (run.models?.picked && [...$("model").options].some((o) => o.value === run.models.picked)) $("model").value = run.models.picked; render(run); } });
+if (saved) fetch("/api/runs/" + saved).then((r) => r.ok ? r.json() : null).then(async (run) => { if (run) { $("result").hidden = false; $("question").value = run.question; await modelsReady; if (run.models?.picked && [...$("model").options].some((o) => o.value === run.models.picked)) $("model").value = run.models.picked; render(run); } });
 </script>
 </body>
 </html>

@@ -88,15 +88,18 @@ createServer(async (req, res) => {
       res.writeHead(200, { "content-type": "text/event-stream", "cache-control": "no-store", connection: "keep-alive" });
       const push = (event, data) => res.write(`event: ${event}\ndata: ${JSON.stringify(data)}\n\n`);
       try {
-        const run = await research({ question, reader: reader || "a researcher", wallet, pick, onEvent: (e) => push("progress", e) });
+        const run = await research({ question, reader: reader || "the person who asked", wallet, pick, onEvent: (e) => push("progress", e) });
         daily.spent(run.ledger?.spentUsd);
         const id = run.startedAt.replace(/[:.]/g, "-");
         writeFileSync(join(RUNS, `${id}.json`), JSON.stringify(run, null, 2));
         push("result", { id });
       } catch (e) {
+        // Count what the failed run paid: its own ledger, or the balance drop when that is larger.
         const after = await wallet.balance().catch(() => bal);
-        daily.spent(Math.max(0, bal - after));
-        push("failed", { error: String(e.message || e).slice(0, 300) });
+        const spent = Math.max(Number(e.spentUsd) || 0, bal - after, 0);
+        daily.spent(spent);
+        const reason = String(e.message || e).slice(0, 200);
+        push("failed", { error: `The brief could not be finished: ${reason}${spent > 0 ? ` The sources already bought cost $${spent.toFixed(2)}.` : ""} Try again, or pick another free model.` });
       } finally {
         busy = false; res.end();
       }
