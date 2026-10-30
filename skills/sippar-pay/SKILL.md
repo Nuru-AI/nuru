@@ -1,6 +1,6 @@
 ---
 name: sippar-pay
-description: How an agent pays Sippar per call. Three ways: a prepaid pass someone gave it, a capped budget the person set up, or the agent's own wallet paying x402 on Base with no account at all.
+description: How an agent pays Sippar per call. Three ways: a prepaid pass (bought by card, or given), a capped budget the person set up, or the agent's own wallet paying x402 on Base with no account at all.
 ---
 
 # Paying per call
@@ -16,6 +16,13 @@ workflow draws from it until it is empty. `my_budget` shows what is left on the 
 budget. This is the simplest way to put an agent to work with a cap: the pass is the cap.
 
 A judge or a teammate with no wallet needs only a code and the device sign-in.
+
+## A pass bought by card
+
+At `https://sippar.network/pass/` a person buys a Sippar pass with a debit or credit card through
+Stripe, or with USDC from any wallet on Base, and gets a one-time code (`SP-XXXX-XXXX`). In
+ChatGPT, Claude or any host: sign in, call `redeem_pass` with the code, and every later call draws
+from the pass. Nothing is charged beyond it.
 
 ## A budget
 

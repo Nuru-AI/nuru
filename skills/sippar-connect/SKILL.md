@@ -1,6 +1,6 @@
 ---
 name: sippar-connect
-description: Add Sippar's MCP door to Hermes Agent, OpenClaw, LangGraph or Claude Code, list its tools without signing in, and sign in once from a box with no browser using a device code.
+description: Add Sippar's MCP door to ChatGPT, Claude, Hermes Agent, OpenClaw or LangGraph, list its tools without signing in, and sign in once, from a browser or with a device code on a box with no browser.
 ---
 
 # Connect an agent to Sippar
@@ -47,6 +47,14 @@ recipe, "Connect OpenClaw to Nebius Token Factory", puts Nemotron behind it as a
 Any framework with an MCP client takes the same URL. Nebius's Token Factory cookbook has an agent
 on each of these; swap the tool server for this door and the model for a Nemotron id.
 
+## ChatGPT
+
+Add the URL as a custom connector in ChatGPT's settings. The tools that spend or read your budget
+ask you to sign in; ChatGPT opens the sign-in in a browser tab, and you sign in with email, Google
+or a wallet. Measured 2026-10-19: ChatGPT signed in, `my_budget` read the live budget, and a news
+search was paid from the budget on Base with no card click. Redeem a pass with `redeem_pass` and
+ask for the job.
+
 ## Claude Code and Claude.ai
 
 Add the URL as a connector; Claude signs in through a browser tab the first time it meets a 401.
@@ -65,7 +73,7 @@ name, description, example input and live price. A product is bought with
 `read_purchase` (the result of a purchase, or of a workflow still running), `my_budget` (sign in,
 balance and pass), `redeem_pass` (a pass code someone gave you), `save_reading` (keep your
 notes against a run), `plan_workflow`, `video_trend_finder`, `competitor_discovery`,
-`compare_images`, `my_knowledge` (what you bought, sealed to your wallet).
+`audience_discovery`, `compare_images`, `my_knowledge` (what you bought, sealed to your wallet).
 
 A purchase is readable for a while after it finishes; a `read_purchase` that answers "no longer
 known to Sippar" means the result expired on the server (your payment is safe). Read a run back

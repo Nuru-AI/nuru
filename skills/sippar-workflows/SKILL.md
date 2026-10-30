@@ -1,6 +1,6 @@
 ---
 name: sippar-workflows
-description: Workflows Sippar runs for an agent under one purchase: a plan over the whole shelf for one request (plan_workflow), YouTube trends for a niche (video_trend_finder), competitor discovery (competitor_discovery). Call once, read back with read_purchase, keep polling until finished.
+description: Workflows Sippar runs for an agent under one purchase: a plan over the whole shelf for one request (plan_workflow), who buys a product and where they talk (audience_discovery), YouTube trends for a niche (video_trend_finder), competitor discovery (competitor_discovery). Call once, read back with read_purchase, keep polling until finished.
 ---
 
 # Workflows Sippar runs for you
@@ -19,6 +19,12 @@ once, then read the run back.
   searches, a filter, ranking by views per hour, details on the top five.
 - `competitor_discovery`: the nine-step research run, priced per cell at the live rate, from your
   budget or pass.
+- `audience_discovery` `{ "category": "...", "buyers": "business" | "consumer", "industry": "...",
+  "company": "...", "roles": N, "budgetUSD": N }`: who buys a product, then where they talk. A
+  profile of the likely buyers from NVIDIA's Nemotron-Personas-USA (synthetic US adults, CC BY 4.0,
+  not real customers; say so in the answer), web searches on the category and on your company if
+  you name one, Reddit and X, and for business buyers the US companies hiring the buyers' jobs; for
+  consumer buyers, YouTube reviews and the brands advertising to them on Meta. At most $5.
 
 ## Reading a run back
 
