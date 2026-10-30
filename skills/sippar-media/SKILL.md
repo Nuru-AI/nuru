@@ -22,8 +22,8 @@ network and returns the file as the seller sent it.
 Input for all of them: `{ "query": "<the description>" }` plus the options the product lists
 (`model`, `size`, `output_format`, `aspect_ratio`, `duration` where the product takes them; the
 shelf entry names each). The field is `query`, not `prompt`: a `prompt` key is refused free,
-before anything is bought. Keep a description under 2,500 characters. The response names the model and the seller; keep that line with the
-file when you show it.
+before anything is bought. Keep a description under 2,500 characters. The response names the
+model and the seller; keep that line with the file when you show it.
 
 A model that reads images, such as Nemotron 3.5 Super VL on Nebius Token Factory, can check a
 delivered picture or clip against the brief before you use it.

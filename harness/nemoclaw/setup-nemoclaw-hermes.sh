@@ -12,11 +12,11 @@
 # NEMOCLAW_ENDPOINT_URL, NEMOCLAW_MODEL, COMPATIBLE_API_KEY; egress allowlist via
 # `openshell policy update <sandbox> --add-endpoint host:port:access:type:enforce`.
 # Known trap (NVIDIA/NemoClaw#307): a provider base URL reached directly from inside the sandbox is blocked by the
-# egress proxy; the custom-provider route above is the supported path. Whether a REMOTE https custom endpoint is
-# accepted by onboarding is the first thing this script measures (the doc's example is a loopback vLLM).
+# egress proxy; the custom-provider route above is the supported path. A remote https endpoint (Token Factory) is
+# accepted by onboarding: measured 2026-10-29, though the doc's example is a loopback vLLM.
 set -euo pipefail
 
-: "${NEBIUS_API_KEY:?NEBIUS_API_KEY must be in the environment (with-secrets tokenfactory)}"
+: "${NEBIUS_API_KEY:?NEBIUS_API_KEY must be in the environment (your Token Factory key)}"
 SANDBOX="${SANDBOX:-sippar-hermes}"
 MODEL="${MODEL:-nvidia/nemotron-3-super-120b-a12b}"
 TF_URL="${TF_URL:-https://api.tokenfactory.nebius.com/v1}"

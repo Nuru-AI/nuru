@@ -7,8 +7,9 @@ other MCP host can add, and the same products reached over plain HTTP with x402 
 holds its own wallet.
 
 Sippar connects an agent to the data and services it trusts and settles each call on chain.
-The agent's model is yours: ChatGPT's, Claude's, or NVIDIA Nemotron on Nebius Token Factory, as in
-this repository's own runtime and inside Hermes Agent under NVIDIA NemoClaw on a Nebius AI Cloud VM.
+The agent's model is yours: ChatGPT's, Claude's, or NVIDIA Nemotron, the default for the plans
+Sippar writes, bought per call on AntSeed. This repository's own runtime, and Hermes Agent under
+NVIDIA NemoClaw on a Nebius AI Cloud VM, run Nemotron on Nebius Token Factory.
 Prices are not written here: the shelf is live, and `list_products` or the free catalog carries
 each product's price at the moment you ask.
 

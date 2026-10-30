@@ -51,6 +51,7 @@ from your own arithmetic over it, unless you show the arithmetic.
 
 ## In this repository
 
-`lib/tools.mjs` is a closed list of five of these products with their input shape and how each
-result is turned into documents; `lib/agent.mjs` plans over that list with Nemotron 3 Ultra,
-buys, keeps only quotes that appear word for word in what was bought, and writes from those.
+`lib/agent.mjs` has Nemotron 3 Ultra plan over the live catalog (`lib/catalog.mjs`), buys the
+steps, keeps only quotes that appear word for word in what was bought, and writes from those.
+`lib/tools.mjs` is the fallback: a closed list of five of these sources, used when the catalog
+cannot be read or a plan fails the code check twice.

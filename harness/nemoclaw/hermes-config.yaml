@@ -1,4 +1,3 @@
-
 # Append to ~/.hermes/config.yaml inside the sandbox (the provider block is written by NemoClaw's onboarding).
 mcp_servers:
   sippar:
