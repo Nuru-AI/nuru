@@ -11,8 +11,8 @@ Built for the Nebius x NVIDIA Global AI Hackathon, Best Apps and Agents track.
 
 ## How it works
 
-- **The model.** NVIDIA Nemotron by default, bought per call on AntSeed, or any model you pick.
-  Nuru's own runtime in this repo runs Nemotron on Nebius Token Factory.
+- **The model.** NVIDIA Nemotron by default, or any model you pick. From a harness, Sippar's door
+  buys it per call on AntSeed; Nuru's own runtime in this repo runs it on Nebius Token Factory.
 - **Pay per call.** With x402, a service answers "402 Payment Required", Nuru pays in USDC on Base
   and gets the data. Never past its budget.
 - **The plan.** Nemotron plans the job over a live catalog of services and their prices, and code
@@ -36,7 +36,8 @@ publishes a catalog and pays whatever a seller's 402 names.
 1. Add the MCP server `https://sippar.network/mcp/protocol/pay` to ChatGPT, Claude or Hermes Agent
    ([skills/sippar-connect](skills/sippar-connect/SKILL.md)).
 2. Get a Sippar Unlock card, paid by card through Stripe, at https://sippar.network/unlock. Sign
-   in once and redeem its code ([skills/sippar-pay](skills/sippar-pay/SKILL.md)). The card is the run's hard cap.
+   in once and redeem its code ([skills/sippar-pay](skills/sippar-pay/SKILL.md)). The card is the
+   run's hard cap.
 3. Ask for the job, for example "find the audience for Nebius AI Cloud"
    ([skills/sippar-workflows](skills/sippar-workflows/SKILL.md)).
 
