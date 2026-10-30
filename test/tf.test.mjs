@@ -97,3 +97,12 @@ test("an answer after the model's reasoning: the outer object closing last, not 
   assert.deepEqual(parseJsonObject('thinking {x}\n```json\n{"steps":[{"id":"s1"}]}\n```\nDone.'), { steps: [{ id: "s1" }] });
   assert.throws(() => parseJsonObject("**Summary** no json here {not json}"), /no JSON object/);
 });
+
+test("the answer names who answered and who was passed over, for the page's 'took over' line", async () => {
+  process.env.NEBIUS_API_KEY = "k";
+  fake((host, body) => (body.model === "poolside/laguna-xs-2.1" ? answer("poolside/laguna-xs-2.1", "**Brief** not JSON") : answer("nvidia/Nemotron-3-Ultra-550b-a55b", '{"title":"t"}')));
+  process.env.NEMOTRON_PROVIDERS = "tokenfactory";
+  const r = await chat(MODELS.writer, [{ role: "user", content: "q" }], { json: true, pick: "poolside/laguna-xs-2.1" });
+  assert.equal(r.served.provider, "tokenfactory");
+  assert.match(r.served.passedOver[0], /^blockrun poolside\/laguna-xs-2\.1: no JSON object/);
+});

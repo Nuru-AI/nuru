@@ -80,6 +80,7 @@ button.primary[disabled] { opacity: .5; cursor: progress; }
 .brief { background: var(--white); border: 1px solid var(--border); border-radius: 20px; padding: clamp(20px, 3vw, 32px); }
 .brief h2 { font-size: clamp(22px, 2.6vw, 28px); line-height: 1.2; letter-spacing: -.02em; margin: 0 0 12px; font-weight: 800; text-wrap: balance; }
 .brief .summary { color: var(--text); font-size: 18px; max-width: 68ch; }
+.brief .byline { margin: 12px 0 0; font-size: 14px; color: var(--text-2); max-width: 72ch; padding: 10px 12px; background: var(--warm-white); border: 1px solid var(--border-2); border-radius: var(--r); }
 .points { list-style: none; padding: 0; margin: 24px 0; display: grid; gap: 14px; max-width: 72ch; }
 .points li { padding-left: 16px; border-left: 2px solid var(--copper); }
 .cite { display: inline-flex; align-items: center; margin-left: 4px; padding: 1px 8px; border-radius: 6px; border: 1px solid var(--copper-600); background: var(--white); color: var(--copper-600); font: 600 13px/1.6 var(--mono); cursor: pointer; vertical-align: baseline; }
@@ -224,12 +225,39 @@ function stepRow(s, live) {
   return `<li class="${live ? "live" : ""}"><div><div class="src">${esc(LABEL[s.tool] || s.tool)} <span class="q">from ${esc(s.seller)}${n}</span></div><div class="q">${esc(input)}</div>${why}${pay}</div></li>`;
 }
 
+// Which model planned and which wrote, as recorded by the run (runs before 2026-10-30 21:00 UTC have no servedBy).
+// A picked model that did not do its part is named, with who took over, as the playground promises.
+let MODEL_NAMES = {};
+const normId = (s) => String(s || "").toLowerCase().replace(/^[^/]+\//, "").replace(/-nim$/, "").replace(/[^a-z0-9]/g, "");
+function modelName(id) {
+  const n = normId(id);
+  for (const [k, v] of Object.entries(MODEL_NAMES)) if (n.startsWith(normId(k))) return v;
+  if (/nemotron3ultra/.test(n)) return "Nemotron 3 Ultra";
+  if (/nemotron3super/.test(n)) return "Nemotron 3 Super";
+  return String(id || "").split("/").pop().replace(/-nim$/, "");
+}
+const WHERE_SERVED = { blockrun: "free through BlockRun", tokenfactory: "on Nebius Token Factory", openrouter: "free through OpenRouter" };
+function byline(run) {
+  const by = run.servedBy; if (!by) return "";
+  const picked = run.models?.picked;
+  const part = (role, s) => {
+    if (!s) return "";
+    let t = `${role} by ${esc(modelName(s.model))} ${WHERE_SERVED[s.provider] || ""}.`;
+    if (picked && normId(s.model).startsWith(normId(picked)) === false) {
+      const verb = role === "Planned" ? "plan" : "write";
+      t += ` ${esc(modelName(picked))} could not ${verb} it, so Nemotron took over.`;
+    }
+    return t;
+  };
+  return `<p class="byline">${[part("Planned", by.planner), part("Written", by.writer)].filter(Boolean).join(" ")}</p>`;
+}
+
 function render(run) {
   $("steps").innerHTML = run.steps.map((s) => stepRow(s)).join("");
   const claims = Object.fromEntries(run.claims.map((c) => [c.id, c]));
   const docStep = (docId) => run.steps.find((s) => (s.documents || []).some((d) => d.id === docId));
   const b = run.brief;
-  $("brief").innerHTML = `<h2>${esc(b.title)}</h2><p class="summary">${esc(b.summary)}</p>
+  $("brief").innerHTML = `<h2>${esc(b.title)}</h2><p class="summary">${esc(b.summary)}</p>${byline(run)}
     <ul class="points">${b.points.map((p, i) => `<li>${esc(p.text)} ${p.evidence.map((e) => `<button class="cite" aria-expanded="false" data-c="${esc(e)}" data-p="${i}">${esc(e)}</button>`).join("")}<div class="ev" id="ev${i}"></div></li>`).join("")}</ul>
     ${b.gaps?.length ? `<div class="gaps"><h3>What the sources did not cover</h3><ul>${b.gaps.map((g) => `<li>${esc(g)}</li>`).join("")}</ul></div>` : ""}`;
   $("brief").querySelectorAll(".cite").forEach((btn) => btn.addEventListener("click", () => {
@@ -290,6 +318,7 @@ $("f").addEventListener("submit", async (e) => {
 // The free models to pick from, read live by the server from BlockRun's catalog; the default stays selected.
 const modelsReady = fetch("/api/models").then((r) => r.json()).then(({ default: def, models }) => {
   $("model").innerHTML = models.map((m) => `<option value="${esc(m.id)}"${m.id === def ? " selected" : ""}>${esc(m.name)}${m.id === def ? " (default)" : ""}</option>`).join("");
+  MODEL_NAMES = Object.fromEntries(models.map((m) => [m.id, String(m.name).replace(/\s*\(Free\)\s*$/i, "")]));
 }).catch(() => {});
 
 const saved = new URLSearchParams(location.search).get("run");
