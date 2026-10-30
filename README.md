@@ -9,6 +9,8 @@ outside the chat, so the harness receives a short summary.
 
 Built for the Nebius x NVIDIA Global AI Hackathon, Best Apps and Agents track.
 
+![Nuru's own page: a brief where every point opens to its quote, its source and its payment on Base](docs/page.png)
+
 ## How it works
 
 - **The model.** NVIDIA Nemotron by default, or any model you pick. From a harness, Sippar's door
@@ -58,6 +60,8 @@ Or from the command line:
 ```bash
 node cli.mjs "How are publishers getting paid when AI agents read their articles?" "a publisher"
 ```
+
+Tests: `npm test` (the plan check and the page's daily limits; no key, nothing bought).
 
 Settings: `MAX_SPEND_USD` (per-run ceiling, default 0.50), `PLANNER` (`catalog`, the default, or
 `fixed`), `CATALOG_URL` (any marketplace's catalog; Sippar's free catalog by default),

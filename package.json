@@ -6,7 +6,8 @@
   "license": "MIT",
   "scripts": {
     "start": "node server.mjs",
-    "run": "node cli.mjs"
+    "run": "node cli.mjs",
+    "test": "node --test test/*.test.mjs"
   },
   "dependencies": {
     "@x402/evm": "^2.29.0",
