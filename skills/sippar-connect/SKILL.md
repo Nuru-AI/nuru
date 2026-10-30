@@ -23,7 +23,7 @@ mcp_servers:
       flow: device
     timeout: 240
     tools:
-      include: ["list_products", "browse_products", "buy_product", "read_purchase", "my_budget", "redeem_pass", "save_reading", "plan_workflow"]
+      include: ["list_products", "browse_products", "buy_product", "read_purchase", "my_budget", "redeem_pass", "save_reading", "plan_workflow", "audience_discovery"]
 ```
 
 Then `hermes mcp login sippar --flow device`. It prints an 8-letter code and
@@ -52,7 +52,7 @@ on each of these; swap the tool server for this door and the model for a Nemotro
 Add the URL as a custom connector in ChatGPT's settings. The tools that spend or read your budget
 ask you to sign in; ChatGPT opens the sign-in in a browser tab, and you sign in with email, Google
 or a wallet. Measured 2026-10-19: ChatGPT signed in, `my_budget` read the live budget, and a news
-search was paid from the budget on Base with no card click. Redeem a pass with `redeem_pass` and
+search was paid from the budget on Base with no card click. Redeem an Unlock card's code with `redeem_pass` and
 ask for the job.
 
 ## Claude Code and Claude.ai
@@ -71,7 +71,7 @@ name, description, example input and live price. A product is bought with
 
 `list_products` and `browse_products` (the shelf), `buy_product` (one call of one product),
 `read_purchase` (the result of a purchase, or of a workflow still running), `my_budget` (sign in,
-balance and pass), `redeem_pass` (a pass code someone gave you), `save_reading` (keep your
+balance and Unlock card), `redeem_pass` (an Unlock card's code), `save_reading` (keep your
 notes against a run), `plan_workflow`, `video_trend_finder`, `competitor_discovery`,
 `audience_discovery`, `compare_images`, `my_knowledge` (what you bought, sealed to your wallet).
 

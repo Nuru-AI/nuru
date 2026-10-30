@@ -18,7 +18,7 @@ once, then read the run back.
 - `video_trend_finder` `{ "niche": "...", "audience": "...", "phrasings": [...] }`: two YouTube
   searches, a filter, ranking by views per hour, details on the top five.
 - `competitor_discovery`: the nine-step research run, priced per cell at the live rate, from your
-  budget or pass.
+  budget or Unlock card.
 - `audience_discovery` `{ "category": "...", "buyers": "business" | "consumer", "industry": "...",
   "company": "...", "roles": N, "budgetUSD": N }`: who buys a product, then where they talk. A
   profile of the likely buyers from NVIDIA's Nemotron-Personas-USA (synthetic US adults, CC BY 4.0,
@@ -38,5 +38,5 @@ credited and the total spent. `save_reading` keeps your own notes against the ru
 ## Budget
 
 `budgetUSD` is a hard cap for the whole run, the plan's own price included. Without a covering
-pass or budget, `plan_workflow` returns the plan as text and your own model buys the steps with
+Unlock card or budget, `plan_workflow` returns the plan as text and your own model buys the steps with
 `buy_product`.

@@ -17,7 +17,7 @@ network and returns the file as the seller sent it.
   and `read_purchase` waits on it and returns the MP4 when it is ready. You are charged only when
   a finished clip is delivered.
 - `compare_images`: one prompt to two to four image models side by side, signed in, from your
-  budget or pass.
+  budget or Unlock card.
 
 Input for all of them: `{ "query": "<the description>" }` plus the options the product lists
 (`model`, `size`, `output_format`, `aspect_ratio`, `duration` where the product takes them; the

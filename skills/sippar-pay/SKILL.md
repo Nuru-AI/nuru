@@ -1,6 +1,6 @@
 ---
 name: sippar-pay
-description: How an agent pays Sippar per call. Three ways: an Unlock card bought by card, or a pass someone gave it, a capped budget the person set up, or the agent's own wallet paying x402 on Base with no account at all.
+description: How an agent pays Sippar per call. Three ways: an Unlock card (bought by card, or given), a capped budget the person set up, or the agent's own wallet paying x402 on Base with no account at all.
 ---
 
 # Paying per call
@@ -8,20 +8,16 @@ description: How an agent pays Sippar per call. Three ways: an Unlock card bough
 Every product is one price per call, settled on chain. Nothing is charged for a call that
 returns nothing: a failed step is refunded or never drawn, and the response says so.
 
-## A pass
+## An Unlock card
 
-A Sippar pass is prepaid value that spends only on Sippar. Someone buys one and hands you a
-claim code; you call `redeem_pass` with it once, signed in, and every later `buy_product` or
-workflow draws from it until it is empty. `my_budget` shows what is left on the pass and on the
-budget. This is the simplest way to put an agent to work with a cap: the pass is the cap.
+A Sippar Unlock card is prepaid value that spends only on Sippar. A person buys one at
+`https://sippar.network/unlock` with a debit or credit card through Stripe, or someone gives you
+one, and you get a one-time code. In ChatGPT, Claude or any host: sign in, call `redeem_pass` with
+the code once, and every later `buy_product` or workflow draws from the card until it is empty.
+`my_budget` shows what is left on the card and on the budget. This is the simplest way to put an
+agent to work with a cap: the card is the cap, and nothing is charged beyond it.
 
-A judge or a teammate with no wallet needs only a code and the device sign-in.
-
-## An Unlock card bought by card
-
-At `https://sippar.network/unlock` a person buys a Sippar Unlock card with a debit or credit card
-through Stripe and gets a one-time code. In ChatGPT, Claude or any host: sign in, call `redeem_pass` with
-the code, and every later call draws from the card. Nothing is charged beyond it.
+A judge or a teammate with no wallet needs only a code and the sign-in.
 
 ## A budget
 

@@ -10,8 +10,8 @@ key never entered the sandbox: OpenShell holds it and supplies it at egress.
 
 - `setup-nemoclaw-hermes.sh`: run on the VM over SSH with the key in the command's environment
   only. Installs Docker and Node 22, runs NVIDIA's installer non-interactively with Hermes and
-  Token Factory as a custom OpenAI-compatible provider, allow-lists `sippar.network:443`. Steps 7
-  and 8 in the script are superseded by the commands below.
+  Token Factory as a custom OpenAI-compatible provider, allow-lists `sippar.network:443`. Attaching the door
+  and signing in are the commands below.
 - `hermes-config.yaml`: the `mcp_servers` block to append to the sandbox's `~/.hermes/config.yaml`.
 - `policy-sippar.yaml`: the network policy block with the one line that made it work.
 

@@ -8,4 +8,4 @@ mcp_servers:
       flow: device
     timeout: 240
     tools:
-      include: ["list_products", "browse_products", "plan_workflow", "buy_product", "read_purchase", "my_budget", "redeem_pass", "save_reading"]
+      include: ["list_products", "browse_products", "plan_workflow", "audience_discovery", "buy_product", "read_purchase", "my_budget", "redeem_pass", "save_reading"]

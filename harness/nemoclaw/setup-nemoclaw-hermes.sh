@@ -2,9 +2,8 @@
 # Hermes Agent inside NVIDIA OpenShell (NemoClaw) on a Nebius AI Cloud VM, with Nemotron on Token Factory as
 # its model and Sippar's hosted MCP door as its tools. Hackathon sandbox check, 2026-10-29.
 #
-# Runs ON THE VM (Ubuntu 24.04, 4 vCPU, 16 GB). Driven from the Mac over SSH; nothing is pasted by hand:
-#   scripts/secrets/with-secrets tokenfactory -- bash -c \
-#     'ssh ubuntu@<vm-ip> "NEBIUS_API_KEY=$NEBIUS_API_KEY bash -s" < deploy/nebius-nemoclaw/setup-nemoclaw-hermes.sh'
+# Runs ON THE VM (Ubuntu 24.04, 4 vCPU, 16 GB), driven from your own machine over SSH:
+#   ssh ubuntu@<vm-ip> "NEBIUS_API_KEY=$NEBIUS_API_KEY bash -s" < setup-nemoclaw-hermes.sh
 # The key travels in the ssh command's environment only; it is never written to the VM's disk by this script.
 # NemoClaw keeps it outside the sandbox (OpenShell supplies it at egress).
 #
@@ -67,14 +66,5 @@ step "6. allow egress to Sippar's door (OpenShell policy)"
 openshell policy update "$SANDBOX" --add-endpoint sippar.network:443:full:rest:enforce || \
   echo "policy update failed: approve sippar.network:443 in 'openshell term' when the agent first tries it"
 
-step "7. attach the door inside the sandbox as a Hermes MCP server with device sign-in"
-nemohermes "$SANDBOX" connect -- bash -lc "
-  hermes mcp add sippar --url $SIPPAR_DOOR --auth oauth || true
-  hermes mcp login sippar --flow device
-" || echo "device login did not start inside the sandbox; see the runbook's fallback (managed MCP with a bearer)"
-
-step "8. one free message through Nemotron"
-nemohermes "$SANDBOX" connect -- bash -lc "hermes chat -q 'Reply with exactly: NEMOTRON OK, and name the model you are.' --oneshot --max-turns 5 --run-budget 120" || true
-
 step "done"
-echo "Next: from the Mac, drive a signed-in run with --max-turns 40 --run-budget 300 and a plan_workflow budget; record in NATIVE_ENTRY_PLAN § 7."
+echo "Next: attach the door and sign in with the commands in README.md, then run with --max-turns and --run-budget."
