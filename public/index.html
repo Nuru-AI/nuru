@@ -55,10 +55,12 @@ h1 { font-family: var(--display); font-weight: 700; font-size: clamp(28px, 4.2vw
 .lede { color: var(--text-2); font-size: clamp(15.5px, 1.6vw, 18px); max-width: 62ch; margin: 0 0 28px; }
 form { display: grid; gap: 12px; max-width: 760px; background: var(--white); border: 1px solid var(--border); border-radius: 20px; padding: clamp(18px, 3vw, 26px); }
 label { font-size: 14px; font-weight: 600; color: var(--text-2); }
-textarea, input { width: 100%; background: var(--warm-white); color: var(--text); border: 1px solid var(--border); border-radius: var(--r); padding: 14px 16px; font: inherit; }
+textarea, input, select { width: 100%; background: var(--warm-white); color: var(--text); border: 1px solid var(--border); border-radius: var(--r); padding: 14px 16px; font: inherit; }
 textarea { min-height: 84px; resize: vertical; }
 textarea::placeholder { color: var(--text-3); }
-.row { display: grid; grid-template-columns: 1fr auto; gap: 12px; align-items: end; }
+.row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto; gap: 12px; align-items: end; }
+select { appearance: none; min-height: 50px; padding-right: 40px; cursor: pointer; background-image: linear-gradient(45deg, transparent 50%, var(--text-2) 50%), linear-gradient(135deg, var(--text-2) 50%, transparent 50%); background-position: calc(100% - 20px) 50%, calc(100% - 15px) 50%; background-size: 5px 5px; background-repeat: no-repeat; }
+@media (max-width: 760px) { .row { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); } .row button.primary { grid-column: 1 / -1; } }
 @media (max-width: 520px) { .row { grid-template-columns: 1fr; } }
 button.primary { background: var(--navy); color: var(--copper); border: 1px solid var(--navy); border-radius: var(--r); padding: 0 22px; min-height: 50px; font: 700 16px var(--body); cursor: pointer; transition: transform 160ms var(--ease-out), background-color 150ms var(--ease-out); }
 button.primary:active { transform: scale(0.97); }
@@ -149,6 +151,10 @@ button.primary[disabled] { opacity: .5; cursor: progress; }
           <label for="reader">Who the brief is for</label>
           <input id="reader" maxlength="80" value="a researcher">
         </div>
+        <div>
+          <label for="model">Free model</label>
+          <select id="model" aria-describedby="model-hint"><option value="nvidia/nemotron-3-ultra-550b">NVIDIA Nemotron 3 Ultra</option></select>
+        </div>
         <button class="primary" id="go" type="submit">Research it</button>
       </div>
       <div class="examples" aria-label="Example questions">
@@ -156,7 +162,7 @@ button.primary[disabled] { opacity: .5; cursor: progress; }
         <button type="button">How are publishers getting paid when AI agents read their articles?</button>
         <button type="button">What changed in open-weight model inference costs this year?</button>
       </div>
-      <p class="hint lead-hint">This is Nuru's playground, and it runs on free models, with NVIDIA Nemotron as the default. The data each brief reads is bought per call from the agent's wallet, up to 3 briefs per visitor a day.</p>
+      <p class="hint lead-hint" id="model-hint">This is Nuru's playground, and it runs on free models, with NVIDIA Nemotron as the default. The model you pick plans and writes the brief; if it does not answer, Nemotron takes over and the brief says so. The data each brief reads is bought per call from the agent's wallet, up to 3 briefs per visitor a day.</p>
       <p class="hint">A brief takes about a minute and usually spends between $0.05 and $0.30 from the agent's wallet.</p>
       <p class="err" id="err" role="alert" hidden></p>
     </form>
@@ -257,7 +263,7 @@ $("f").addEventListener("submit", async (e) => {
   $("brief").innerHTML = `<p class="status" id="status">Planning the reading</p>`;
   const steps = [];
   try {
-    const res = await fetch("/api/run", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ question, reader: $("reader").value }) });
+    const res = await fetch("/api/run", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ question, reader: $("reader").value, model: $("model").value }) });
     if (!res.ok || !res.body) { throw new Error((await res.json().catch(() => ({}))).error || "The run could not start."); }
     const reader = res.body.getReader(); const dec = new TextDecoder(); let buf = "";
     for (;;) {
@@ -281,8 +287,13 @@ $("f").addEventListener("submit", async (e) => {
   } finally { $("go").disabled = false; $("go").textContent = "Research it"; }
 });
 
+// The free models to pick from, read live by the server from BlockRun's catalog; the default stays selected.
+const modelsReady = fetch("/api/models").then((r) => r.json()).then(({ default: def, models }) => {
+  $("model").innerHTML = models.map((m) => `<option value="${esc(m.id)}"${m.id === def ? " selected" : ""}>${esc(m.name)}${m.id === def ? " (default)" : ""}</option>`).join("");
+}).catch(() => {});
+
 const saved = new URLSearchParams(location.search).get("run");
-if (saved) fetch("/api/runs/" + saved).then((r) => r.ok ? r.json() : null).then((run) => { if (run) { $("result").hidden = false; $("question").value = run.question; $("reader").value = run.reader; render(run); } });
+if (saved) fetch("/api/runs/" + saved).then((r) => r.ok ? r.json() : null).then(async (run) => { if (run) { $("result").hidden = false; $("question").value = run.question; $("reader").value = run.reader; await modelsReady; if (run.models?.picked && [...$("model").options].some((o) => o.value === run.models.picked)) $("model").value = run.models.picked; render(run); } });
 </script>
 </body>
 </html>
