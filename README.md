@@ -48,13 +48,15 @@ publishes a catalog and pays whatever a seller's 402 names.
 
 Requirements: Node.js 22 and a wallet on Base holding a few dollars of USDC. Every read is bought per
 call. The model needs no key: with none set, Nuru runs on BlockRun's free NVIDIA Nemotron 3 Ultra.
-With a key it tries Nebius Token Factory first, then the free routes, in the order `NEMOTRON_PROVIDERS`
-gives (default `tokenfactory,blockrun,openrouter`; OpenRouter's free Nemotron needs `OPENROUTER_API_KEY`).
-The free routes run on NVIDIA's own hosted endpoint, under NVIDIA's API Trial Terms.
+Free comes first: the Ultra calls (plan, write) try BlockRun's free Ultra, then Token Factory, then
+OpenRouter (`NEMOTRON_PROVIDERS`, default `blockrun,tokenfactory,openrouter`). The Super calls (reading
+each source) try Token Factory first, since BlockRun has no free Super (`NEMOTRON_PROVIDERS_SUPER`, default
+`tokenfactory,openrouter,blockrun`). OpenRouter's free Nemotron needs `OPENROUTER_API_KEY`. The page
+shows which provider served each run.
 
 ```bash
 npm install
-export NEBIUS_API_KEY=...        # optional: Token Factory first; leave it out to run free
+export NEBIUS_API_KEY=...        # optional: Token Factory for the Super calls and as Ultra's fallback
 export AGENT_WALLET_KEY=0x...    # the agent's own Base wallet, funded with USDC
 npm start                        # http://localhost:8790
 ```

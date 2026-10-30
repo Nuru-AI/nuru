@@ -3,7 +3,7 @@
 import { test, beforeEach, afterEach } from "node:test";
 import assert from "node:assert/strict";
 
-const KEYS = ["NEBIUS_API_KEY", "OPENROUTER_API_KEY", "NEMOTRON_PROVIDERS"];
+const KEYS = ["NEBIUS_API_KEY", "OPENROUTER_API_KEY", "NEMOTRON_PROVIDERS", "NEMOTRON_PROVIDERS_SUPER"];
 let saved, realFetch, calls;
 beforeEach(() => { saved = Object.fromEntries(KEYS.map((k) => [k, process.env[k]])); KEYS.forEach((k) => delete process.env[k]); realFetch = globalThis.fetch; calls = []; });
 afterEach(() => { KEYS.forEach((k) => (saved[k] === undefined ? delete process.env[k] : (process.env[k] = saved[k]))); globalThis.fetch = realFetch; });
@@ -13,7 +13,8 @@ const fake = (byHost) => { globalThis.fetch = async (url, init) => { calls.push(
 const { chat, providerOrder, MODELS } = await import("../lib/tf.mjs");
 
 test("with no key at all, Nuru runs on BlockRun's free Nemotron, no Authorization header", async () => {
-  assert.deepEqual(providerOrder(), ["blockrun"]);
+  assert.deepEqual(providerOrder(MODELS.planner), ["blockrun"]);
+  assert.deepEqual(providerOrder(MODELS.worker), ["blockrun"]);
   fake(() => answer("nvidia/nemotron-3-ultra-550b-nim"));
   const r = await chat(MODELS.planner, [{ role: "user", content: "q" }]);
   assert.equal(r.served.provider, "blockrun");
@@ -21,23 +22,26 @@ test("with no key at all, Nuru runs on BlockRun's free Nemotron, no Authorizatio
   assert.equal(calls[0].auth, undefined);
 });
 
-test("Token Factory first when its key is set; on failure the free route answers", async () => {
+test("free first for Ultra, Token Factory first for Super (BlockRun has no free Super); each falls to the other", async () => {
   process.env.NEBIUS_API_KEY = "k";
-  assert.deepEqual(providerOrder(), ["tokenfactory", "blockrun"]);
-  fake((host) => (host.includes("nebius") ? new Response("busy", { status: 503 }) : answer("nvidia/nemotron-3-ultra-550b-nim", '{"a":1}')));
+  assert.deepEqual(providerOrder(MODELS.writer), ["blockrun", "tokenfactory"]);
+  assert.deepEqual(providerOrder(MODELS.worker), ["tokenfactory", "blockrun"]);
+  fake((host) => (host.includes("blockrun") ? new Response("429 daily capacity", { status: 429 }) : answer("nvidia/Nemotron-3-Ultra-550b-a55b", '{"a":1}')));
   const r = await chat(MODELS.writer, [{ role: "user", content: "q" }], { json: true });
   assert.deepEqual(r.json, { a: 1 });
-  assert.equal(r.served.provider, "blockrun");
-  assert.equal(calls[0].body.response_format.type, "json_object");
-  assert.equal(calls[1].body.response_format, undefined, "the free route is not sent a response format");
+  assert.equal(r.served.provider, "tokenfactory");
+  assert.equal(calls[0].body.response_format, undefined, "the free route is not sent a response format");
+  assert.equal(calls[1].body.response_format.type, "json_object");
+  fake(() => answer("nvidia/nemotron-3-super-120b-a12b"));
+  assert.equal((await chat(MODELS.worker, [{ role: "user", content: "q" }])).served.provider, "tokenfactory");
 });
 
 test("an answer from a model that is not Nemotron is passed over", async () => {
   process.env.OPENROUTER_API_KEY = "o";
-  fake((host) => (host.includes("blockrun") ? answer("deepseek/deepseek-v4-flash") : answer("nvidia/nemotron-3-super-120b-a12b:free")));
-  const r = await chat(MODELS.worker, [{ role: "user", content: "q" }]);
+  fake((host) => (host.includes("blockrun") ? answer("deepseek/deepseek-v4-flash") : answer("nvidia/nemotron-3-ultra-550b-a55b:free")));
+  const r = await chat(MODELS.planner, [{ role: "user", content: "q" }]);
   assert.equal(r.served.provider, "openrouter");
-  assert.equal(calls[1].body.model, "nvidia/nemotron-3-super-120b-a12b:free");
+  assert.equal(calls[1].body.model, "nvidia/nemotron-3-ultra-550b-a55b:free");
 });
 
 test("the order is configurable, and an all-fail run says why for each", async () => {
