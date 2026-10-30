@@ -62,6 +62,8 @@ node cli.mjs "How are publishers getting paid when AI agents read their articles
 Settings: `MAX_SPEND_USD` (per-run ceiling, default 0.50), `PLANNER` (`catalog`, the default, or
 `fixed`), `CATALOG_URL` (any marketplace's catalog; Sippar's free catalog by default),
 `PLANNER_MODEL`, `WORKER_MODEL`, `WRITER_MODEL`, `TOKEN_FACTORY_BASE_URL`, `MAX_STEPS`, `MAX_DOCS`.
+On the page: `RUNS_PER_IP_PER_DAY` (default 3) and `DAILY_SPEND_USD` (spend shared by every
+visitor, default 1), counted per UTC day.
 
 ## Inside NVIDIA's sandbox on Nebius
 
