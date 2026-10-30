@@ -106,3 +106,19 @@ test("the answer names who answered and who was passed over, for the page's 'too
   assert.equal(r.served.provider, "tokenfactory");
   assert.match(r.served.passedOver[0], /^blockrun poolside\/laguna-xs-2\.1: no JSON object/);
 });
+
+test("valid JSON in the wrong shape passes to the next provider; the free route is told the shape", async () => {
+  const { schemaMismatch } = await import("../lib/tf.mjs");
+  const BRIEF = { type: "object", required: ["title", "points"], properties: { title: { type: "string" }, points: { type: "array", items: { type: "object", required: ["text", "evidence"], properties: { text: { type: "string" }, evidence: { type: "array", items: { type: "string" } } } } } } };
+  assert.equal(schemaMismatch({ title: "t", points: [{ text: "a", evidence: ["C1"] }] }, BRIEF), null);
+  assert.match(schemaMismatch({ title: "t", points: [{ text: "a" }] }, BRIEF), /no "evidence"/);
+  assert.match(schemaMismatch({ brief: {} }, BRIEF), /no "title"/);
+  process.env.NEBIUS_API_KEY = "k";
+  process.env.NEMOTRON_PROVIDERS = "tokenfactory";
+  fake((host, body) => (body.model === "poolside/laguna-xs-2.1" ? answer("poolside/laguna-xs-2.1", '{"title":"t","points":[{"text":"a"}]}') : answer("nvidia/Nemotron-3-Ultra-550b-a55b", '{"title":"t","points":[{"text":"a","evidence":["C1"]}]}')));
+  const r = await chat(MODELS.writer, [{ role: "user", content: "q" }], { schema: BRIEF, pick: "poolside/laguna-xs-2.1" });
+  assert.equal(r.served.provider, "tokenfactory");
+  assert.match(r.served.passedOver[0], /wrong shape .*no "evidence"/);
+  assert.match(calls[0].body.messages.at(-1).content, /matching this JSON Schema/);
+  assert.equal(calls[1].body.messages.at(-1).content, "q", "Token Factory gets the schema as a response format, not in the prompt");
+});
