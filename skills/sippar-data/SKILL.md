@@ -32,8 +32,9 @@ without a card, or over plain HTTP, the data is in the response.
 ## Publishers are paid
 
 A share of each `web-search` and `grounded-search` goes to the publishers whose pages appear in its
-results, in USDC on Base, when Sippar is paid. Sites on Sippar's payee list are paid; a publisher
-joins with only an email, into a wallet that only they can open.
+results, in USDC on Base, when Sippar is paid. Any publisher can be paid this way, into a wallet
+created for the publisher's email that only they can open, before they have signed up with anyone.
+The first payment reached Dataconomy on 30 October 2026.
 
 ## What AI models say
 

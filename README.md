@@ -20,9 +20,10 @@ Built for the Nebius x NVIDIA Global AI Hackathon, Best Apps and Agents track.
 - **Search.** Tavily, bought per call. Tavily's keyless pay-per-search is the design target; during
   the build those calls settled through a reseller of Tavily search, and each response names the
   path that served it.
-- **The publishers.** Each Tavily search sends a share to the publishers in its results that are
-  on Sippar's payee list, into a wallet tied to their email that only they can open, before they
-  sign up anywhere. The first payment reached Dataconomy on 30 October 2026.
+- **The publishers.** Each Tavily search sends a share to the publishers whose pages appear in
+  its results. Any publisher can be paid this way, into a wallet created for the publisher's email
+  that only they can open, before they have signed up with anyone. The first payment reached
+  Dataconomy on 30 October 2026.
 - **Any harness.** ChatGPT, Claude, Hermes Agent in NVIDIA's NemoClaw sandbox on Nebius, or Nuru's
   own page at https://agent.sippar.network.
 
