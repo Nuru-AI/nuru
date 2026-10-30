@@ -14,7 +14,8 @@ Built for the Nebius x NVIDIA Global AI Hackathon, Best Apps and Agents track.
 ## How it works
 
 - **The model.** NVIDIA Nemotron by default, or any model you pick. From a harness, Sippar's door
-  buys it per call on AntSeed; Nuru's own runtime in this repo runs it on Nebius Token Factory.
+  buys it per call on AntSeed; Nuru's own runtime in this repo runs it on Nebius Token Factory, or free
+  on BlockRun's Nemotron 3 Ultra with no account.
 - **Pay per call.** With x402, a service answers "402 Payment Required", Nuru pays in USDC on Base
   and gets the data. Never past its budget.
 - **The plan.** Nemotron plans the job over a live catalog of services and their prices, and code
@@ -43,14 +44,17 @@ publishes a catalog and pays whatever a seller's 402 names.
 3. Ask for the job, for example "find the audience for Nebius AI Cloud"
    ([skills/sippar-workflows](skills/sippar-workflows/SKILL.md)).
 
-## Run Nuru's own runtime (Nemotron on Nebius Token Factory)
+## Run Nuru's own runtime (Nemotron, free or on Nebius Token Factory)
 
-Requirements: Node.js 22, a Nebius Token Factory API key, and a wallet on Base holding a few
-dollars of USDC. No other key: every read is bought per call.
+Requirements: Node.js 22 and a wallet on Base holding a few dollars of USDC. Every read is bought per
+call. The model needs no key: with none set, Nuru runs on BlockRun's free NVIDIA Nemotron 3 Ultra.
+With a key it tries Nebius Token Factory first, then the free routes, in the order `NEMOTRON_PROVIDERS`
+gives (default `tokenfactory,blockrun,openrouter`; OpenRouter's free Nemotron needs `OPENROUTER_API_KEY`).
+The free routes run on NVIDIA's own hosted endpoint, under NVIDIA's API Trial Terms.
 
 ```bash
 npm install
-export NEBIUS_API_KEY=...        # Token Factory
+export NEBIUS_API_KEY=...        # optional: Token Factory first; leave it out to run free
 export AGENT_WALLET_KEY=0x...    # the agent's own Base wallet, funded with USDC
 npm start                        # http://localhost:8790
 ```
@@ -79,7 +83,7 @@ VM setup script that ran Hermes Agent in NVIDIA OpenShell on a Nebius AI Cloud V
 
 - `lib/agent.mjs`: one run: plan, buy, read, write, account
 - `lib/planner.mjs`, `lib/catalog.mjs`: the plan format, the code check, the catalog
-- `lib/tf.mjs`: Nemotron on Token Factory
+- `lib/tf.mjs`: Nemotron from the first provider that answers (Token Factory, BlockRun free, OpenRouter free)
 - `lib/pay.mjs`, `lib/tools.mjs`: x402 payments and the fallback source list
 - `server.mjs`, `public/`: the page; `cli.mjs`: the command line
 - `skills/`: any harness on the same door
