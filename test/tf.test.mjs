@@ -44,6 +44,15 @@ test("an answer from a model that is not Nemotron is passed over", async () => {
   assert.equal(calls[1].body.model, "nvidia/nemotron-3-ultra-550b-a55b:free");
 });
 
+test("a JSON step answered in prose by the free route passes to Token Factory (the first live playground brief)", async () => {
+  process.env.NEBIUS_API_KEY = "k";
+  fake((host) => (host.includes("blockrun") ? answer("nvidia/nemotron-3-ultra-550b-nim", "**Summary (74 words)**\n- Subscriptions provide durable direct revenue (C2).") : answer("nvidia/Nemotron-3-Ultra-550b-a55b", '{"title":"t"}')));
+  const r = await chat(MODELS.writer, [{ role: "user", content: "q" }], { json: true });
+  assert.deepEqual(r.json, { title: "t" });
+  assert.equal(r.served.provider, "tokenfactory");
+  assert.equal(calls.length, 2);
+});
+
 test("the order is configurable, and an all-fail run says why for each", async () => {
   process.env.NEMOTRON_PROVIDERS = "blockrun";
   fake(() => new Response("429 daily capacity", { status: 429 }));
