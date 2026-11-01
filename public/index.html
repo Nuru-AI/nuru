@@ -87,7 +87,7 @@ textarea::placeholder { color: var(--text-3); }
 /* ui-ux-pro-max pass: the list opens from its button (state-transition, 160ms ease-out), presses answer at once. */
 .mlist:not([hidden]) { animation: mlist-in 160ms var(--ease-out); transform-origin: top left; }
 @keyframes mlist-in { from { opacity: 0; transform: translateY(-4px) scale(.98); } }
-.mmore:active, .try-tabs button:active, .try .examples button:active { background: var(--paper); }
+.mmore:active { background: var(--paper); }
 @media (prefers-reduced-motion: reduce) { .mlist:not([hidden]) { animation: none; } }
 .mlist .mhint { font-size: 13px; color: var(--text-3); margin: 6px 10px 8px; }
 .mopt { position: relative; display: grid; grid-template-columns: auto auto 1fr; align-items: center; gap: 10px; min-height: 48px; padding: 8px 10px; border: 1px solid transparent; border-radius: 10px; cursor: pointer; }
@@ -105,16 +105,21 @@ textarea::placeholder { color: var(--text-3); }
 .kbd { white-space: nowrap; font: 12px var(--mono); color: var(--text-2); }
 @media (hover: none) { .kbd-l { display: none; } }
 /* A phone: the model on its own line, Other models and the button under it; the count only near the limit. */
-@media (max-width: 520px) { .mcur { flex-basis: 100%; min-height: 32px; } .qcount:not(.near) { display: none; }
-  .try-tabs [role="tablist"] { flex: 1 1 100%; min-width: 0; flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; margin: 0 -4px; padding: 0 4px; } .try-tabs { flex-wrap: wrap; } .try-tabs button { flex: none; } }
-/* Example questions by topic: one row of topics, the open topic's questions under it. */
+@media (max-width: 520px) { .mcur { flex-basis: 100%; min-height: 32px; } .qcount:not(.near) { display: none; } }
+/* One example question at a time; the wand shows another (Elad 2026-11-01). Ten questions across health, science,
+   economy, crypto and AI, each answerable from sources Nuru reads. */
 .try { display: grid; grid-template-columns: minmax(0, 1fr); gap: 8px; min-width: 0; }
-.try-tabs { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
-.try-l { font-size: 13px; font-weight: 600; color: var(--text-3); margin-right: 4px; }
-.try-tabs button { min-height: 44px; padding: 0 12px; background: transparent; border: 1px solid transparent; border-radius: 999px; font: 600 13px var(--body); color: var(--text-2); cursor: pointer; }
-.try-tabs button[aria-selected="true"] { background: var(--navy); color: var(--warm-white); }
-@media (hover: hover) { .try-tabs button[aria-selected="false"]:hover { background: var(--paper); color: var(--text); } }
-.try .examples button { font-size: 14px; }
+.try-l { font-size: 13px; font-weight: 600; color: var(--text-3); }
+.try-row { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.try-q { flex: 1 1 auto; min-width: 0; min-height: 44px; text-align: left; background: var(--warm-white); color: var(--text-2); border: 1px solid var(--border-2); border-radius: 14px; padding: 10px 14px; font: 14px/1.4 var(--body); cursor: pointer; }
+.try-q.swap { animation: try-swap 200ms var(--ease-out); }
+@keyframes try-swap { from { opacity: 0; transform: translateY(3px); } }
+.try-next { flex: none; width: 44px; height: 44px; display: grid; place-items: center; background: transparent; color: var(--text-2); border: 1px solid var(--border-2); border-radius: 50%; cursor: pointer; }
+.try-next svg { transition: transform 200ms var(--ease-out); }
+.try-next:active svg { transform: rotate(-20deg); }
+@media (hover: hover) { .try-q:hover, .try-next:hover { background: var(--paper); color: var(--text); } }
+.try-q:active, .try-next:active { background: var(--paper); }
+@media (prefers-reduced-motion: reduce) { .try-q.swap { animation: none; } .try-next svg { transition: none; } }
 select { appearance: none; min-height: 50px; padding-right: 40px; cursor: pointer; background-image: linear-gradient(45deg, transparent 50%, var(--text-2) 50%), linear-gradient(135deg, var(--text-2) 50%, transparent 50%); background-position: calc(100% - 20px) 50%, calc(100% - 15px) 50%; background-size: 5px 5px; background-repeat: no-repeat; }
 
 @media (max-width: 520px) { .row { grid-template-columns: 1fr; } }
@@ -374,8 +379,11 @@ button.primary[disabled] { opacity: .5; cursor: progress; }
       </div>
       <p class="hint go-note" id="qkeys">Two to four minutes, usually $0.15 to $0.40 from the agent's wallet. Up to 3 briefs a day.<span class="kbd-l"> <span class="kbd">Ctrl or ⌘ + Enter</span> to send.</span></p>
       <div class="try">
-        <div class="try-tabs"><span class="try-l" id="try-l">Try a question</span><span role="tablist" aria-labelledby="try-l" class="try-tabs"><button type="button" role="tab" id="try-health" aria-controls="try-q-health" aria-selected="true" tabindex="0" data-try="health">Health</button><button type="button" role="tab" id="try-science" aria-controls="try-q-science" aria-selected="false" tabindex="-1" data-try="science">Science</button><button type="button" role="tab" id="try-economy" aria-controls="try-q-economy" aria-selected="false" tabindex="-1" data-try="economy">Economy</button><button type="button" role="tab" id="try-crypto" aria-controls="try-q-crypto" aria-selected="false" tabindex="-1" data-try="crypto">Crypto</button><button type="button" role="tab" id="try-tech" aria-controls="try-q-tech" aria-selected="false" tabindex="-1" data-try="tech">AI and tech</button></span></div>
-        <div class="examples" role="tabpanel" id="try-q-health" aria-labelledby="try-health"><button type="button">What is the current evidence that GLP-1 drugs reduce the risk of Alzheimer's disease?</button><button type="button">Which blood pressure medicines did the FDA recall this year, and why?</button></div><div class="examples" role="tabpanel" id="try-q-science" aria-labelledby="try-science" hidden><button type="button">What do recent studies say about microplastics in drinking water?</button><button type="button">Where were the strongest earthquakes in the past month?</button></div><div class="examples" role="tabpanel" id="try-q-economy" aria-labelledby="try-economy" hidden><button type="button">How has inflation in Argentina changed over the last ten years?</button><button type="button">How are publishers getting paid when AI agents read their articles?</button></div><div class="examples" role="tabpanel" id="try-q-crypto" aria-labelledby="try-crypto" hidden><button type="button">Which DeFi protocols grew their total value locked the most this year?</button><button type="button">How have the biggest stablecoins' market caps moved this year?</button></div><div class="examples" role="tabpanel" id="try-q-tech" aria-labelledby="try-tech" hidden><button type="button">What changed in open-weight model inference costs this year?</button><button type="button">Which JavaScript packages for building AI agents are growing fastest?</button></div>
+        <span class="try-l" id="try-l">Try a question</span>
+        <div class="try-row">
+          <button type="button" class="try-q" id="try-q" aria-describedby="try-l">What is the current evidence that GLP-1 drugs reduce the risk of Alzheimer's disease?</button>
+          <button type="button" class="try-next" id="try-next" aria-label="Show another example question" title="Another example"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4l-10 16"/><path d="M12.5 6.5l3 3"/><path d="M19 3v4M17 5h4"/><path d="M19 13v3M17.5 14.5h3"/><path d="M8 3v2M7 4h2"/></svg></button>
+        </div>
       </div>
       <p class="err" id="err" role="alert" hidden></p>
     </form>
@@ -431,11 +439,24 @@ async function wallet() {
 }
 wallet();
 
-document.querySelectorAll(".try .examples button").forEach((b) => b.addEventListener("click", () => { $("question").value = b.textContent.trim(); countQ(); $("question").focus(); }));
-// The example topics: one open at a time; arrow keys move between them.
-const tryTabs = [...document.querySelectorAll("[data-try]")];
-const openTry = (t, focus) => { for (const x of tryTabs) { const on = x === t; x.setAttribute("aria-selected", on); x.tabIndex = on ? 0 : -1; $("try-q-" + x.dataset.try).hidden = !on; } if (focus) t.focus(); };
-tryTabs.forEach((t, i) => { t.addEventListener("click", () => openTry(t)); t.addEventListener("keydown", (e) => { const j = { ArrowRight: i + 1, ArrowLeft: i - 1, Home: 0, End: tryTabs.length - 1 }[e.key]; if (j == null) return; e.preventDefault(); openTry(tryTabs[(j + tryTabs.length) % tryTabs.length], true); }); });
+// One example at a time; the wand shows the next, starting from a different one on each visit.
+const EXAMPLES = [
+  "What is the current evidence that GLP-1 drugs reduce the risk of Alzheimer's disease?",
+  "What do recent studies say about microplastics in drinking water?",
+  "How has inflation in Argentina changed over the last ten years?",
+  "Which DeFi protocols grew their total value locked the most this year?",
+  "What changed in open-weight model inference costs this year?",
+  "Which blood pressure medicines did the FDA recall this year, and why?",
+  "Where were the strongest earthquakes in the past month?",
+  "How are publishers getting paid when AI agents read their articles?",
+  "How have the biggest stablecoins' market caps moved this year?",
+  "Which JavaScript packages for building AI agents are growing fastest?",
+];
+let exI = Math.floor(Math.random() * EXAMPLES.length);
+const showEx = (swap) => { const q = $("try-q"); q.textContent = EXAMPLES[exI]; if (swap) { q.classList.remove("swap"); void q.offsetWidth; q.classList.add("swap"); } };
+showEx(false);
+$("try-q").addEventListener("click", () => { $("question").value = EXAMPLES[exI]; countQ(); $("question").focus(); });
+$("try-next").addEventListener("click", () => { exI = (exI + 1) % EXAMPLES.length; showEx(true); });
 const countQ = () => { const n = $("question").value.length; $("qcount").textContent = `${n} / 400`; $("qcount").classList.toggle("near", n > 360); };
 $("question").addEventListener("input", countQ);
 $("question").addEventListener("keydown", (e) => { if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) { e.preventDefault(); $("f").requestSubmit(); } });
