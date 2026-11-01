@@ -160,14 +160,22 @@ button.primary[disabled] { opacity: .5; cursor: progress; }
 .menu-box .more-topics { background: transparent; border-style: dashed; color: var(--navy); font-weight: 600; }
 .menu-box .menu-chips button { min-height: 44px; padding: 6px 12px; font-size: 13.5px; display: inline-flex; align-items: center; gap: 6px; }
 .menu-box .menu-chips button .i { flex: none; opacity: .85; }
-/* A coming-soon teaser for the Unlock cards (Elad 2026-11-01). Words only, no price or date: the cards are still
-   being explored (docs/research/2026-11-01_UNLOCK_CARDS_EXPLORATION.md in Nuru-AI/sippar). */
-.soon { display: flex; align-items: center; gap: 12px; margin-top: 16px; padding: 14px 16px; border: 1px dashed var(--copper-600, var(--copper)); border-radius: 14px; background: var(--white); }
-.soon-ico { flex: none; width: 40px; height: 40px; border-radius: 10px; display: grid; place-items: center; background: var(--navy); color: var(--copper); }
-.soon-txt { display: grid; gap: 2px; min-width: 0; }
-.soon-h { font-weight: 700; font-size: 15px; color: var(--text); display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
-.soon-tag { font: 600 11px var(--mono); letter-spacing: .04em; text-transform: uppercase; color: var(--navy); background: var(--paper); border: 1px solid var(--border-2); border-radius: 999px; padding: 2px 8px; }
-.soon-l { font-size: 14px; color: var(--text-2); }
+/* Sippar Unlock, coming soon (Elad 2026-11-01): the ticket and the Coming soon pill from sippar.network/unlock/
+   (Nuru-AI/sippar demos/unlock/index.html), its own public words, and a link there. */
+.unl { display: flex; align-items: center; gap: 18px; margin-top: 18px; padding: 16px 18px; background: var(--white); border: 1px solid var(--border); border-radius: 16px; color: inherit; text-decoration: none; }
+@media (hover: hover) { .unl:hover { border-color: var(--text-3); } }
+.unl-ticket { flex: none; width: 150px; background: var(--navy); color: var(--copper); border-radius: 10px; padding: 12px; display: grid; gap: 10px; position: relative; box-shadow: 0 12px 20px -14px rgba(14, 26, 56, .6); transform: rotate(-3deg); }
+.unl-ticket::before, .unl-ticket::after { content: ""; position: absolute; width: 10px; height: 10px; border-radius: 50%; background: var(--white); top: 50%; margin-top: -5px; }
+.unl-ticket::before { left: -5px; } .unl-ticket::after { right: -5px; }
+.unl-ticket .tr { display: flex; align-items: center; justify-content: space-between; gap: 6px; }
+.unl-ticket .tt { font-family: var(--display); font-weight: 700; font-size: 9.5px; letter-spacing: .12em; text-transform: uppercase; line-height: 1.2; }
+.unl-ticket .mk { width: 24px; height: 24px; border-radius: 5px; }
+.unl-ticket .code { font: 11px var(--mono); color: var(--white); letter-spacing: .06em; }
+.unl-txt { display: grid; gap: 6px; justify-items: start; min-width: 0; }
+.unl-soon { display: inline-flex; align-items: center; gap: 7px; font-size: 12.5px; font-weight: 700; padding: 3px 11px; border-radius: 999px; background: var(--navy); color: var(--copper); }
+.unl-soon::before { content: ""; width: 6px; height: 6px; transform: rotate(45deg); background: currentColor; }
+.unl-l { font-size: 14px; color: var(--text-2); }
+@media (max-width: 420px) { .unl { flex-direction: column; align-items: flex-start; } }
 .menu-box .menu-chips button[aria-selected="true"] { background: var(--navy); color: var(--white); border-color: var(--navy); }
 .menu-box .menu-chips .n { font-variant-numeric: tabular-nums; opacity: .7; margin-left: 2px; }
 .menu-box .menu-rows { display: grid; gap: 4px; list-style: none; margin: 0; padding: 0; }
@@ -409,11 +417,10 @@ button.primary[disabled] { opacity: .5; cursor: progress; }
     <aside class="side menu-box" id="menubox" aria-labelledby="menu-h">
       <div class="menu-head"><h2 id="menu-h">What Nuru can read</h2><div id="menu-kind"></div></div>
       <div class="wfx" id="menu"><p class="hint">Reading the list of sources.</p></div>
-      <div class="soon" role="note" aria-labelledby="soon-h">
-        <span class="soon-ico" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/></svg></span>
-        <span class="soon-txt"><span class="soon-h" id="soon-h">Unlock cards <span class="soon-tag">Coming soon</span></span>
-        <span class="soon-l">One card unlocks every source a job needs.</span></span>
-      </div>
+      <a class="unl" href="https://sippar.network/unlock/" aria-label="Sippar Unlock, coming soon: prepaid credit your assistant spends on live data, AI models and pictures">
+        <span class="unl-ticket" aria-hidden="true"><span class="tr"><span class="tt">Sippar Unlock</span><img class="mk" src="brand/sippar-mark-diamond-512.png" alt="" width="28" height="28"></span><span class="code">SP-••••-••••</span></span>
+        <span class="unl-txt"><span class="unl-soon">Coming soon</span><span class="unl-l">Prepaid credit your assistant spends on live data, AI models and pictures.</span></span>
+      </a>
     </aside>
     </div>
   </section>
