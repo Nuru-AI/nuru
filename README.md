@@ -67,13 +67,20 @@ Or from the command line:
 node cli.mjs "How are publishers getting paid when AI agents read their articles?" "a publisher"
 ```
 
-Tests: `npm test` (the plan check and the page's daily limits; no key, nothing bought).
+Tests: `npm test` (the plan check, the free sources against recorded answers, and the page's daily limits; no key, nothing bought).
 
 Settings: `MAX_SPEND_USD` (per-run ceiling, default 0.50), `PLANNER` (`catalog`, the default, or
 `fixed`), `CATALOG_URL` (any marketplace's catalog; Sippar's free catalog by default),
 `PLANNER_MODEL`, `WORKER_MODEL`, `WRITER_MODEL`, `TOKEN_FACTORY_BASE_URL`, `MAX_STEPS`, `MAX_DOCS`.
 On the page: `RUNS_PER_IP_PER_DAY` (default 3) and `DAILY_SPEND_USD` (spend shared by every
 visitor, default 1), counted per UTC day.
+
+Free public sources: `FREE_SOURCES=on` adds 14 free public data sources to the catalog at $0 (OpenAlex,
+Crossref, arXiv, SEC EDGAR, openFDA drug recalls, USGS earthquakes, NASA POWER, World Bank, GBIF,
+Wikipedia, npm, Open Library, CoinGecko, DefiLlama). Nuru calls them directly, credits each one under
+the brief, and writes an empty search as a gap, never as a fact. `FREE_API_CONTACT` (an email) goes in
+the User-Agent; SEC EDGAR refuses calls without one, so it stays off until it is set.
+`FREE_CALLS_PER_RUN` (default 10), `FREE_FOR_EACH_MAX` (5), `FREE_CALLS_PER_DAY` (300, across all visitors).
 
 ## Inside NVIDIA's sandbox on Nebius
 
@@ -85,6 +92,7 @@ VM setup script that ran Hermes Agent in NVIDIA OpenShell on a Nebius AI Cloud V
 
 - `lib/agent.mjs`: one run: plan, buy, read, write, account
 - `lib/planner.mjs`, `lib/catalog.mjs`: the plan format, the code check, the catalog
+- `lib/free.mjs`: the free public sources, each with its endpoint, limits, credit and result shape
 - `lib/tf.mjs`: Nemotron from the first provider that answers (Token Factory, BlockRun free, OpenRouter free)
 - `lib/pay.mjs`, `lib/tools.mjs`: x402 payments and the fallback source list
 - `server.mjs`, `public/`: the page; `cli.mjs`: the command line
