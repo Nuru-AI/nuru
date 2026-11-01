@@ -92,13 +92,6 @@ button.primary[disabled] { opacity: .5; cursor: progress; }
 .side > h3:first-child { margin-top: 0; }
 .gaps ul { color: var(--text-2); margin: 0; padding-left: 20px; max-width: 70ch; }
 .side { background: var(--paper); border-radius: 20px; padding: clamp(18px, 3vw, 24px); }
-.steps { list-style: none; counter-reset: s; padding: 0; margin: 0; display: grid; gap: 12px; }
-.steps li { counter-increment: s; display: grid; grid-template-columns: 28px 1fr; gap: 10px; font-size: 15px; }
-.steps li::before { content: counter(s); font: 600 13px/26px var(--mono); text-align: center; height: 28px; border-radius: 50%; border: 1px solid var(--border); background: var(--white); color: var(--text-3); }
-.steps li.live::before { border-color: var(--navy); background: var(--navy); color: var(--copper); }
-.steps .src { color: var(--text); font-weight: 600; }
-.steps .q { color: var(--text-2); }
-.steps .pay { font: 13px/1.5 var(--mono); color: var(--text-3); margin-top: 2px; word-break: break-all; }
 .steps .pay .paid { color: var(--ok); font-weight: 600; }
 .ledger { width: 100%; border-collapse: collapse; font-size: 14px; }
 .ledger td { padding: 6px 0; border-bottom: 1px solid var(--border); vertical-align: top; color: var(--text-2); }
@@ -127,6 +120,131 @@ button.primary[disabled] { opacity: .5; cursor: progress; }
 .brief .notices { margin: 14px 0 0; font-size: 13px; line-height: 1.5; color: var(--text-3); max-width: 72ch; }
 .brief .notices p { margin: 4px 0; }
 .sf-note + .sf-note { margin-top: 10px; }
+/* How the brief was made, in the card's own frame: Sippar's MCP card styles for a planned workflow
+   (Nuru-AI/sippar src/mcp-apps/payment-card/payment-card.html, card build 80b0da688a8d), scoped to .wfx,
+   with the card's own default tokens. */
+.wfx { --bg: #ffffff; --bg-2: #f5f4ed; --bg-3: #faf9f5; --fg: #141413; --fg-2: #3d3d3a; --fg-3: #73726c;
+  --line: rgb(31 30 29 / 0.15); --line-2: rgb(31 30 29 / 0.3); --ok: #265b19; --ok-bg: #e9f1dc; --warn: #5a4815; --warn-bg: #f6eedf;
+  --bad: #7f2c28; --bad-bg: #f7ecec; --info: #3266ad; --ring: rgb(50 102 173 / 0.5); --r-sm: 6px; --r-md: 8px; --r-lg: 10px; --bw: 0.5px;
+  --t-xs: 12px; --t-sm: 14px; color: var(--fg); }
+.wfx .wf-sbody { font-size: var(--t-sm); color: var(--fg-2); }
+.wfx .wf-sbody p { margin: 6px 0; }
+.wfx .wf-h { font-size: var(--t-sm); margin: 12px 0 6px; color: var(--fg); }
+.wfx q { color: var(--fg); }
+.wfx .banner { margin: 0 16px 12px; padding: 10px 12px; border-radius: var(--r-md); }
+.wfx .banner.bad { background: var(--bad-bg); color: var(--bad); }
+.wfx .banner.ok { background: var(--ok-bg); color: var(--ok); }
+.wfx .banner.warn { background: var(--warn-bg); color: var(--fg); }
+.wfx .banner b { font-weight: 600; }
+.wfx .banner .hint { color: inherit; opacity: 1; }
+.wfx .hint { font-size: var(--t-xs); color: var(--fg-3); margin-top: 6px; }
+.wfx .hint.bad { color: var(--bad); }
+.wfx .hint.ok { color: var(--ok); }
+.wfx .ico { position: relative; width: 18px; height: 18px; flex: none; border-radius: 4px; background: var(--bg-2); display: grid; place-items: center; overflow: hidden; }
+.wfx .ico img { width: 16px; height: 16px; opacity: 0; }
+.wfx .ico.loaded:not(.failed) img { opacity: 1; }
+.wfx .ico-l { position: absolute; inset: 0; display: grid; place-items: center; font-size: 10px; font-weight: 700; color: var(--fg-3); }
+.wfx .ico.loaded:not(.failed) .ico-l { display: none; }
+.wfx .ico.failed img { display: none; }
+.wfx .linkish { all: unset; cursor: pointer; color: var(--fg-2); text-decoration: underline; text-underline-offset: 2px; }
+.wfx .linkish:focus-visible { outline: 2px solid var(--ring); border-radius: 3px; }
+@media (pointer: coarse) {
+.wfx .linkish { position: relative; }
+.wfx .linkish::after { content: ""; position: absolute; inset: -14px -6px; }
+.wfx li .linkish::after { inset: -8px -8px; }
+}
+.wfx .banner:not(.bad):not(.ok):not(.warn) { border: var(--bw) solid var(--line); }
+.wfx .wf-steps { list-style: none; margin: 8px 0 12px; padding: 0; display: grid; gap: 6px; }
+.wfx .wf-step { border: var(--bw) solid var(--line-2); border-radius: var(--r-lg); overflow: hidden; }
+.wfx .wf-step.st-making { border-color: var(--info); box-shadow: inset 0 0 0 1px var(--info); }
+.wfx .wf-step.st-lost { border-color: var(--warn); }
+.wfx .wf-step.st-failed, .wfx .wf-step.st-planned { opacity: .75; }
+.wfx .wf-row { all: unset; box-sizing: border-box; display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 10px; padding: 10px 12px; width: 100%; min-height: 54px; }
+.wfx .wf-row[data-wfopen] { cursor: pointer; }
+.wfx .wf-row[data-wfopen]:hover { background: var(--bg-2); }
+.wfx .wf-row:focus-visible { outline: 2px solid var(--ring); outline-offset: -2px; }
+.wfx .wf-st { display: inline-flex; align-items: center; gap: 6px; font-size: var(--t-xs); font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.wfx .wf-st.ok { color: var(--ok); }
+.wfx .wf-st.warn { color: var(--warn); }
+.wfx .wf-st.busy { color: var(--info); }
+.wfx .wf-st.muted { color: var(--fg-2); font-weight: 400; }
+.wfx .wf-body { padding: 0 12px 10px; font-size: var(--t-xs); color: var(--fg-2); }
+.wfx .wf-body .sk-line + .sk-line { margin-top: 6px; }
+.wfx .wf-open { padding-top: 4px; }
+.wfx .wf-spin { width: 12px; height: 12px; border-radius: 50%; border: 2px solid var(--line-2); border-top-color: var(--info); animation: wfspin .9s linear infinite; }
+@keyframes wfspin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) {
+.wfx .wf-spin { animation: none; }
+}
+.wfx .wf-sum { margin: 4px 0 8px; }
+.wfx .wf-sum h3, .wfx .wf-sec h3 { font-size: var(--t-sm); margin: 12px 0 6px; }
+.wfx .wf-ct { display: grid; min-width: 0; gap: 2px; }
+.wfx .wf-ct .muted { font-size: var(--t-xs); }
+.wfx .wf-nums { font-variant-numeric: tabular-nums; font-size: var(--t-xs); color: var(--fg-2); }
+.wfx .wf-sec { margin-top: 18px; }
+.wfx .wf-flow { list-style: none; margin: 8px 0 12px; padding: 0; display: grid; grid-template-columns: minmax(0, 1fr); gap: 0; }
+.wfx .wf-stage, .wfx .wf-sbody, .wfx .wf-sec { min-width: 0; }
+.wfx .wf-sec h4 { overflow-wrap: anywhere; }
+.wfx .wf-stage { position: relative; padding: 0 0 14px 40px; }
+.wfx .wf-stage::before { content: ""; position: absolute; left: 13px; top: 30px; bottom: 0; width: 2px; background: var(--line-2); }
+.wfx .wf-stage:last-child::before { display: none; }
+.wfx .wf-stage.st-done::before { background: var(--ok); }
+.wfx .wf-shead { all: unset; box-sizing: border-box; display: grid; gap: 2px; width: 100%; min-height: 44px; padding: 4px 0; cursor: pointer; border-radius: var(--r-sm); }
+.wfx .wf-shead:not([data-wfstage]) { cursor: default; }
+.wfx .wf-shead[data-wfstage]:hover .wf-stitle { text-decoration: underline; text-underline-offset: 3px; }
+.wfx .wf-shead:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
+.wfx .wf-stitle { font-size: var(--t-sm); font-weight: 600; color: var(--fg); }
+.wfx .wf-who { font-size: var(--t-xs); color: var(--fg-3); }
+.wfx .wf-sout { font-size: var(--t-sm); color: var(--fg-2); }
+.wfx .wf-num { position: absolute; left: 0; top: 4px; width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center;
+        font-size: var(--t-xs); font-weight: 700; font-variant-numeric: tabular-nums; border: 2px solid var(--line-2); background: var(--bg); color: var(--fg-2); }
+.wfx .wf-num.ok { border-color: var(--ok); background: var(--ok); color: var(--bg); }
+.wfx .wf-num.warn { border-color: var(--warn); color: var(--warn); }
+.wfx .wf-num.busy { border-color: var(--info); }
+.wfx .wf-stage.st-planned .wf-stitle, .wfx .wf-stage.st-planned .wf-sout { color: var(--fg-3); }
+.wfx .wf-row .pt-name { white-space: normal; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.wfx .wf-sbody { margin-top: 8px; }
+.wfx .wf-list { margin: 0; padding-left: 20px; display: grid; gap: 6px; font-size: var(--t-sm); line-height: 1.5; }
+.wfx .wf-rows .wf-row.lg { grid-template-columns: auto 1fr auto; gap: 10px; }
+.wfx .wf-rows .wf-row.lg .pt-name { white-space: normal; }
+.wfx .wf-rows .wf-row.lg .wf-said { white-space: normal; color: var(--fg-2); }
+.wfx .wf-items .linkish { text-align: left; font-weight: 600; color: var(--fg); }
+.wfx .wf-rows { list-style: none; margin: 0; padding: 0; display: grid; }
+.wfx .wf-rows .wf-row { grid-template-columns: 1fr auto; padding: 8px 0; min-height: 0; }
+.wfx .wf-sec h4 { font-size: var(--t-sm); margin: 10px 0 6px; }
+@media (pointer: coarse) {
+.wfx .sk-toc li .linkish { display: inline-flex; align-items: center; min-height: 40px; }
+.wfx .sk-toc li .linkish::after { inset: -2px -8px; }
+}
+.wfx .ico.plogo { width: 28px; height: 28px; border-radius: 7px; }
+.wfx .ico.plogo img { width: 20px; height: 20px; }
+.wfx .ico.plogo .ico-l { font-size: var(--t-xs); color: var(--fg-2); }
+.wfx .pt-main { display: grid; min-width: 0; }
+.wfx .pt-name { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.wfx .pt-src { font-size: var(--t-xs); color: var(--fg-3); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.wfx .pt-price { font-variant-numeric: tabular-nums; font-weight: 600; font-size: var(--t-xs); }
+@media (max-width: 420px) {
+.wfx .ptile .plogo { grid-row: span 2; }
+.wfx .ptile .pt-price { grid-column: 2; font-weight: 400; color: var(--fg-2); }
+.wfx .ptile .pt-src { display: none; }
+}
+.wfx .banner.warn { background: var(--warn-bg); color: var(--warn); }
+@media (pointer: coarse) {
+.wfx .sk-src .linkish::after { content: ""; position: absolute; inset: -6px -4px; }
+.wfx .sk-src .linkish { position: relative; }
+.wfx .sk-src .linkish::after { inset: -14px -6px; }
+}
+@media (max-width: 640px) {
+.wfx .sk-toc li .linkish { font-size: var(--t-xs); border: var(--bw) solid var(--line-2); border-radius: 999px; padding: 1px 8px; }
+}
+.wfx .banner.warn { background: var(--warn-bg); color: var(--warn); }
+.wfx .wf-status .busy { color: var(--info); font-weight: 600; }
+.wfx .wf-status .ok { color: var(--ok); }
+.wfx .wf-status .warn { color: var(--warn); font-weight: 600; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.wfx .ico.plogo.sm { width: 18px; height: 18px; border-radius: 5px; }
+.wfx .ico.plogo.sm img { width: 14px; height: 14px; }
+.wfx .ico.plogo.sm .ico-l { font-size: 10px; }
 </style>
 </head>
 <body>
@@ -173,8 +291,8 @@ button.primary[disabled] { opacity: .5; cursor: progress; }
       <p class="status" id="status">Planning the reading</p>
     </article>
     <aside class="side" aria-label="How the brief was made">
-      <h3>The reading plan</h3>
-      <ol class="steps" id="steps"></ol>
+      <h3>How this brief was made</h3>
+      <div class="wfx" id="steps"></div>
       <div id="ledgerbox" hidden>
         <h3>Who was paid</h3>
         <table class="ledger" id="ledger"></table>
@@ -213,17 +331,6 @@ wallet();
 
 document.querySelectorAll(".examples button").forEach((b) => b.addEventListener("click", () => { $("question").value = b.textContent; $("question").focus(); }));
 
-function stepRow(s, live) {
-  const input = s.input?.query || s.input?.url || (s.input && Object.keys(s.input).length ? JSON.stringify(s.input) : "");
-  const why = s.why ? `<div class="q">${esc(s.why)}</div>` : "";
-  let pay = "";
-  if (s.payment?.tx) pay = `<div class="pay"><span class="paid">paid ${usd(s.payment.priceUsd)}</span> · ${tx(s.payment.tx)}</div>`;
-  else if (s.payment?.note) pay = `<div class="pay">${esc(s.payment.note)}</div>`;
-  if (s.error) pay += `<div class="pay err">${esc(s.error.slice(0, 120))}</div>`;
-  if (s.skipped) pay += `<div class="pay">${esc(s.skipped)}</div>`;
-  const n = s.documents ? ` · ${s.documents.length} read` : typeof s.items === "number" ? ` · ${s.items} items` : "";
-  return `<li class="${live ? "live" : ""}"><div><div class="src">${esc(LABEL[s.tool] || s.tool)} <span class="q">from ${esc(s.seller)}${n}</span></div><div class="q">${esc(input)}</div>${why}${pay}</div></li>`;
-}
 
 // Which model planned and which wrote, as recorded by the run (runs before 2026-10-30 21:00 UTC have no servedBy).
 // A picked model that did not do its part is named, with who took over, as the playground promises.
@@ -273,7 +380,8 @@ function notices(run) {
 }
 
 function render(run) {
-  $("steps").innerHTML = run.steps.map((s) => stepRow(s)).join("");
+  wfUi = {};
+  drawStages(run, { phase: "done" });
   const claims = Object.fromEntries(run.claims.map((c) => [c.id, c]));
   const docStep = (docId) => run.steps.find((s) => (s.documents || []).some((d) => d.id === docId));
   const b = run.brief;
@@ -302,15 +410,36 @@ function render(run) {
   wallet();
 }
 
+// The stages, in the card's frame (stages.mjs). Which stage and row are open is the visitor's choice.
+let STAGES = null, wfRun = null, wfUi = {};
+const stagesReady = import("./stages.mjs").then((m) => (STAGES = m));
+const whoServed = (s) => s?.model ? `${modelName(s.model)}${s.provider && s.provider !== "sippar" && WHERE_SERVED[s.provider] ? ` ${WHERE_SERVED[s.provider]}` : ""}` : "";
+async function drawStages(run, ui = {}) {
+  wfRun = run; wfUi = { ...wfUi, ...ui };
+  const m = STAGES ?? await stagesReady;
+  $("steps").innerHTML = m.stagesHtml(run, wfUi, whoServed);
+  m.wireLogos($("steps"));
+}
+$("steps").addEventListener("click", (e) => {
+  const row = e.target.closest("[data-wfopen]"), st = e.target.closest("[data-wfstage]");
+  if (row) { const n = Number(row.dataset.wfopen); wfUi.row = wfUi.row === n ? undefined : n; }
+  else if (st) wfUi.stage = st.getAttribute("aria-expanded") === "true" ? null : Number(st.dataset.wfstage);
+  else return;
+  if (wfRun) drawStages(wfRun);
+});
+
 const MSG = { "plan:start": "Planning the reading", "step:start": "Buying and reading sources", "read:start": "Pulling quotes from each source", "write:start": "Writing the brief" };
 
 $("f").addEventListener("submit", async (e) => {
   e.preventDefault();
   const question = $("question").value.trim(); if (!question) return;
   $("err").hidden = true; $("go").disabled = true; $("go").textContent = "Researching";
-  $("result").hidden = false; $("steps").innerHTML = ""; $("ledgerbox").hidden = true;
+  $("result").hidden = false; $("steps").innerHTML = ""; $("ledgerbox").hidden = true; wfUi = {};
   $("brief").innerHTML = `<p class="status" id="status">Planning the reading</p>`;
   const steps = [];
+  // The run as it is being built: its steps, the plan once it is checked, and where it is (plan, buy, read, write).
+  const live = { steps, servedBy: {} };
+  let phase = "plan", liveN;
   try {
     const res = await fetch("/api/run", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ question, model: $("model").value }) });
     if (!res.ok || !res.body) { throw new Error((await res.json().catch(() => ({}))).error || "The run could not start."); }
@@ -325,9 +454,20 @@ $("f").addEventListener("submit", async (e) => {
           if (MSG[data.type] && $("status")) $("status").textContent = MSG[data.type];
           if (data.type === "step:start" && data.step?.tool === "workflow-planner" && $("status")) $("status").textContent = "Sippar's workflow planner is planning";
           if (data.type === "plan:wait" && $("status")) $("status").textContent = `Sippar's workflow planner is planning (${data.seconds} s)`;
-          if (data.type === "plan:done") { const off = steps.length; data.steps.forEach((s, k) => steps[off + k] = { ...s, seller: "" }); }
-          if (data.step) { steps[data.step.n - 1] = data.step; }
-          if (data.step || data.type === "plan:done") $("steps").innerHTML = steps.map((s, k) => stepRow(s, data.step && data.step.n === k + 1 && data.type === "step:start")).join("");
+          if (data.type === "plan:done") {
+            const off = steps.length; data.steps.forEach((s, k) => steps[off + k] = { ...s, seller: "" });
+            live.plan = { summary: data.summary, steps: data.steps.map((s) => String(s.tool).startsWith("code: ") ? { move: String(s.tool).slice(6), args: s.input, why: s.why } : { product: s.tool, input: s.input, why: s.why }),
+              check: { ok: true, costUSD: data.costUSD, calls: data.calls }, corrections: data.corrections };
+          }
+          if (data.step) {
+            steps[data.step.n - 1] = data.step;
+            if (data.step.tool === "workflow-planner") live.servedBy.planner = data.step.error ? undefined : { provider: "sippar" };
+            else if (data.type === "step:start") phase = "buy";
+            liveN = data.type === "step:start" ? data.step.n : undefined;
+          }
+          if (data.type === "read:start") { phase = "read"; liveN = undefined; }
+          if (data.type === "write:start") phase = "write";
+          if (data.step || ["plan:start", "plan:done", "read:start", "write:start"].includes(data.type)) drawStages(live, { phase, live: liveN });
         }
         if (ev === "result") { const run = await (await fetch("/api/runs/" + data.id)).json(); history.replaceState(null, "", "?run=" + data.id); render(run); }
         if (ev === "failed") throw new Error(data.error);

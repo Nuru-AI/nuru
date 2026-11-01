@@ -29,7 +29,7 @@ function clientIp(req) {
 const wallet = loadWallet();
 let busy = false;
 
-const TYPES = { ".html": "text/html; charset=utf-8", ".css": "text/css", ".js": "text/javascript", ".svg": "image/svg+xml", ".woff2": "font/woff2", ".json": "application/json", ".png": "image/png" };
+const TYPES = { ".html": "text/html; charset=utf-8", ".css": "text/css", ".js": "text/javascript", ".mjs": "text/javascript", ".svg": "image/svg+xml", ".woff2": "font/woff2", ".json": "application/json", ".png": "image/png" };
 
 function send(res, code, body, type = "application/json") {
   res.writeHead(code, { "content-type": type, "cache-control": "no-store" });
