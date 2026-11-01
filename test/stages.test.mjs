@@ -105,8 +105,8 @@ test("the plan stage shows what the plan cost, the number the ledger shows", () 
 });
 
 test("a finished brief's making is one line that opens to the steps, with the ledger's own total", () => {
-  assert.equal(summaryLine(fda, who), `Planned by Sippar's workflow planner · 1 source bought and 1 free, $0.18 in all with the plan · 11 quotes found word for word · written by ${fda.servedBy.writer.model}`);
-  assert.match(summaryLine(pubmed, who), /^Planned by Nuru's own planner · 1 source bought, \$0\.18 in all, with Sippar's plan that could not be used ·/);
+  assert.equal(summaryLine(fda), "Sippar's planner · 1 bought, 1 free · $0.18 · 11 quotes checked");
+  assert.equal(summaryLine(pubmed), "Nuru's planner · 1 bought · $0.18 · 3 quotes checked");
   const closed = stagesHtml(fda, { phase: "done", collapsed: true }, who);
   assert.match(closed, /data-wfall aria-expanded="false"/);
   assert.doesNotMatch(closed, /wf-stage/, "collapsed: no stages drawn");

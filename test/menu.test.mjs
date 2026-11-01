@@ -21,7 +21,7 @@ test("every source sits under a topic a reader looks in", () => {
 
 test("the menu counts paid and free, opens one topic, and prices each row", () => {
   const html = menuHtml(sources, { topic: "research" });
-  assert.match(html, /3 paid per call through Sippar, 14 free public sources\./);
+  assert.match(html, /3 paid through Sippar · 14 free/);
   assert.match(html, /data-topic="research" aria-selected="true"/);
   assert.match(html, /Scholarly works/);
   assert.match(html, /wf-st ok">Free</);

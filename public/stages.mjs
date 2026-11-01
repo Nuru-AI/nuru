@@ -256,18 +256,17 @@ export function openStage(list, ui) {
 /** The whole list, in the card's frame. */
 /** A finished brief's whole making in one line: who planned it, what was bought and what it cost, how many quotes
  *  were found word for word, who wrote it. The same numbers the stages and "Who was paid" show. */
-export function summaryLine(run, who = (s) => s?.model ?? "") {
+export function summaryLine(run) {
   const steps = run.steps ?? [];
-  const planBuy = steps.find(isPlanStep);
   const bought = steps.filter((s) => !isPlanStep(s) && !isMove(s));
   const paidN = bought.filter((s) => s.payment?.tx).length, freeN = bought.filter((s) => !s.payment?.tx && (s.rail === "free" || s.payment?.note)).length;
   const total = steps.reduce((a, s) => a + (s.payment?.tx ? s.payment.priceUsd || 0 : 0), 0);
   const by = run.servedBy?.planner;
-  const planned = by?.provider === "sippar" ? "Planned by Sippar's workflow planner" : run.plan ? "Planned by Nuru's own planner" : "Read from Nuru's fixed list";
-  const sources = [paidN ? plural(paidN, "source") + " bought" : "", freeN ? `${freeN} free` : ""].filter(Boolean).join(" and ") || "no source read";
+  // Short on purpose (Elad 2026-11-01: "clean the page so there won't be so much text"); the steps hold the detail.
+  const planned = by?.provider === "sippar" ? "Sippar's planner" : run.plan ? "Nuru's planner" : "Fixed list";
+  const sources = [paidN ? `${paidN} bought` : "", freeN ? `${freeN} free` : ""].filter(Boolean).join(", ") || "no source read";
   const verified = (run.claims ?? []).filter((c) => c.verified).length;
-  return [planned, `${sources}, ${usd(total)} in all${planBuy?.payment?.tx ? (planBuy.error ? ", with Sippar's plan that could not be used" : " with the plan") : ""}`, `${plural(verified, "quote")} found word for word`,
-    run.servedBy?.writer?.model ? `written by ${who(run.servedBy.writer)}` : ""].filter(Boolean).join(" · ");
+  return [planned, sources, usd(total), `${plural(verified, "quote")} checked`].join(" · ");
 }
 
 export function stagesHtml(run, ui = {}, who) {

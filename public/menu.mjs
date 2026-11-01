@@ -37,11 +37,11 @@ export function menuHtml(sources, ui = {}) {
   const FIRST = 6;
   const shown = ui.all ? topics : topics.filter(([k], i) => i < FIRST || k === open);
   const more = topics.length > FIRST ? `<button type="button" class="more-topics" data-moretopics aria-expanded="${!!ui.all}">${ui.all ? "Fewer topics" : `More topics (${topics.length - shown.length})`}</button>` : "";
-  return `<p class="menu-count">${sources.length - free} paid per call through Sippar, ${free} free public sources.</p>
+  return `<p class="menu-count">${sources.length - free} paid through Sippar · ${free} free</p>
     <div class="examples menu-chips"><div role="tablist" aria-label="Topics" class="menu-tabs">${shown.map(([k, name]) =>
       `<button type="button" role="tab" data-topic="${k}" aria-selected="${k === open}" tabindex="${k === open ? 0 : -1}" id="mt-${k}" aria-controls="menu-rows">${esc(name)} <span class="n">${by.get(k).length}</span></button>`).join("")}</div>${more}</div>
     <ul class="wf-rows menu-rows" id="menu-rows" role="tabpanel" aria-labelledby="mt-${open}">${rows.map((p) => {
       const m = metaOf(p.id, { label: p.shortName, source: p.source, seller: p.name });
-      return `<li class="wf-row lg">${logoHtml(m)}<span class="pt-main"><span class="pt-name">${esc(m.label)}</span><span class="pt-src">${esc(m.source)}</span>${p.summary ? `<span class="pt-src wf-said">${esc(p.summary)}</span>` : ""}</span><span class="wf-st ${p.free ? "ok" : "muted"}">${esc(price(p))}</span></li>`;
+      return `<li class="wf-row lg">${logoHtml(m)}<span class="pt-main"><span class="pt-name">${esc(m.label)}</span><span class="pt-src">${esc(m.source)}</span></span><span class="wf-st ${p.free ? "ok" : "muted"}">${esc(price(p))}</span></li>`;
     }).join("")}</ul>`;
 }

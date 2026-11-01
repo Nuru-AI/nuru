@@ -360,7 +360,7 @@ button.primary[disabled] { opacity: .5; cursor: progress; }
   <section class="ask wrap">
     <span class="play">Agent: Nuru</span>
     <h1>Nuru research agent</h1>
-    <p class="lede">Ask a question. Nuru plans which sources to read, buys each one per call through Sippar or reads free public data, and writes a short brief where every point opens to its quote and its payment.</p>
+    <p class="lede">Ask a question. Nuru reads paid and free sources and writes a short brief; every point opens to its quote.</p>
     <div class="ask-grid">
     <form id="f">
       <label for="question">Your question</label>
@@ -370,14 +370,14 @@ button.primary[disabled] { opacity: .5; cursor: progress; }
           <span class="mcur" id="mcur"><span class="mlogo" aria-hidden="true">N</span><span><b id="mcur-name">Nemotron 3 Ultra</b> · free</span></span>
           <button type="button" class="mmore" id="mmore" aria-expanded="false" aria-controls="mlist">Other models</button>
           <div class="mlist wfx" id="mlist" role="radiogroup" aria-label="Free model" hidden>
-            <p class="mhint" id="model-hint">The model you pick plans and writes the brief, free. If it does not answer, Nemotron takes over and the brief says so.</p>
+            <p class="mhint" id="model-hint">All free. If one does not answer, Nemotron takes over.</p>
             <div id="model"><label class="mopt"><input type="radio" name="model" value="nvidia/nemotron-3-ultra-550b" checked><span class="mdot" aria-hidden="true"></span><span class="mlogo" aria-hidden="true">N</span><span class="mtxt"><span class="mname">Nemotron 3 Ultra</span><span class="mby">NVIDIA · Default</span></span></label></div>
           </div>
           <span class="cgo"><span class="qcount" id="qcount" aria-live="polite">0 / 400</span>
           <button class="primary" id="go" type="submit">Research it</button></span>
         </div>
       </div>
-      <p class="hint go-note" id="qkeys">Two to four minutes, usually $0.15 to $0.40 from the agent's wallet. Up to 3 briefs a day.<span class="kbd-l"> <span class="kbd">Ctrl or ⌘ + Enter</span> to send.</span></p>
+      <p class="hint go-note" id="qkeys">About 3 minutes · 3 briefs a day<span class="kbd-l"> · <span class="kbd">⌘/Ctrl + Enter</span> to send</span></p>
       <div class="try">
         <span class="try-l" id="try-l">Try a question</span>
         <div class="try-row">
@@ -406,7 +406,7 @@ button.primary[disabled] { opacity: .5; cursor: progress; }
       <div id="ledgerbox" hidden>
         <h2>Who was paid</h2>
         <table class="ledger" id="ledger"></table>
-        <h2>The models, and where they ran</h2>
+        <h2>Models</h2>
         <div class="models" id="models"></div>
       </div>
     </aside>
@@ -420,7 +420,7 @@ button.primary[disabled] { opacity: .5; cursor: progress; }
         <a href="https://sippar.network" aria-label="Sippar home"><img class="sfw" src="brand/sippar-wordmark.svg" alt="Sippar" width="166" height="36"></a>
         <p class="sf-tag">Every service, by the sip.</p>
       </div>
-      <p class="sf-note">Nuru runs on free models, with NVIDIA Nemotron as the default: free through BlockRun, and on Nebius Token Factory where no free route serves it. Every source, web search included, is bought per call through Sippar in USDC on Base, and named on each response. Dataconomy articles are read with the publisher's agreement, and the publisher is paid per read.</p>
+      <p class="sf-note">Free models, NVIDIA Nemotron by default. Every paid source is bought per call through Sippar in USDC on Base; Dataconomy is paid per read, by agreement.</p>
       <p class="sf-note">Nuru reads public sources live and writes a short brief from what they returned. Briefs show what the sources said at the time of the search. They can be incomplete or out of date, and they are not medical, legal or financial advice. Check anything important at the source linked in the brief.</p>
     </div>
     <div class="sf-bottom"><span>© 2026 Sippar</span><a href="https://github.com/Nuru-AI/nuru">Nuru on GitHub</a></div>
@@ -482,16 +482,18 @@ function byline(run) {
     // A plan bought from Sippar's workflow planner: the AntSeed model and seller that wrote it, and the skills it read.
     if (s.provider === "sippar") {
       const skills = (s.skills || []).map((k) => esc(k.name || k.id)).filter(Boolean);
-      return `${role} by Sippar's workflow planner, written by ${esc(modelName(s.model))}${s.seller ? ` (sold by ${esc(s.seller)} on AntSeed)` : " on AntSeed"}${skills.length ? `, guided by the skill${skills.length > 1 ? "s" : ""} ${skills.join(" and ")}` : ""}.`;
+      return "";
     }
-    let t = `${role} by ${esc(modelName(s.model))} ${WHERE_SERVED[s.provider] || ""}.`;
+    // Who planned and wrote it is in the line above the brief and the Models panel; here only a takeover, as the
+    // model picker promises.
     if (picked && normId(s.model).startsWith(normId(picked)) === false) {
       const verb = role === "Planned" ? "plan" : "write";
-      t += ` ${esc(modelName(picked))} could not ${verb} it, so Nemotron took over.`;
+      return `${esc(modelName(picked))} could not ${verb} it, so Nemotron took over.`;
     }
-    return t;
+    return "";
   };
-  return `<p class="byline">${[part("Planned", by.planner), part("Written", by.writer)].filter(Boolean).join(" ")}</p>`;
+  const t = [part("Planned", by.planner), part("Written", by.writer)].filter(Boolean).join(" ");
+  return t ? `<p class="byline">${t}</p>` : "";
 }
 
 // The notices under every brief (Sippar draft docs/research/2026-11-01_NURU_DISCLAIMER_AND_WORDING_DRAFT.md):
@@ -666,7 +668,7 @@ const modelsReady = fetch("/api/models").then((r) => r.json()).then(async ({ def
 }).catch(() => {});
 
 const saved = new URLSearchParams(location.search).get("run");
-if (saved) fetch("/api/runs/" + saved).then((r) => r.ok ? r.json() : null).then(async (run) => { if (run) { $("result").hidden = false; $("question").value = run.question; await modelsReady; if (run.models?.picked) pickModel(run.models.picked); render(run); $("result").scrollIntoView({ block: "start" }); } });
+if (saved) fetch("/api/runs/" + saved).then((r) => r.ok ? r.json() : null).then(async (run) => { if (run) { $("result").hidden = false; $("question").value = run.question; countQ(); await modelsReady; if (run.models?.picked) pickModel(run.models.picked); render(run); $("result").scrollIntoView({ block: "start" }); } });
 </script>
 </body>
 </html>
