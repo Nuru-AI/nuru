@@ -47,6 +47,7 @@ test("code moves say what they kept, in words", () => {
 test("the reading counts quotes found word for word; the brief stage counts points and gaps", () => {
   const [, , , r, w] = stages(pubmed, {}, who);
   assert.equal(r.out, "3 of 3 quotes found word for word");
+  assert.match(stages({ ...pubmed, claims: [{ verified: true }] }, {}, who)[3].out, /^1 of 1 quote found/, "one quote, not one quotes");
   assert.equal(w.out, `${pubmed.brief.points.length} points, ${pubmed.brief.gaps.length} gaps`);
 });
 
@@ -58,6 +59,9 @@ test("a live run: the stage at work is running, later ones wait, nothing claims 
   assert.equal(buying[0].st, "warn");
   assert.equal(buying[1].st, "running");
   assert.equal(buying[3].out, "Waiting");
+  const writing = stages({ ...pubmed, brief: undefined, claims: [] }, { phase: "write" }, who);
+  assert.equal(writing[3].out, "Read; the quotes show with the brief", "a live run never shows 0 of 0 quotes as done");
+  assert.match(stages({ ...pubmed, plan: { ...pubmed.plan, steps: pubmed.plan.steps.slice(0, 1) } }, {}, who)[0].out, /^1 step, /, "one step, not one steps");
 });
 
 test("one stage opens at a time: the visitor's choice, else the data", () => {
