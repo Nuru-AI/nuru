@@ -96,6 +96,15 @@ export const makerLogo = (maker) => logoHtml({ label: maker.name, source: maker.
 
 /** A product's label, source and site: the step's own words from the catalog when the run kept them, else the table,
  *  else the seller's name. */
+/** Why Sippar's plan was not used, in plain words; the run keeps the raw error (Elad 2026-11-01 saw "the plan could not
+ *  be read: no JSON object in the answer: ." on a live brief; the empty answer is Nuru-AI/sippar#6407). */
+export function planFailWords(error) {
+  const e = String(error || "");
+  if (/no JSON object in the answer:\s*$/.test(e)) return "Sippar's planner sent back an empty answer.";
+  if (/could not be read/.test(e)) return "Sippar's planner sent back a plan Nuru could not read.";
+  return "Sippar's plan could not be used.";
+}
+
 export function metaOf(id, step = {}) {
   const own = META[id] ?? {};
   return { label: step.label || own.label || step.seller || id, source: step.source || own.source || "", site: own.site };
@@ -204,7 +213,7 @@ export function stages(run, ui = {}, who = (s) => s?.model ?? "") {
   const s1 = { n: 1, title: "Write the plan", who: planWho, st: st(0, !plan || !!planFailed),
     out: plan ? `${plural(plan.steps.length, "step")}${planFailed ? `. Sippar's plan cost ${usd(planBuy.payment?.priceUsd)} and could not be used, so Nuru's own planner wrote this one` : planBuy?.payment?.priceUsd ? `; the plan cost ${usd(planBuy.payment.priceUsd)}` : ", planned free"}` : phase === "plan" ? "Writing" : "No plan; Nuru read its fixed list",
     body: () => [
-      planBuy ? `<ul class="wf-rows">${stepRow({ ...planBuy, input: {}, error: planFailed ? `${planBuy.error}. Nuru's own planner wrote the plan instead.` : "" , documents: [] }, ui, ui.live)}</ul>` : "",
+      planBuy ? `<ul class="wf-rows">${stepRow({ ...planBuy, input: {}, error: planFailed ? `${planFailWords(planBuy.error)} Nuru's own planner wrote the plan instead.` : "" , documents: [] }, ui, ui.live)}</ul>` : "",
       sipparPlanned && by.skills?.length ? `<p class="hint">Guided by the skill${by.skills.length > 1 ? "s" : ""} ${by.skills.map((k) => esc(k.name || k.id)).join(" and ")}.</p>` : "",
       plan?.summary ? `<p>${esc(plan.summary)}</p>` : "",
       plan?.ask_first?.length ? `<h3 class="wf-h">What the plan assumed</h3><ul class="wf-list">${plan.ask_first.map((a) => `<li>${esc(a)}</li>`).join("")}</ul>` : "",

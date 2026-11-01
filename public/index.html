@@ -50,6 +50,8 @@ header.top .wrap { display: flex; align-items: center; justify-content: space-be
 /* Donate (Elad 2026-11-01: "a donate button on the top right next to the balance"): the agent wallet's address, USDC
    on Base only, a copy button and the wallet on Basescan. No wallet connection: the visitor sends from their own. */
 .hright { position: relative; display: flex; align-items: center; gap: 8px; }
+.ghlink { display: inline-grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; color: var(--text-2); }
+@media (hover: hover) { .ghlink:hover { color: var(--text); background: var(--paper); } }
 .donate { min-height: 44px; padding: 0 16px; border-radius: 999px; border: 1px solid var(--navy); background: var(--navy); color: var(--copper); font: 700 14px var(--body); cursor: pointer; }
 @media (hover: hover) { .donate:hover { background: #17274F; } }
 .donate-pop { position: absolute; right: 0; top: calc(100% + 8px); z-index: 30; width: min(340px, calc(100vw - 32px)); background: var(--white); border: 1px solid var(--border); border-radius: 14px; box-shadow: 0 12px 32px rgba(14, 26, 56, .14); padding: 16px; display: grid; gap: 10px; animation: mlist-in 160ms var(--ease-out); }
@@ -63,7 +65,7 @@ header.top .wrap { display: flex; align-items: center; justify-content: space-be
 .donate-pop a { font-size: 14px; }
 @media (prefers-reduced-motion: reduce) { .donate-pop { animation: none; } }
 /* A phone: the balance without its word, so the Playground title keeps its room; the narrowest drop the title. */
-@media (max-width: 480px) { header.top .ptitle { font-size: 10px; letter-spacing: .06em; } header.top .brand { gap: 8px; } .walletchip .wl { display: none; } .walletchip { padding: 9px 10px; } .donate { padding: 0 12px; } header.top .wrap { gap: 8px; } }
+@media (max-width: 480px) { .ghlink { display: none; } header.top .ptitle { font-size: 10px; letter-spacing: .06em; } header.top .brand { gap: 8px; } .walletchip .wl { display: none; } .walletchip { padding: 9px 10px; } .donate { padding: 0 12px; } header.top .wrap { gap: 8px; } }
 @media (max-width: 359px) { .pdiv, .ptitle { display: none; } }
 @media (max-width: 560px) { .ptitle { font-size: 12px; letter-spacing: .08em; } .brand { gap: 10px; } }
 @media (max-width: 374px) { .ptitle, .pdiv { display: none; } }
@@ -242,19 +244,25 @@ button.primary[disabled] { opacity: .5; cursor: progress; }
 @media (prefers-reduced-motion: reduce) { .status::before { animation: none; } }
 
 /* The sippar.network footer, as /connector/, /seedstore/ and /unlock/ carry it */
-.sf { background: var(--navy-deep); border-top: 1px solid rgba(212,160,116,.2); color: #94A0B8; padding: 48px 0 28px; }
+.sf { background: var(--navy-deep); border-top: 1px solid rgba(212,160,116,.2); color: #94A0B8; padding: 56px 0 28px; }
 .sf a { color: #94A0B8; text-decoration: none; display: inline-flex; align-items: center; min-height: 44px; }
 @media (hover: hover) { .sf a:hover { color: var(--paper); text-decoration: underline; text-underline-offset: 4px; } }
 .sf :focus-visible { outline-color: var(--copper); }
 .sf-top { display: flex; justify-content: space-between; align-items: flex-end; gap: 40px; flex-wrap: wrap; }
-.sfw { height: 36px; width: auto; display: block; }
+.sfw { height: 40px; width: auto; display: block; }
 .sf-tag { margin: 10px 0 0; font-family: var(--mono); font-size: 12px; letter-spacing: .25em; text-transform: uppercase; color: var(--copper); }
-.sf-note { max-width: 62ch; font-size: 14px; line-height: 1.6; margin: 0; }
-.sf-bottom { margin-top: 28px; padding-top: 18px; border-top: 1px solid rgba(212,160,116,.15); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 6px 16px; font-family: var(--mono); font-size: 12px; color: #8592B5; }
-[hidden] { display: none !important; }
-.brief .notices { margin: 14px 0 0; font-size: 13px; line-height: 1.5; color: var(--text-3); max-width: 72ch; }
-.brief .notices p { margin: 4px 0; }
-.sf-note + .sf-note { margin-top: 10px; }
+.sf-social { display: flex; gap: 6px; margin-top: 10px; }
+.sf-social a { width: 44px; justify-content: center; }
+.sf-cols { display: grid; grid-template-columns: repeat(3, auto); gap: 8px 48px; font-size: 14px; }
+.sf-h { font-family: var(--mono); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--copper); font-weight: 600; margin: 0 0 4px; }
+.sf ul { list-style: none; margin: 0; padding: 0; }
+.sf-own { margin-top: 40px; padding-top: 22px; border-top: 1px solid rgba(212,160,116,.15); font-size: 13px; display: grid; gap: 6px; }
+.sf-own p { margin: 0; }
+.sf-own .sf-note { max-width: 72ch; font-size: 13px; line-height: 1.6; }
+.sf-own .links { display: flex; flex-wrap: wrap; column-gap: 20px; }
+.sf-bottom { margin-top: 18px; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 6px 16px; font-family: var(--mono); font-size: 12px; color: #8592B5; }
+.sf-bottom i { font-style: italic; }
+@media (max-width: 640px) { .sf { padding-top: 40px; } .sf-top { gap: 20px; } .sf-cols { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: 16px; width: 100%; } .sf-cols > div:nth-child(2) { order: 3; } .sf-own { margin-top: 24px; } }
 /* How the brief was made, in the card's own frame: Sippar's MCP card styles for a planned workflow
    (Nuru-AI/sippar src/mcp-apps/payment-card/payment-card.html, card build 80b0da688a8d), scoped to .wfx,
    with the card's own default tokens. */
@@ -398,6 +406,7 @@ button.primary[disabled] { opacity: .5; cursor: progress; }
       <span class="ptitle">Playground</span>
     </div>
     <div class="hright">
+      <a class="ghlink" href="https://github.com/Nuru-AI/nuru" target="_blank" rel="noopener noreferrer" aria-label="Nuru on GitHub (opens in a new tab)" title="Nuru on GitHub"><svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20" aria-hidden="true"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg></a>
       <span class="walletchip" id="wallet" title="The agent's own wallet on Base"><span class="wl">wallet </span><b id="bal">…</b></span>
       <button type="button" class="donate" id="donate" aria-expanded="false" aria-controls="donate-pop" hidden>Donate</button>
       <div class="donate-pop" id="donate-pop" role="dialog" aria-labelledby="donate-h" hidden>
@@ -472,17 +481,29 @@ button.primary[disabled] { opacity: .5; cursor: progress; }
   </section>
 </main>
 
+<!-- The sippar.network footer, as /connector/, /unlock/ and /seedstore/ carry it (Nuru-AI/sippar demos/unlock/index.html,
+     the newest copy), with Nuru's own two notes in its fine-print row (Elad 2026-11-01: "add the sippar footer"). -->
 <footer class="sf">
   <div class="wrap">
     <div class="sf-top">
       <div>
         <a href="https://sippar.network" aria-label="Sippar home"><img class="sfw" src="brand/sippar-wordmark.svg" alt="Sippar" width="166" height="36"></a>
         <p class="sf-tag">Every service, by the sip.</p>
+        <div class="sf-social"><a href="https://twitter.com/sipparnetwork" target="_blank" rel="noopener noreferrer" aria-label="Sippar on X (opens in a new tab)"><svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20" aria-hidden="true"><path d="M14.234 10.162 22.977 0h-2.072l-7.591 8.824L7.251 0H.258l9.168 13.343L.258 24H2.33l8.016-9.318L16.749 24h6.993zm-2.837 3.299-.929-1.329L3.076 1.56h3.182l5.965 8.532.929 1.329 7.754 11.09h-3.182z"/></svg></a><a href="https://github.com/Nuru-AI/nuru" target="_blank" rel="noopener noreferrer" aria-label="Nuru on GitHub (opens in a new tab)"><svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20" aria-hidden="true"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg></a></div>
       </div>
+      <nav class="sf-cols" aria-label="Sippar">
+        <div><p class="sf-h">Product</p><ul><li><a href="https://sippar.network/connector/">Connector</a></li><li><a href="https://sippar.network/pass/">Sippar pass</a></li><li><a href="https://sippar.network/seedstore/">SeedStore</a></li></ul></div>
+        <div><p class="sf-h">Develop</p><ul><li><a href="https://sippar.network/developers">Developers</a></li><li><a href="https://sippar.network/mcp/">MCP</a></li><li><a href="https://github.com/Nuru-AI/nuru">Nuru on GitHub</a></li></ul></div>
+        <div><p class="sf-h">Company</p><ul><li><a href="https://sippar.network/about">About</a></li><li><a href="mailto:elad@sippar.network">Contact</a></li></ul></div>
+      </nav>
+    </div>
+    <div class="sf-own">
       <p class="sf-note">Free models, NVIDIA Nemotron by default. Every paid source is bought per call through Sippar in USDC on Base; Dataconomy is paid per read, by agreement.</p>
       <p class="sf-note">Nuru reads public sources live and writes a short brief from what they returned. Briefs show what the sources said at the time of the search. They can be incomplete or out of date, and they are not medical, legal or financial advice. Check anything important at the source linked in the brief.</p>
+      <p class="indep">Sippar is not affiliated with the platforms, suppliers and assistants named on this page; their names belong to their owners.</p>
+      <p class="links"><a href="https://github.com/Nuru-AI/nuru/issues">Report a problem</a><a href="https://sippar.network/legal.html#impressum">Impressum</a><a href="https://sippar.network/legal.html#privacy">Privacy</a></p>
     </div>
-    <div class="sf-bottom"><span>© 2026 Sippar</span><a href="https://github.com/Nuru-AI/nuru">Nuru on GitHub</a></div>
+    <div class="sf-bottom"><span>© 2026 Sippar</span><i>Sippar · ancient Mesopotamian city sacred to Shamash ("City of the Sun")</i></div>
   </div>
 </footer>
 

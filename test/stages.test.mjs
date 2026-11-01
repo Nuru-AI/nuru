@@ -2,7 +2,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "fs";
-import { stages, stagesHtml, metaOf, moveWords, summaryLine } from "../public/stages.mjs";
+import { stages, stagesHtml, metaOf, moveWords, summaryLine, planFailWords } from "../public/stages.mjs";
 
 const run = (id) => JSON.parse(readFileSync(new URL(`./fixtures/saved-briefs/${id}.json`, import.meta.url), "utf8"));
 // Sippar planned it; a free FDA source and a paid paper search were read (2026-11-01, free sources' first live brief).
@@ -114,4 +114,13 @@ test("a finished brief's making is one line that opens to the steps, with the le
   assert.match(open, /data-wfall aria-expanded="true"/);
   assert.match(open, /class="wf-stage/);
   assert.doesNotMatch(stagesHtml(fda, { phase: "buy" }, who), /data-wfall/, "a live run shows its steps, no summary");
+});
+
+test("a failed Sippar plan reads in plain words, never the raw parser error", () => {
+  assert.equal(planFailWords("the plan could not be read: no JSON object in the answer: "), "Sippar's planner sent back an empty answer.");
+  assert.equal(planFailWords("the plan could not be read: Unexpected token"), "Sippar's planner sent back a plan Nuru could not read.");
+  assert.equal(planFailWords("timeout"), "Sippar's plan could not be used.");
+  const html = stagesHtml({ ...pubmed, steps: pubmed.steps.map((s, i) => i === 0 ? { ...s, error: "the plan could not be read: no JSON object in the answer: " } : s) }, { stage: 1 }, who);
+  assert.doesNotMatch(html, /no JSON object/);
+  assert.match(html, /Sippar&#39;s planner sent back an empty answer\. Nuru&#39;s own planner wrote the plan instead\.|Sippar's planner sent back an empty answer\. Nuru's own planner wrote the plan instead\./);
 });
