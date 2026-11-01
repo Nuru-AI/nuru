@@ -44,6 +44,17 @@ export const META = {
   "company-funding": { label: "Funding history", source: "SEC EDGAR", site: "sec.gov" },
   "funding-events": { label: "New raises", source: "SEC EDGAR", site: "sec.gov" },
   "paper-search": { label: "Papers", source: "Scholarly papers (open metadata)" },
+  "property-intel": { label: "Roof & solar", source: "Google Solar", site: "google.com" },
+  "crypto-skills": { label: "Crypto skills", source: "CryptoSkill", site: "cryptoskill.org" },
+  "healthparse": { label: "Healthcare", source: "HealthParse" },
+  "instagram-social": { label: "Instagram", source: "Instagram", site: "instagram.com" },
+  "tiktok-social": { label: "TikTok", source: "TikTok", site: "tiktok.com" },
+  "apify-actors": { label: "Apify Store", source: "Apify", site: "apify.com" },
+  "image-generation": { label: "Sippar's pick", source: "Qwen or Z-Image", site: "antseed.com" },
+  "ai-visibility": { label: "AI visibility", source: "AI models via AntSeed", site: "antseed.com" },
+  "second-opinion": { label: "Second opinion", source: "AI models via AntSeed", site: "antseed.com" },
+  "council": { label: "Model council", source: "AI models via AntSeed", site: "antseed.com" },
+  "media-workflow": { label: "Media workflow", source: "AI models via AntSeed", site: "antseed.com" },
   "free-openalex-works": { label: "Scholarly works", source: "OpenAlex", site: "openalex.org" },
   "free-crossref-works": { label: "Publication records", source: "Crossref", site: "crossref.org" },
   "free-arxiv-papers": { label: "Preprints", source: "arXiv", site: "arxiv.org" },
@@ -77,7 +88,11 @@ export function metaOf(id, step = {}) {
 /** The card's logo tile: the site's icon, with the first letter underneath for when no icon comes back. */
 export function logoHtml(m) {
   const letter = esc((m.source || m.label).replace(/[^A-Za-z0-9]/g, "")[0]?.toUpperCase() ?? "?");
-  const img = m.site && /^[a-z0-9.-]+$/i.test(m.site)
+  // The logo engine's own copy (public/logos.js, built by scripts/build-logos.py) first; else the site's icon, live.
+  const own = m.site ? globalThis.NURU_LOGOS?.[m.site] : undefined;
+  const img = own && /^data:image\/png;base64,/.test(own)
+    ? `<img src="${own}" alt="" width="20" height="20" decoding="async" data-fallback>`
+    : m.site && /^[a-z0-9.-]+$/i.test(m.site)
     ? `<img src="https://icons.duckduckgo.com/ip3/${esc(m.site)}.ico" alt="" width="20" height="20" loading="lazy" referrerpolicy="no-referrer" data-fallback>`
     : "";
   return `<span class="ico plogo ${img ? "" : "failed"}" aria-hidden="true">${img}<span class="ico-l">${letter}</span></span>`;

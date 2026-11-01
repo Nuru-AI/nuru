@@ -8,6 +8,7 @@
 <meta name="theme-color" content="#FAF8F4">
 <meta name="color-scheme" content="light">
 <link rel="preload" href="brand/inter-v20-latin.woff2" as="font" type="font/woff2" crossorigin>
+<script src="logos.js" defer></script>
 <style>
 /* The bright style of sippar.network's connector, SeedStore and Unlock pages (Elad, 2026-10-30): warm white, navy ink,
    copper on navy for actions, Orbitron for the title and product name, Inter for the rest. Fonts are local. */
@@ -77,6 +78,19 @@ button.primary[disabled] { opacity: .5; cursor: progress; }
 /* The brief and how it was made */
 .result { display: grid; grid-template-columns: minmax(0, 1fr) 380px; gap: 32px; padding-top: 8px; padding-bottom: 64px; align-items: start; }
 @media (max-width: 960px) { .result { grid-template-columns: 1fr; } }
+/* The workflow above the brief (Elad 2026-11-01), across the page; who was paid beside the brief once it is known. */
+.result > .made { grid-column: 1 / -1; }
+.result > .paid:has(> #ledgerbox[hidden]) { display: none; }
+/* The question beside what Nuru can read; under it on a narrow screen. */
+.ask-grid { display: grid; grid-template-columns: minmax(0, 620px) minmax(0, 1fr); gap: 24px; align-items: start; }
+@media (max-width: 1099px) { .ask-grid { grid-template-columns: minmax(0, 760px); } }
+.menu-box .menu-count { font-size: 14px; color: var(--text-2); margin: 0 0 12px; }
+.menu-box .menu-chips { margin-bottom: 10px; }
+.menu-box .menu-chips button { min-height: 36px; padding: 6px 12px; font-size: 13.5px; }
+.menu-box .menu-chips button[aria-selected="true"] { background: var(--navy); color: var(--white); border-color: var(--navy); }
+.menu-box .menu-chips .n { font-variant-numeric: tabular-nums; opacity: .7; margin-left: 2px; }
+.menu-box .menu-rows { display: grid; gap: 4px; list-style: none; margin: 0; padding: 0; }
+.menu-box .menu-rows .wf-row { background: var(--white); border-radius: 10px; min-height: 52px; }
 .brief { background: var(--white); border: 1px solid var(--border); border-radius: 20px; padding: clamp(20px, 3vw, 32px); }
 .brief h2 { font-size: clamp(22px, 2.6vw, 28px); line-height: 1.2; letter-spacing: -.02em; margin: 0 0 12px; font-weight: 800; text-wrap: balance; }
 .brief .summary { color: var(--text); font-size: 18px; max-width: 68ch; }
@@ -265,6 +279,7 @@ button.primary[disabled] { opacity: .5; cursor: progress; }
     <span class="play">Playground</span>
     <h1>The agent that pays per sip and unlocks the web</h1>
     <p class="lede">With a pay-per-call budget, the digital world is flat. Ask a question: a free model plans the job, Nuru's wallet pays each source per call, and every point in the answer opens to its quote, its source and its payment on Base.</p>
+    <div class="ask-grid">
     <form id="f">
       <label for="question">Your question</label>
       <textarea id="question" required maxlength="400" placeholder="What is the current evidence that GLP-1 drugs reduce the risk of Alzheimer's disease?"></textarea>
@@ -284,15 +299,22 @@ button.primary[disabled] { opacity: .5; cursor: progress; }
       <p class="hint">A brief takes two to four minutes and usually spends between $0.15 and $0.40 from the agent's wallet, the plan included.</p>
       <p class="err" id="err" role="alert" hidden></p>
     </form>
+    <aside class="side menu-box" aria-labelledby="menu-h">
+      <h3 id="menu-h">What Nuru can read</h3>
+      <div class="wfx" id="menu"><p class="hint">Reading the list of sources.</p></div>
+    </aside>
+    </div>
   </section>
 
   <section class="wrap result" id="result" hidden aria-live="polite">
+    <div class="side made" aria-labelledby="made-h">
+      <h3 id="made-h">How this brief was made</h3>
+      <div class="wfx" id="steps"></div>
+    </div>
     <article class="brief" id="brief">
       <p class="status" id="status">Planning the reading</p>
     </article>
-    <aside class="side" aria-label="How the brief was made">
-      <h3>How this brief was made</h3>
-      <div class="wfx" id="steps"></div>
+    <aside class="side paid" aria-label="Who was paid">
       <div id="ledgerbox" hidden>
         <h3>Who was paid</h3>
         <table class="ledger" id="ledger"></table>
@@ -412,6 +434,16 @@ function render(run) {
   $("ledgerbox").hidden = false;
   wallet();
 }
+
+// What Nuru can read (menu.mjs): the planner's own sources, read live, one topic open at a time.
+let menuSources = null, menuTopic;
+const drawMenu = async () => {
+  const m = await import("./menu.mjs"), st = STAGES ?? await stagesReady;
+  $("menu").innerHTML = menuSources ? m.menuHtml(menuSources, { topic: menuTopic }) : `<p class="hint">The list of sources could not be read just now.</p>`;
+  st.wireLogos($("menu"));
+};
+fetch("/api/sources").then((r) => (r.ok ? r.json() : null)).then((d) => { menuSources = d?.sources ?? null; drawMenu(); }).catch(() => drawMenu());
+$("menu").addEventListener("click", (e) => { const b = e.target.closest("[data-topic]"); if (!b) return; menuTopic = b.dataset.topic; drawMenu().then(() => document.getElementById("mt-" + menuTopic)?.focus()); });
 
 // The stages, in the card's frame (stages.mjs). Which stage and row are open is the visitor's choice.
 let STAGES = null, wfRun = null, wfUi = {};
