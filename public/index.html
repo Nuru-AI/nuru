@@ -267,6 +267,8 @@ function notices(run) {
   const lines = [`Read live${when ? ` on ${when}` : ""} from the sources cited above. A source can miss records, so a topic the brief does not mention may still exist.`];
   if (used(HEALTH_SOURCES)) lines.push("Health records and reports are not verified and do not prove a product caused an event. Talk to a doctor or pharmacist before acting on anything here.");
   if (used(MARKET_SOURCES)) lines.push("Prices and figures are from the moment they were read and can change quickly. This is not investment advice.");
+  // The credit each free public source asks for, once per source the run called.
+  if (run.credits?.length) lines.push(`Free public sources: ${run.credits.join("; ")}.`);
   return `<div class="notices">${lines.map((l) => `<p>${esc(l)}</p>`).join("")}</div>`;
 }
 

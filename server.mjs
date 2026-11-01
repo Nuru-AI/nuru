@@ -88,7 +88,7 @@ createServer(async (req, res) => {
       res.writeHead(200, { "content-type": "text/event-stream", "cache-control": "no-store", connection: "keep-alive" });
       const push = (event, data) => res.write(`event: ${event}\ndata: ${JSON.stringify(data)}\n\n`);
       try {
-        const run = await research({ question, reader: reader || "the person who asked", wallet, pick, onEvent: (e) => push("progress", e) });
+        const run = await research({ question, reader: reader || "the person who asked", wallet, pick, allowFree: () => daily.freeCall(), onEvent: (e) => push("progress", e) });
         daily.spent(run.ledger?.spentUsd);
         const id = run.startedAt.replace(/[:.]/g, "-");
         writeFileSync(join(RUNS, `${id}.json`), JSON.stringify(run, null, 2));

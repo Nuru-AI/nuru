@@ -1,0 +1,92 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<feed xmlns:opensearch="http://a9.com/-/spec/opensearch/1.1/" xmlns:arxiv="http://arxiv.org/schemas/atom" xmlns="http://www.w3.org/2005/Atom">
+  <id>https://arxiv.org/api/RvhaOSm5ZR0kUVX9w1CYM+fEUNE</id>
+  <title>arXiv Query: search_query=all:agent OR all:payments&amp;id_list=&amp;start=0&amp;max_results=3</title>
+  <updated>2026-11-01T10:38:29Z</updated>
+  <link href="https://arxiv.org/api/query?search_query=all:agent+OR+all:payments&amp;start=0&amp;max_results=3&amp;id_list=" type="application/atom+xml"/>
+  <opensearch:itemsPerPage>3</opensearch:itemsPerPage>
+  <opensearch:totalResults>87105</opensearch:totalResults>
+  <opensearch:startIndex>0</opensearch:startIndex>
+  <entry>
+    <id>http://arxiv.org/abs/2203.08975v2</id>
+    <title>A Survey of Multi-Agent Deep Reinforcement Learning with Communication</title>
+    <updated>2024-10-18T10:14:58Z</updated>
+    <link href="https://arxiv.org/abs/2203.08975v2" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2203.08975v2" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Communication is an effective mechanism for coordinating the behaviors of multiple agents, broadening their views of the environment, and to support their collaborations. In the field of multi-agent deep reinforcement learning (MADRL), agents can improve the overall learning performance and achieve their objectives by communication. Agents can communicate various types of messages, either to all agents or to specific agent groups, or conditioned on specific constraints. With the growing body of research work in MADRL with communication (Comm-MADRL), there is a lack of a systematic and structural approach to distinguish and classify existing Comm-MADRL approaches. In this paper, we survey recent works in the Comm-MADRL field and consider various aspects of communication that can play a role in designing and developing multi-agent reinforcement learning systems. With these aspects in mind, we propose 9 dimensions along which Comm-MADRL approaches can be analyzed, developed, and compared. By projecting existing works into the multi-dimensional space, we discover interesting trends. We also propose some novel directions for designing future Comm-MADRL systems through exploring possible combinations of the dimensions.</summary>
+    <category term="cs.MA" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.LG" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2022-03-16T22:39:46Z</published>
+    <arxiv:comment>34 pages, 5 figures, 13 tables; published on Autonomous Agents and Multi-Agent Systems</arxiv:comment>
+    <arxiv:primary_category term="cs.MA"/>
+    <arxiv:journal_ref>Auton. Agents Multi Agent Syst. 38(1): 4 (2024)</arxiv:journal_ref>
+    <author>
+      <name>Changxi Zhu</name>
+    </author>
+    <author>
+      <name>Mehdi Dastani</name>
+    </author>
+    <author>
+      <name>Shihan Wang</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/1908.08219v2</id>
+    <title>Implementing result-based agri-environmental payments by means of modelling</title>
+    <updated>2020-12-23T07:15:43Z</updated>
+    <link href="https://arxiv.org/abs/1908.08219v2" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/1908.08219v2" rel="related" type="application/pdf" title="pdf"/>
+    <summary>From a theoretical point of view, result-based agri-environmental payments are clearly preferable to action-based payments. However, they suffer from two major practical disadvantages: costs of measuring the results and payment uncertainty for the participating farmers. In this paper, we propose an alternative design to overcome these two disadvantages by means of modelling (instead of measuring) the results. We describe the concept of model-informed result-based agri-environmental payments (MIRBAP), including a hypothetical example of payments for the protection and enhancement of soil functions. We offer a comprehensive discussion of the relative advantages and disadvantages of MIRBAP, showing that it not only unites most of the advantages of result-based and action-based schemes, but also adds two new advantages: the potential to address trade-offs among multiple policy objectives and management for long-term environmental effects. We argue that MIRBAP would be a valuable addition to the agri-environmental policy toolbox and a reflection of recent advancements in agri-environmental modelling.</summary>
+    <category term="econ.GN" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2019-08-22T06:40:14Z</published>
+    <arxiv:primary_category term="econ.GN"/>
+    <arxiv:journal_ref>Payments by modelled results: a novel design for agri-environmental schemes. Land Use Policy 102: 105230 (2017)</arxiv:journal_ref>
+    <author>
+      <name>Bartosz Bartkowski</name>
+    </author>
+    <author>
+      <name>Nils Droste</name>
+    </author>
+    <author>
+      <name>Mareike Ließ</name>
+    </author>
+    <author>
+      <name>William Sidemo-Holm</name>
+    </author>
+    <author>
+      <name>Ulrich Weller</name>
+    </author>
+    <author>
+      <name>Mark V. Brady</name>
+    </author>
+    <arxiv:doi>10.1016/j.landusepol.2020.105230</arxiv:doi>
+    <link rel="related" href="https://doi.org/10.1016/j.landusepol.2020.105230" title="doi"/>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2409.01907v1</id>
+    <title>Focus Agent: LLM-Powered Virtual Focus Group</title>
+    <updated>2024-09-03T13:56:14Z</updated>
+    <link href="https://arxiv.org/abs/2409.01907v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2409.01907v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>In the domain of Human-Computer Interaction, focus groups represent a widely utilised yet resource-intensive methodology, often demanding the expertise of skilled moderators and meticulous preparatory efforts. This study introduces the ``Focus Agent,'' a Large Language Model (LLM) powered framework that simulates both the focus group (for data collection) and acts as a moderator in a focus group setting with human participants. To assess the data quality derived from the Focus Agent, we ran five focus group sessions with a total of 23 human participants as well as deploying the Focus Agent to simulate these discussions with AI participants. Quantitative analysis indicates that Focus Agent can generate opinions similar to those of human participants. Furthermore, the research exposes some improvements associated with LLMs acting as moderators in focus group discussions that include human participants.</summary>
+    <category term="cs.HC" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2024-09-03T13:56:14Z</published>
+    <arxiv:comment>8 pages, the 24th Intelligent Virtual Agent Conference</arxiv:comment>
+    <arxiv:primary_category term="cs.HC"/>
+    <arxiv:journal_ref>Taiyu Zhang, Xuesong Zhang, Robbe Cools, and Adalberto Simeone. 2024. Focus Agent: LLM-Powered Virtual Focus Group. In ACM International Conference on Intelligent Virtual Agents (IVA '24), September 16--19, 2024, GLASGOW, United Kingdom</arxiv:journal_ref>
+    <author>
+      <name>Taiyu Zhang</name>
+    </author>
+    <author>
+      <name>Xuesong Zhang</name>
+    </author>
+    <author>
+      <name>Robbe Cools</name>
+    </author>
+    <author>
+      <name>Adalberto L. Simeone</name>
+    </author>
+    <arxiv:doi>10.1145/3652988.3673918</arxiv:doi>
+    <link rel="related" href="https://doi.org/10.1145/3652988.3673918" title="doi"/>
+  </entry>
+</feed>

@@ -1,0 +1,117 @@
+{
+ "objects": [
+  {
+   "downloads": {
+    "monthly": 1940981,
+    "weekly": 697392
+   },
+   "dependents": "132",
+   "updated": "2026-10-30T13:28:10.893Z",
+   "searchScore": 2040.947,
+   "package": {
+    "name": "x402",
+    "keywords": [],
+    "version": "1.2.0",
+    "description": "x402 Payment Protocol",
+    "sanitized_name": "x402",
+    "license": "Apache-2.0",
+    "date": "2026-04-16T06:27:17.775Z",
+    "links": {
+     "homepage": "https://github.com/x402-foundation/x402#readme",
+     "repository": "git+https://github.com/x402-foundation/x402.git",
+     "bugs": "https://github.com/x402-foundation/x402/issues",
+     "npm": "https://www.npmjs.com/package/x402"
+    }
+   },
+   "score": {
+    "final": 2040.947,
+    "detail": {
+     "popularity": 1,
+     "quality": 1,
+     "maintenance": 1
+    }
+   },
+   "flags": {
+    "insecure": 0
+   }
+  },
+  {
+   "downloads": {
+    "monthly": 1562271,
+    "weekly": 586562
+   },
+   "dependents": "857",
+   "updated": "2026-10-30T13:26:16.037Z",
+   "searchScore": 461.36993,
+   "package": {
+    "name": "@x402/core",
+    "keywords": [],
+    "version": "2.29.0",
+    "description": "x402 Payment Protocol",
+    "sanitized_name": "@x402/core",
+    "license": "Apache-2.0",
+    "date": "2026-10-28T18:29:54.316Z",
+    "links": {
+     "homepage": "https://github.com/x402-foundation/x402#readme",
+     "repository": "https://github.com/x402-foundation/x402",
+     "bugs": "https://github.com/x402-foundation/x402/issues",
+     "npm": "https://www.npmjs.com/package/@x402/core"
+    }
+   },
+   "score": {
+    "final": 461.36993,
+    "detail": {
+     "popularity": 1,
+     "quality": 1,
+     "maintenance": 1
+    }
+   },
+   "flags": {
+    "insecure": 0
+   }
+  },
+  {
+   "downloads": {
+    "monthly": 1065817,
+    "weekly": 415987
+   },
+   "dependents": "916",
+   "updated": "2026-10-30T13:26:15.286Z",
+   "searchScore": 428.98236,
+   "package": {
+    "name": "@x402/evm",
+    "keywords": [
+     "x402",
+     "payment",
+     "protocol",
+     "evm",
+     "ethereum"
+    ],
+    "version": "2.29.0",
+    "description": "x402 Payment Protocol EVM Implementation",
+    "sanitized_name": "@x402/evm",
+    "license": "Apache-2.0",
+    "date": "2026-10-28T18:33:31.908Z",
+    "links": {
+     "homepage": "https://github.com/x402-foundation/x402#readme",
+     "repository": "https://github.com/x402-foundation/x402",
+     "bugs": "https://github.com/x402-foundation/x402/issues",
+     "npm": "https://www.npmjs.com/package/@x402/evm"
+    }
+   },
+   "score": {
+    "final": 428.98236,
+    "detail": {
+     "popularity": 1,
+     "quality": 1,
+     "maintenance": 1
+    }
+   },
+   "flags": {
+    "insecure": 0
+   }
+  }
+ ],
+ "total": 6327,
+ "time": "2026-11-01T10:38:38.236Z"
+}
