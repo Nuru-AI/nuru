@@ -144,7 +144,13 @@ button.primary[disabled] { opacity: .5; cursor: progress; }
 /* The question beside what Nuru can read; under it on a narrow screen. */
 .ask-grid { display: grid; grid-template-columns: minmax(0, 620px) minmax(0, 1fr); gap: 24px; align-items: start; }
 @media (max-width: 1099px) { .ask-grid { grid-template-columns: minmax(0, 760px); } }
-.menu-box .menu-count { font-size: 14px; color: var(--text-2); margin: 0 0 12px; }
+/* All / Paid / Free: one segmented switch; the choice is a filled navy segment, never colour alone (aria-checked). */
+.kind-sw { display: inline-flex; gap: 2px; padding: 2px; margin: 0 0 12px; background: var(--warm-white); border: 1px solid var(--border-2); border-radius: 999px; }
+.kind-sw button { min-height: 44px; padding: 0 14px; border: 0; border-radius: 999px; background: transparent; font: 600 13px var(--body); color: var(--text-2); cursor: pointer; }
+.kind-sw button .n { font-weight: 400; color: var(--text-3); margin-left: 2px; }
+.kind-sw button[aria-checked="true"] { background: var(--navy); color: var(--warm-white); }
+.kind-sw button[aria-checked="true"] .n { color: var(--copper); }
+@media (hover: hover) { .kind-sw button[aria-checked="false"]:hover { background: var(--paper); color: var(--text); } }
 .menu-box .menu-chips { margin-bottom: 10px; }
 .menu-box .menu-tabs { display: contents; }
 .menu-box .more-topics { background: transparent; border-style: dashed; color: var(--navy); font-weight: 600; }
@@ -555,20 +561,22 @@ function render(run) {
 }
 
 // What Nuru can read (menu.mjs): the planner's own sources, read live, one topic open at a time.
-let menuSources = null, menuTopic, menuAll = false;
+let menuSources = null, menuTopic, menuAll = false, menuKind = "all";
 const drawMenu = async () => {
   const m = await import("./menu.mjs"), st = STAGES ?? await stagesReady;
-  $("menu").innerHTML = menuSources ? m.menuHtml(menuSources, { topic: menuTopic, all: menuAll }) : `<p class="hint">The list of sources could not be read just now.</p>`;
+  $("menu").innerHTML = menuSources ? m.menuHtml(menuSources, { topic: menuTopic, all: menuAll, kind: menuKind }) : `<p class="hint">The list of sources could not be read just now.</p>`;
   st.wireLogos($("menu"));
 };
 fetch("/api/sources").then((r) => (r.ok ? r.json() : null)).then((d) => { menuSources = d?.sources ?? null; drawMenu(); }).catch(() => drawMenu());
 $("menu").addEventListener("keydown", (e) => {
-  const tab = e.target.closest('[role="tab"]'); if (!tab || !["ArrowLeft", "ArrowRight", "Home", "End"].includes(e.key)) return;
-  const tabs = [...$("menu").querySelectorAll('[role="tab"]')], i = tabs.indexOf(tab);
+  // Arrow keys move along the topic tabs, and along the All / Paid / Free switch.
+  const tab = e.target.closest('[role="tab"], [role="radio"]'); if (!tab || !["ArrowLeft", "ArrowRight", "Home", "End"].includes(e.key)) return;
+  const tabs = [...$("menu").querySelectorAll(`[role="${tab.getAttribute("role")}"]`)], i = tabs.indexOf(tab);
   const to = e.key === "Home" ? tabs[0] : e.key === "End" ? tabs[tabs.length - 1] : tabs[(i + (e.key === "ArrowRight" ? 1 : tabs.length - 1)) % tabs.length];
   e.preventDefault(); to.click();
 });
 $("menu").addEventListener("click", (e) => {
+  const k = e.target.closest("[data-kind]"); if (k) { menuKind = k.dataset.kind; drawMenu().then(() => $("menu").querySelector(`[data-kind="${menuKind}"]`)?.focus()); return; }
   if (e.target.closest("[data-moretopics]")) { menuAll = !menuAll; drawMenu().then(() => $("menu").querySelector("[data-moretopics]")?.focus()); return; } const b = e.target.closest("[data-topic]"); if (!b) return; menuTopic = b.dataset.topic; drawMenu().then(() => document.getElementById("mt-" + menuTopic)?.focus()); });
 
 // The stages, in the card's frame (stages.mjs). Which stage and row are open is the visitor's choice.

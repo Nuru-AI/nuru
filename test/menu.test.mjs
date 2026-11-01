@@ -21,7 +21,9 @@ test("every source sits under a topic a reader looks in", () => {
 
 test("the menu counts paid and free, opens one topic, and prices each row", () => {
   const html = menuHtml(sources, { topic: "research" });
-  assert.match(html, /3 paid through Sippar · 14 free/);
+  assert.match(html, /data-kind="all" aria-checked="true"[^>]*>All <span class="n">17</);
+  assert.match(html, /data-kind="paid"[^>]*>Paid <span class="n">3</);
+  assert.match(html, /data-kind="free"[^>]*>Free <span class="n">14</);
   assert.match(html, /data-topic="research" aria-selected="true"/);
   assert.match(html, /Scholarly works/);
   assert.match(html, /wf-st ok">Free</);
@@ -32,6 +34,17 @@ test("the menu counts paid and free, opens one topic, and prices each row", () =
 test("free rows come first in a topic, then the cheapest paid", () => {
   const html = menuHtml(sources, { topic: "research" });
   assert.ok(html.indexOf("Scholarly works") < html.indexOf(">Papers<"), "free before paid");
+});
+
+test("the switch shows only paid or only free sources, and their topics", () => {
+  const free = menuHtml(sources, { kind: "free", topic: "research" });
+  assert.match(free, /data-kind="free" aria-checked="true"/);
+  assert.match(free, /Scholarly works/);
+  assert.doesNotMatch(free, /\$0\.080|>Papers</, "no paid row under Free");
+  const paidOnly = menuHtml(sources, { kind: "paid", topic: "research" });
+  assert.match(paidOnly, />Papers</);
+  assert.doesNotMatch(paidOnly, /wf-st ok">Free</, "no free row under Paid");
+  assert.doesNotMatch(paidOnly, /data-topic="health"/, "a topic with only free sources is not offered under Paid");
 });
 
 test("a source priced per request says so", () => {
@@ -55,5 +68,6 @@ test("six topics up front, the rest behind More topics; the open topic always sh
   assert.match(html, /More topics \(3\)/);
   assert.equal((menuHtml(many, { all: true }).match(/role="tab"/g) || []).length, 9);
   assert.match(menuHtml(many, { topic: "travel" }), /data-topic="travel" aria-selected="true"/, "a chosen later topic still shows");
-  assert.equal((html.match(/tabindex="0"/g) || []).length, 1, "one Tab stop for the topic row");
+  assert.equal((html.match(/role="tab"[^>]*tabindex="0"/g) || []).length, 1, "one Tab stop for the topic row");
+  assert.equal((html.match(/role="radio"[^>]*tabindex="0"/g) || []).length, 1, "one Tab stop for the switch");
 });

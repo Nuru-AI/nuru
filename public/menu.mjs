@@ -23,21 +23,29 @@ export function topicOf(p) {
   return TOPICS.some(([k]) => k === p.topic) ? p.topic : "more";
 }
 
-/** The menu: chips for every topic that has a source, the open topic's rows, and a count of paid and free. */
-export function menuHtml(sources, ui = {}) {
+/** The paid / free switch (Elad 2026-11-01: "a toggle for free/paid products"): All, Paid or Free, each with its count. */
+const KINDS = [["all", "All"], ["paid", "Paid"], ["free", "Free"]];
+const ofKind = (k) => (p) => k === "free" ? !!p.free : k === "paid" ? !p.free : true;
+
+/** The menu: the paid / free switch, chips for every topic that has a source of that kind, and the open topic's rows. */
+export function menuHtml(all, ui = {}) {
+  if (!all.length) return `<p class="hint">The list of sources could not be read just now.</p>`;
+  const kind = KINDS.some(([k]) => k === ui.kind) ? ui.kind : "all";
+  const sw = `<div class="kind-sw" role="radiogroup" aria-label="Show sources">${KINDS.map(([k, name]) =>
+    `<button type="button" role="radio" data-kind="${k}" aria-checked="${k === kind}" tabindex="${k === kind ? 0 : -1}">${name} <span class="n">${all.filter(ofKind(k)).length}</span></button>`).join("")}</div>`;
+  const sources = all.filter(ofKind(kind));
   const by = new Map();
   for (const p of sources) { const k = topicOf(p); if (!by.has(k)) by.set(k, []); by.get(k).push(p); }
   const topics = TOPICS.filter(([k]) => by.has(k));
-  if (!topics.length) return `<p class="hint">The list of sources could not be read just now.</p>`;
+  if (!topics.length) return `${sw}<p class="hint">No ${kind} sources just now.</p>`;
   const open = by.has(ui.topic) ? ui.topic : topics[0][0];
-  const free = sources.filter((p) => p.free).length;
   const rows = by.get(open).slice().sort((a, b) => Number(!!b.free) - Number(!!a.free) || a.priceUSD - b.priceUSD);
   // Six topics up front, the rest a tap away (critique: fifteen chips beside the question competed with it); the open
   // topic always shows. One Tab stop for the row: the chosen topic; arrow keys move between them (the page wires it).
   const FIRST = 6;
   const shown = ui.all ? topics : topics.filter(([k], i) => i < FIRST || k === open);
   const more = topics.length > FIRST ? `<button type="button" class="more-topics" data-moretopics aria-expanded="${!!ui.all}">${ui.all ? "Fewer topics" : `More topics (${topics.length - shown.length})`}</button>` : "";
-  return `<p class="menu-count">${sources.length - free} paid through Sippar · ${free} free</p>
+  return `${sw}
     <div class="examples menu-chips"><div role="tablist" aria-label="Topics" class="menu-tabs">${shown.map(([k, name]) =>
       `<button type="button" role="tab" data-topic="${k}" aria-selected="${k === open}" tabindex="${k === open ? 0 : -1}" id="mt-${k}" aria-controls="menu-rows">${esc(name)} <span class="n">${by.get(k).length}</span></button>`).join("")}</div>${more}</div>
     <ul class="wf-rows menu-rows" id="menu-rows" role="tabpanel" aria-labelledby="mt-${open}">${rows.map((p) => {
