@@ -79,3 +79,14 @@ test("each topic chip carries its icon once the icon file has loaded, and only w
   assert.match(html, /data-topic="research"[^>]*><svg class="i"[^>]*aria-hidden="true">/);
   for (const [, , ic] of (await import("../public/menu.mjs")).TOPICS) assert.ok(globalThis.NURU_ICONS[ic], `icon ${ic} is in icons.js`);
 });
+
+test("social platforms read as the connector presents them, by name and what each reads, whatever the catalog says", () => {
+  const social = sourcesOf({ products: [
+    { id: "sippar-facebook-social", name: "Facebook Social Media (Meta Ad Library and page posts)", topic: "social", priceUSD: 0.02 },
+    { id: "instagram-social", name: "Instagram Social Media", shortName: "Instagram", source: "Instagram", topic: "social", priceUSD: 0.02 },
+  ] });
+  const html = menuHtml(social, { topic: "social" });
+  assert.match(html, />Facebook<\/span><span class="pt-src">Posts, reels, reviews, events, comments and ads</);
+  assert.match(html, />Instagram<\/span><span class="pt-src">Posts, reels, profiles, hashtags and comments</);
+  assert.doesNotMatch(html, /Facebook ads|Meta Ad Library/);
+});

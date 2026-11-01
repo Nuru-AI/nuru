@@ -47,6 +47,24 @@ header.top .wrap { display: flex; align-items: center; justify-content: space-be
 .ptitle { font-family: var(--display); font-weight: 700; font-size: 13px; letter-spacing: .14em; text-transform: uppercase; color: var(--text-3); white-space: nowrap; }
 .walletchip { font: 500 13px/1 var(--mono); color: var(--text-2); background: var(--white); border: 1px solid var(--border); border-radius: 999px; padding: 9px 12px; white-space: nowrap; }
 .walletchip b { color: var(--text); font-weight: 600; }
+/* Donate (Elad 2026-11-01: "a donate button on the top right next to the balance"): the agent wallet's address, USDC
+   on Base only, a copy button and the wallet on Basescan. No wallet connection: the visitor sends from their own. */
+.hright { position: relative; display: flex; align-items: center; gap: 8px; }
+.donate { min-height: 44px; padding: 0 16px; border-radius: 999px; border: 1px solid var(--navy); background: var(--navy); color: var(--copper); font: 700 14px var(--body); cursor: pointer; }
+@media (hover: hover) { .donate:hover { background: #17274F; } }
+.donate-pop { position: absolute; right: 0; top: calc(100% + 8px); z-index: 30; width: min(340px, calc(100vw - 32px)); background: var(--white); border: 1px solid var(--border); border-radius: 14px; box-shadow: 0 12px 32px rgba(14, 26, 56, .14); padding: 16px; display: grid; gap: 10px; animation: mlist-in 160ms var(--ease-out); }
+.donate-pop[hidden] { display: none; }
+.donate-pop .dh { margin: 0; font-weight: 700; font-size: 16px; color: var(--text); }
+.donate-pop .dl, .donate-pop .dwarn { margin: 0; font-size: 14px; color: var(--text-2); }
+.donate-pop .dwarn { font-size: 13px; color: var(--text-3); }
+.daddr { display: flex; align-items: center; gap: 8px; background: var(--warm-white); border: 1px solid var(--border-2); border-radius: 10px; padding: 8px 8px 8px 12px; }
+.daddr code { flex: 1 1 auto; min-width: 0; font: 12.5px/1.4 var(--mono); color: var(--text); overflow-wrap: anywhere; }
+.dcopy { flex: none; min-height: 44px; padding: 0 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--white); font: 600 13px var(--body); color: var(--text); cursor: pointer; }
+.donate-pop a { font-size: 14px; }
+@media (prefers-reduced-motion: reduce) { .donate-pop { animation: none; } }
+/* A phone: the balance without its word, so the Playground title keeps its room; the narrowest drop the title. */
+@media (max-width: 480px) { header.top .ptitle { font-size: 10px; letter-spacing: .06em; } header.top .brand { gap: 8px; } .walletchip .wl { display: none; } .walletchip { padding: 9px 10px; } .donate { padding: 0 12px; } header.top .wrap { gap: 8px; } }
+@media (max-width: 359px) { .pdiv, .ptitle { display: none; } }
 @media (max-width: 560px) { .ptitle { font-size: 12px; letter-spacing: .08em; } .brand { gap: 10px; } }
 @media (max-width: 374px) { .ptitle, .pdiv { display: none; } }
 
@@ -379,7 +397,17 @@ button.primary[disabled] { opacity: .5; cursor: progress; }
       <span class="pdiv" aria-hidden="true"></span>
       <span class="ptitle">Playground</span>
     </div>
-    <span class="walletchip" id="wallet" title="The agent's own wallet on Base">wallet <b id="bal">…</b></span>
+    <div class="hright">
+      <span class="walletchip" id="wallet" title="The agent's own wallet on Base"><span class="wl">wallet </span><b id="bal">…</b></span>
+      <button type="button" class="donate" id="donate" aria-expanded="false" aria-controls="donate-pop" hidden>Donate</button>
+      <div class="donate-pop" id="donate-pop" role="dialog" aria-labelledby="donate-h" hidden>
+        <p class="dh" id="donate-h">Donate to Nuru</p>
+        <p class="dl">Nuru pays for its sources from its own wallet. Send USDC on Base to:</p>
+        <div class="daddr"><code id="donate-addr"></code><button type="button" class="dcopy" id="donate-copy">Copy</button></div>
+        <p class="dwarn">USDC on Base only. Other tokens or networks can be lost.</p>
+        <a id="donate-scan" href="https://basescan.org" target="_blank" rel="noopener">See the wallet on Basescan</a>
+      </div>
+    </div>
   </div>
 </header>
 
@@ -466,8 +494,20 @@ const tx = (h) => `<a href="https://basescan.org/tx/${esc(h)}" target="_blank" r
 const LABEL = { "workflow-planner": "A plan from Sippar's workflow planner", web_search: "Web search", read_page: "Read a page", news: "News", dataconomy_search: "Dataconomy search", dataconomy_article: "Dataconomy article", papers: "Scholarly papers" };
 
 async function wallet() {
-  try { const w = await (await fetch("/api/wallet")).json(); $("bal").textContent = w.balanceUsd == null ? "unknown" : usd(w.balanceUsd); $("wallet").title = "The agent's own wallet on Base: " + w.address; } catch {}
+  try {
+    const w = await (await fetch("/api/wallet")).json(); $("bal").textContent = w.balanceUsd == null ? "unknown" : usd(w.balanceUsd); $("wallet").title = "The agent's own wallet on Base: " + w.address;
+    // Donate shows only once the address is read, so it never offers an empty one.
+    if (/^0x[0-9a-fA-F]{40}$/.test(w.address || "")) { $("donate-addr").textContent = w.address; $("donate-scan").href = "https://basescan.org/address/" + w.address; $("donate").hidden = false; }
+  } catch {}
 }
+const donateOpen = (on, back) => { $("donate-pop").hidden = !on; $("donate").setAttribute("aria-expanded", on); if (on) $("donate-copy").focus(); else if (back) $("donate").focus(); };
+$("donate").addEventListener("click", () => donateOpen($("donate-pop").hidden));
+$("donate-pop").addEventListener("keydown", (e) => { if (e.key === "Escape") donateOpen(false, true); });
+document.addEventListener("click", (e) => { if (!$("donate-pop").hidden && !e.target.closest("#donate-pop, #donate")) donateOpen(false); });
+$("donate-copy").addEventListener("click", async () => {
+  try { await navigator.clipboard.writeText($("donate-addr").textContent); $("donate-copy").textContent = "Copied"; } catch { $("donate-copy").textContent = "Select it"; }
+  setTimeout(() => { $("donate-copy").textContent = "Copy"; }, 2000);
+});
 wallet();
 
 // One example at a time; the wand shows the next, starting from a different one on each visit.
