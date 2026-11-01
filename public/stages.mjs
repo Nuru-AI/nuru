@@ -11,6 +11,7 @@ const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(
 const link = (url, text) => /^https?:\/\//i.test(String(url ?? "")) ? `<a class="linkish" href="${esc(url)}" target="_blank" rel="noopener">${esc(text)}</a>` : `<span>${esc(text)}</span>`;
 /** A date as a person reads it: "20260708" (openFDA's own form) becomes 2026-07-08; an ISO time keeps its day. */
 const day = (d) => { const s = String(d); return /^\d{8}$/.test(s) ? `${s.slice(0, 4)}-${s.slice(4, 6)}-${s.slice(6)}` : s.slice(0, 10); };
+const plural = (n, one, many = `${one}s`) => `${n} ${n === 1 ? one : many}`;
 const usd = (n) => `$${Number(n || 0).toFixed(Number(n) > 0 && Number(n) < 0.1 ? 3 : 2)}`;
 
 /** Each product's short name, source and site for its logo: the card's own table (catalog.ts META), plus the free
@@ -167,7 +168,7 @@ export function stages(run, ui = {}, who = (s) => s?.model ?? "") {
     : plan ? `Nuru's own planner${writtenBy}` : "Nuru's fixed list of sources";
   const planFailed = planBuy && planBuy.error;
   const s1 = { n: 1, title: "Write the plan", who: planWho, st: st(0, !plan || !!planFailed),
-    out: plan ? `${plan.steps.length} steps, ${usd(plan.check?.costUSD)} at live prices${planFailed ? ". Sippar's plan could not be used, so Nuru's own planner wrote this one" : ""}` : phase === "plan" ? "Writing" : "No plan; Nuru read its fixed list",
+    out: plan ? `${plural(plan.steps.length, "step")}, ${usd(plan.check?.costUSD)} at live prices${planFailed ? ". Sippar's plan could not be used, so Nuru's own planner wrote this one" : ""}` : phase === "plan" ? "Writing" : "No plan; Nuru read its fixed list",
     body: () => [
       planBuy ? `<ul class="wf-rows">${stepRow({ ...planBuy, input: {}, error: planFailed ? `${planBuy.error}. Nuru's own planner wrote the plan instead.` : "" , documents: [] }, ui, ui.live)}</ul>` : "",
       sipparPlanned && by.skills?.length ? `<p class="hint">Guided by the skill${by.skills.length > 1 ? "s" : ""} ${by.skills.map((k) => esc(k.name || k.id)).join(" and ")}.</p>` : "",
@@ -202,7 +203,7 @@ export function stages(run, ui = {}, who = (s) => s?.model ?? "") {
   const claims = run.claims ?? [];
   const verified = claims.filter((c) => c.verified);
   const s4 = { n: 4, title: "Read the sources", who: run.models?.worker ? who({ model: run.models.worker }) : "a model", st: st(2, phase === "done" && !verified.length),
-    out: at < 2 ? "Waiting" : at === 2 ? "Reading" : `${verified.length} of ${claims.length} quotes found word for word`,
+    out: at < 2 ? "Waiting" : at === 2 ? "Reading" : phase !== "done" ? "Read; the quotes show with the brief" : `${verified.length} of ${plural(claims.length, "quote")} found word for word`,
     body: () => verified.length ? `<ol class="wf-list">${verified.slice(0, 8).map((c) => `<li><q>${esc(String(c.quote).slice(0, 220))}</q> ${link(c.url, c.publisher || "source")}</li>`).join("")}</ol>${verified.length > 8 ? `<p class="hint">${verified.length - 8} more quotes.</p>` : ""}`
       : `<p class="hint">${at < 3 ? "Quotes show once the sources are read." : "No quote was found word for word in a bought source."}</p>` };
 
