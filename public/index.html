@@ -55,42 +55,61 @@ header.top .wrap { display: flex; align-items: center; justify-content: space-be
 .play::before { content: ""; width: 7px; height: 7px; transform: rotate(45deg); background: currentColor; }
 h1 { font-family: var(--display); font-weight: 700; font-size: clamp(28px, 4.2vw, 44px); line-height: 1.08; letter-spacing: -.01em; margin: 0 0 14px; max-width: 22ch; text-wrap: balance; }
 .lede { color: var(--text-2); font-size: clamp(15.5px, 1.6vw, 18px); max-width: 62ch; margin: 0 0 28px; }
-form { display: grid; gap: 12px; max-width: 760px; background: var(--white); border: 1px solid var(--border); border-radius: 20px; padding: clamp(18px, 3vw, 26px); }
+form { display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; max-width: 760px; background: var(--white); border: 1px solid var(--border); border-radius: 20px; padding: clamp(18px, 3vw, 26px); }
 label { font-size: 14px; font-weight: 600; color: var(--text-2); }
 textarea, input, select { width: 100%; background: var(--warm-white); color: var(--text); border: 1px solid var(--border); border-radius: var(--r); padding: 14px 16px; font: inherit; }
 textarea { min-height: 104px; resize: vertical; }
 textarea::placeholder { color: var(--text-3); }
 .row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 12px; align-items: end; }
-/* The question box (Elad 2026-11-01: "improve the 'your question' box"). */
-.qhead { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+/* The question box (Elad 2026-11-01: "improve the 'your question' box"; then "fold the free models so it will only show
+   one default option and have an other models button... inline the input box"). One composer: the question, and under
+   it in the same box the model in use, Other models, the count and the button. */
+.composer { background: var(--warm-white); border: 1px solid var(--border); border-radius: 16px; transition: border-color 150ms var(--ease-out); }
+.composer:focus-within { border-color: var(--navy); box-shadow: 0 0 0 1px var(--navy); }
+.composer textarea#question { display: block; background: transparent; border: 0; border-radius: 16px 16px 0 0; padding: 16px 16px 8px; min-height: 96px; font-size: 17px; line-height: 1.5; outline: none; }
+.cbar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 8px 10px 10px 12px; position: relative; }
+.cgo { margin-left: auto; display: inline-flex; align-items: center; gap: 12px; }
+.composer textarea#question { resize: none; }
 .qcount { font: 13px var(--mono); color: var(--text-3); font-variant-numeric: tabular-nums; }
 .qcount.near { color: var(--warn); }
-textarea#question { font-size: 17px; line-height: 1.5; }
-.try { display: grid; gap: 6px; }
-.try-l { font-size: 13px; font-weight: 600; color: var(--text-3); }
-/* Free models as option cards, each with its maker's logo (the connector's Ask AI makers, as tiles). The choice is a
-   filled dot and a navy border, never colour alone. */
-fieldset.picker { border: 0; margin: 4px 0 0; padding: 0; min-width: 0; display: grid; gap: 8px; }
-fieldset.picker legend { font-size: 14px; font-weight: 600; color: var(--text-2); padding: 0; margin-bottom: 8px; }
-.mopts { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 8px; }
-.mopt { position: relative; display: grid; grid-template-columns: auto auto 1fr; align-items: center; gap: 10px; min-height: 56px; padding: 10px 12px;
-  background: var(--warm-white); border: 1px solid var(--border); border-radius: 12px; cursor: pointer; }
-.mopt input { position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer; }
+.cbar button.primary { min-height: 44px; padding: 0 18px; font-size: 15px; }
+/* The model in use, and the others a tap away. The choice is a filled dot and a navy border, never colour alone. */
+.mcur { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; font-size: 14px; color: var(--text-2); }
+.mcur b { font-weight: 600; color: var(--text); }
+.mlogo { width: 24px; height: 24px; flex: none; border-radius: 7px; background: var(--white); border: 1px solid var(--border-2); display: grid; place-items: center; overflow: hidden; font: 700 12px var(--body); color: var(--text-3); }
+.mlogo img { width: 16px; height: 16px; }
+.mmore { min-height: 44px; padding: 0 12px; background: transparent; border: 1px solid var(--border-2); border-radius: 999px; font: 600 13px var(--body); color: var(--text-2); cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
+.mmore::after { content: ""; width: 6px; height: 6px; border-right: 1.5px solid currentColor; border-bottom: 1.5px solid currentColor; transform: translateY(-2px) rotate(45deg); transition: transform 150ms var(--ease-out); }
+.mmore[aria-expanded="true"]::after { transform: translateY(1px) rotate(-135deg); }
+@media (hover: hover) { .mmore:hover { background: var(--paper); color: var(--text); } }
+.mlist { position: absolute; left: 8px; right: 8px; top: calc(100% + 6px); z-index: 20; max-width: 380px; background: var(--white); border: 1px solid var(--border); border-radius: 14px; box-shadow: 0 12px 32px rgba(14, 26, 56, .14); padding: 6px; display: grid; gap: 2px; }
+.mlist[hidden] { display: none; }
+.mlist .mhint { font-size: 13px; color: var(--text-3); margin: 6px 10px 8px; }
+.mopt { position: relative; display: grid; grid-template-columns: auto auto 1fr; align-items: center; gap: 10px; min-height: 48px; padding: 8px 10px; border: 1px solid transparent; border-radius: 10px; cursor: pointer; }
+.mopt input { position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer; width: 100%; }
 .mopt .mdot { width: 18px; height: 18px; border-radius: 50%; border: 2px solid var(--text-3); background: var(--white); display: grid; place-items: center; }
 .mopt input:checked ~ .mdot { border-color: var(--navy); }
 .mopt input:checked ~ .mdot::after { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--navy); }
-.mopt:has(input:checked) { border-color: var(--navy); box-shadow: inset 0 0 0 1px var(--navy); background: var(--white); }
-.mopt:has(input:focus-visible) { outline: 2px solid var(--navy); outline-offset: 2px; }
-.mopt .mlogo { width: 28px; height: 28px; border-radius: 8px; background: var(--white); border: 1px solid var(--border-2); display: grid; place-items: center; overflow: hidden; font: 700 13px var(--body); color: var(--text-3); }
-.mopt .mlogo img { width: 20px; height: 20px; }
+.mopt:has(input:checked) { border-color: var(--navy); background: var(--warm-white); }
+.mopt:has(input:focus-visible) { outline: 2px solid var(--navy); outline-offset: 1px; }
 .mopt .mtxt { display: grid; min-width: 0; }
-.mopt .mname { font-size: 15px; font-weight: 600; color: var(--text); overflow-wrap: anywhere; }
-.mopt .mby { font-size: 13px; color: var(--text-3); }
-@media (hover: hover) { .mopt:hover { border-color: var(--text-3); } }
-.go-row { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; margin-top: 4px; }
-.go-row .go-note { margin: 0; flex: 1 1 260px; }
+.mopt .mname { font-size: 14px; font-weight: 600; color: var(--text); overflow-wrap: anywhere; }
+.mopt .mby { font-size: 12.5px; color: var(--text-3); }
+@media (hover: hover) { .mopt:hover { background: var(--paper); } }
+.go-note { margin: 0; }
 .kbd { white-space: nowrap; font: 12px var(--mono); color: var(--text-2); }
-@media (hover: none) { .kbd { display: none; } }
+@media (hover: none) { .kbd-l { display: none; } }
+/* A phone: the model on its own line, Other models and the button under it; the count only near the limit. */
+@media (max-width: 520px) { .mcur { flex-basis: 100%; min-height: 32px; } .qcount:not(.near) { display: none; }
+  .try-tabs [role="tablist"] { flex: 1 1 100%; min-width: 0; flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; margin: 0 -4px; padding: 0 4px; } .try-tabs { flex-wrap: wrap; } .try-tabs button { flex: none; } }
+/* Example questions by topic: one row of topics, the open topic's questions under it. */
+.try { display: grid; grid-template-columns: minmax(0, 1fr); gap: 8px; min-width: 0; }
+.try-tabs { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.try-l { font-size: 13px; font-weight: 600; color: var(--text-3); margin-right: 4px; }
+.try-tabs button { min-height: 44px; padding: 0 12px; background: transparent; border: 1px solid transparent; border-radius: 999px; font: 600 13px var(--body); color: var(--text-2); cursor: pointer; }
+.try-tabs button[aria-selected="true"] { background: var(--navy); color: var(--warm-white); }
+@media (hover: hover) { .try-tabs button[aria-selected="false"]:hover { background: var(--paper); color: var(--text); } }
+.try .examples button { font-size: 14px; }
 select { appearance: none; min-height: 50px; padding-right: 40px; cursor: pointer; background-image: linear-gradient(45deg, transparent 50%, var(--text-2) 50%), linear-gradient(135deg, var(--text-2) 50%, transparent 50%); background-position: calc(100% - 20px) 50%, calc(100% - 15px) 50%; background-size: 5px 5px; background-repeat: no-repeat; }
 
 @media (max-width: 520px) { .row { grid-template-columns: 1fr; } }
@@ -334,23 +353,24 @@ button.primary[disabled] { opacity: .5; cursor: progress; }
     <p class="lede">Ask a question. Nuru plans which sources to read, buys each one per call through Sippar or reads free public data, and writes a short brief where every point opens to its quote and its payment.</p>
     <div class="ask-grid">
     <form id="f">
-      <div class="qhead"><label for="question">Your question</label><span class="qcount" id="qcount" aria-live="polite">0 / 400</span></div>
-      <textarea id="question" required maxlength="400" rows="3" placeholder="Ask a research question in your own words" aria-describedby="qkeys"></textarea>
-      <div class="try"><span class="try-l" id="try-l">Try</span>
-        <div class="examples" role="group" aria-labelledby="try-l">
-          <button type="button">What is the current evidence that GLP-1 drugs reduce the risk of Alzheimer's disease?</button>
-          <button type="button">How are publishers getting paid when AI agents read their articles?</button>
-          <button type="button">What changed in open-weight model inference costs this year?</button>
+      <label for="question">Your question</label>
+      <div class="composer">
+        <textarea id="question" required maxlength="400" rows="3" placeholder="Ask a research question in your own words" aria-describedby="qkeys"></textarea>
+        <div class="cbar">
+          <span class="mcur" id="mcur"><span class="mlogo" aria-hidden="true">N</span><span><b id="mcur-name">Nemotron 3 Ultra</b> · free</span></span>
+          <button type="button" class="mmore" id="mmore" aria-expanded="false" aria-controls="mlist">Other models</button>
+          <div class="mlist wfx" id="mlist" role="radiogroup" aria-label="Free model" hidden>
+            <p class="mhint" id="model-hint">The model you pick plans and writes the brief, free. If it does not answer, Nemotron takes over and the brief says so.</p>
+            <div id="model"><label class="mopt"><input type="radio" name="model" value="nvidia/nemotron-3-ultra-550b" checked><span class="mdot" aria-hidden="true"></span><span class="mlogo" aria-hidden="true">N</span><span class="mtxt"><span class="mname">Nemotron 3 Ultra</span><span class="mby">NVIDIA · Default</span></span></label></div>
+          </div>
+          <span class="cgo"><span class="qcount" id="qcount" aria-live="polite">0 / 400</span>
+          <button class="primary" id="go" type="submit">Research it</button></span>
         </div>
       </div>
-      <fieldset class="picker" aria-describedby="model-hint">
-        <legend>Free model</legend>
-        <div class="mopts wfx" id="model"><label class="mopt"><input type="radio" name="model" value="nvidia/nemotron-3-ultra-550b" checked><span class="mdot" aria-hidden="true"></span><span class="mtxt"><span class="mname">Nemotron 3 Ultra</span><span class="mby">NVIDIA · Default</span></span></label></div>
-        <p class="hint" id="model-hint">The model you pick plans and writes the brief, free. If it does not answer, Nemotron takes over and the brief says so.</p>
-      </fieldset>
-      <div class="go-row">
-        <button class="primary" id="go" type="submit">Research it</button>
-        <p class="hint go-note" id="qkeys">Two to four minutes, usually $0.15 to $0.40 from the agent's wallet. Up to 3 briefs a day. <span class="kbd">Ctrl or ⌘ + Enter</span> to send.</p>
+      <p class="hint go-note" id="qkeys">Two to four minutes, usually $0.15 to $0.40 from the agent's wallet. Up to 3 briefs a day.<span class="kbd-l"> <span class="kbd">Ctrl or ⌘ + Enter</span> to send.</span></p>
+      <div class="try">
+        <div class="try-tabs"><span class="try-l" id="try-l">Try a question</span><span role="tablist" aria-labelledby="try-l" class="try-tabs"><button type="button" role="tab" id="try-health" aria-controls="try-q-health" aria-selected="true" tabindex="0" data-try="health">Health</button><button type="button" role="tab" id="try-science" aria-controls="try-q-science" aria-selected="false" tabindex="-1" data-try="science">Science</button><button type="button" role="tab" id="try-economy" aria-controls="try-q-economy" aria-selected="false" tabindex="-1" data-try="economy">Economy</button><button type="button" role="tab" id="try-crypto" aria-controls="try-q-crypto" aria-selected="false" tabindex="-1" data-try="crypto">Crypto</button><button type="button" role="tab" id="try-tech" aria-controls="try-q-tech" aria-selected="false" tabindex="-1" data-try="tech">AI and tech</button></span></div>
+        <div class="examples" role="tabpanel" id="try-q-health" aria-labelledby="try-health"><button type="button">What is the current evidence that GLP-1 drugs reduce the risk of Alzheimer's disease?</button><button type="button">Which blood pressure medicines did the FDA recall this year, and why?</button></div><div class="examples" role="tabpanel" id="try-q-science" aria-labelledby="try-science" hidden><button type="button">What do recent studies say about microplastics in drinking water?</button><button type="button">Where were the strongest earthquakes in the past month?</button></div><div class="examples" role="tabpanel" id="try-q-economy" aria-labelledby="try-economy" hidden><button type="button">How has inflation in Argentina changed over the last ten years?</button><button type="button">How are publishers getting paid when AI agents read their articles?</button></div><div class="examples" role="tabpanel" id="try-q-crypto" aria-labelledby="try-crypto" hidden><button type="button">Which DeFi protocols grew their total value locked the most this year?</button><button type="button">How have the biggest stablecoins' market caps moved this year?</button></div><div class="examples" role="tabpanel" id="try-q-tech" aria-labelledby="try-tech" hidden><button type="button">What changed in open-weight model inference costs this year?</button><button type="button">Which JavaScript packages for building AI agents are growing fastest?</button></div>
       </div>
       <p class="err" id="err" role="alert" hidden></p>
     </form>
@@ -407,6 +427,10 @@ async function wallet() {
 wallet();
 
 document.querySelectorAll(".try .examples button").forEach((b) => b.addEventListener("click", () => { $("question").value = b.textContent.trim(); countQ(); $("question").focus(); }));
+// The example topics: one open at a time; arrow keys move between them.
+const tryTabs = [...document.querySelectorAll("[data-try]")];
+const openTry = (t, focus) => { for (const x of tryTabs) { const on = x === t; x.setAttribute("aria-selected", on); x.tabIndex = on ? 0 : -1; $("try-q-" + x.dataset.try).hidden = !on; } if (focus) t.focus(); };
+tryTabs.forEach((t, i) => { t.addEventListener("click", () => openTry(t)); t.addEventListener("keydown", (e) => { const j = { ArrowRight: i + 1, ArrowLeft: i - 1, Home: 0, End: tryTabs.length - 1 }[e.key]; if (j == null) return; e.preventDefault(); openTry(tryTabs[(j + tryTabs.length) % tryTabs.length], true); }); });
 const countQ = () => { const n = $("question").value.length; $("qcount").textContent = `${n} / 400`; $("qcount").classList.toggle("near", n > 360); };
 $("question").addEventListener("input", countQ);
 $("question").addEventListener("keydown", (e) => { if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) { e.preventDefault(); $("f").requestSubmit(); } });
@@ -592,14 +616,25 @@ $("f").addEventListener("submit", async (e) => {
 
 // The free models to pick from, read live by the server from BlockRun's catalog; the default stays selected.
 const pickedModel = () => document.querySelector('input[name="model"]:checked')?.value;
-const pickModel = (id) => { const r = [...document.querySelectorAll('input[name="model"]')].find((x) => x.value === id); if (r) r.checked = true; return !!r; };
+const pickModel = (id) => { const r = [...document.querySelectorAll('input[name="model"]')].find((x) => x.value === id); if (r) { r.checked = true; showModel(); } return !!r; };
+// The model in use shows in the question box; the others fold under Other models (Elad 2026-11-01).
+const showModel = () => { const o = document.querySelector('input[name="model"]:checked')?.closest(".mopt"); if (!o) return; $("mcur").querySelector(".mlogo").innerHTML = o.querySelector(".mlogo").innerHTML; $("mcur-name").textContent = o.querySelector(".mname").textContent; };
+const listOpen = (on, back) => { $("mlist").hidden = !on; $("mmore").setAttribute("aria-expanded", on); if (on) document.querySelector('input[name="model"]:checked')?.focus(); else if (back) $("mmore").focus(); };
+$("mmore").addEventListener("click", () => listOpen($("mlist").hidden));
+$("mlist").addEventListener("change", () => showModel());
+$("mlist").addEventListener("click", (e) => { if (e.target.matches('input[name="model"]') && e.detail) listOpen(false, true); });
+$("mlist").addEventListener("keydown", (e) => { if (e.key === "Escape" || e.key === "Enter") { e.preventDefault(); listOpen(false, true); } });
+document.addEventListener("click", (e) => { if (!$("mlist").hidden && !e.target.closest("#mlist, #mmore")) listOpen(false); });
 const modelsReady = fetch("/api/models").then((r) => r.json()).then(async ({ default: def, models }) => {
   const st = STAGES ?? await stagesReady;
-  $("model").innerHTML = models.map((m) => {
+  const ordered = [...models].sort((a, b) => Number(b.id === def) - Number(a.id === def));
+  $("model").innerHTML = ordered.map((m) => {
     const maker = st.makerOf(m.id), name = String(m.name).replace(/\s*\(Free\)\s*$/i, "").replace(/^(NVIDIA|Poolside)\s+/i, "");
     return `<label class="mopt"><input type="radio" name="model" value="${esc(m.id)}"${m.id === def ? " checked" : ""}><span class="mdot" aria-hidden="true"></span><span class="mlogo" aria-hidden="true">${st.makerLogo(maker)}</span><span class="mtxt"><span class="mname">${esc(name)}</span><span class="mby">${esc(maker.name)}${m.id === def ? " · Default" : ""}</span></span></label>`;
   }).join("");
   st.wireLogos($("model"));
+  showModel();
+  st.wireLogos($("mcur"));
   MODEL_NAMES = Object.fromEntries(models.map((m) => [m.id, String(m.name).replace(/\s*\(Free\)\s*$/i, "")]));
 }).catch(() => {});
 
