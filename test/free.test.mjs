@@ -160,3 +160,27 @@ test("a free-only plan runs through Nuru's step runner: nothing charged, empty s
     assert.match(run2.steps[0].skipped, /free calls for this page are used up/);
   } finally { globalThis.fetch = realFetch; }
 });
+
+test("what is read is what the plan's code kept: a filtered-out item's document is never read (#6408)", async () => {
+  const { runCatalogPlan } = await import("../lib/agent.mjs");
+  const rows = FREE_SOURCES.map(freeRow);
+  const catalog = { byId: Object.fromEntries(rows.map((r) => [r.id, r])) };
+  const realFetch = globalThis.fetch;
+  globalThis.fetch = async () => new Response(fx("wikipedia.json"), { status: 200 });
+  try {
+    const run = { steps: [] };
+    const plan = { steps: [
+      { id: "s1", product: "free-wikipedia-search", input: { query: "stablecoin" } },
+      { id: "s2", move: "filter", from: ["s1"], args: { field: "title", op: "==", value: "Stablecoin" } },
+    ] };
+    await runCatalogPlan({ run, plan, catalog, wallet: { address: "0x0" }, emit: () => {} });
+    const docs = run.steps[0].documents;
+    assert.ok(docs.length >= 2, "the search found several articles");
+    assert.equal(run.steps[1].items, 1);
+    assert.deepEqual(run.readDocIds, [docs.find((d) => d.title === "Stablecoin").id], "only the article the filter kept is read");
+    // A plan with no code move reads every document its steps returned, as before.
+    const run2 = { steps: [] };
+    await runCatalogPlan({ run: run2, plan: { steps: [plan.steps[0]] }, catalog, wallet: { address: "0x0" }, emit: () => {} });
+    assert.equal(run2.readDocIds.length, run2.steps[0].documents.length);
+  } finally { globalThis.fetch = realFetch; }
+});

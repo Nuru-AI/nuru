@@ -27,8 +27,20 @@ test("paper-search: a plan may now filter and rank its papers by their fields", 
   const plan = { steps: [
     { id: "s1", product: "paper-search", input: { query: "metformin longevity" } },
     { id: "s2", move: "filter", from: ["s1"], args: { field: "year", op: ">=", value: 2020 } },
-    { id: "s3", move: "rank", from: ["s2"], args: { by: "citedBy" } },
+    { id: "s3", move: "rank", from: ["s2"], args: { by: "year" } },
   ] };
   const c = checkPlan(plan, shelf, 0.2);
   assert.equal(c.ok, true, c.errors.join("; "));
+});
+
+test("paper-search: a paper without its abstract is read as its title only, and marked so (#6408)", () => {
+  const docs = docsFrom(product, itemsOf("paper-search", paper), paper, 3);
+  assert.ok(docs.every((d) => d.titleOnly === true), "no row in the recording carried an abstract");
+  const withAbstract = { results: [{ ...paper.results[0], abstract: "A long abstract that the paper's authors wrote." }] };
+  assert.equal(docsFrom(product, itemsOf("paper-search", withAbstract), withAbstract, 3)[0].titleOnly, undefined);
+});
+
+test("paper-search declares only the fields the recorded answer carries (#6408)", async () => {
+  const { RESULT_SHAPES } = await import("../lib/planner.mjs");
+  assert.deepEqual(Object.keys(RESULT_SHAPES["paper-search"].fields), ["title", "year", "doi", "pmid"]);
 });

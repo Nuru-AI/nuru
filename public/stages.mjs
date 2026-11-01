@@ -138,7 +138,9 @@ const stOfSteps = (xs, live) => !xs.length ? (live ? "planned" : "done")
 function stepRow(s, ui, liveN) {
   const id = productId(s), m = metaOf(id, s);
   const what = s.error ? s.error : s.skipped ? s.skipped : asked(s);
-  const n = s.documents?.length ? ` · ${s.documents.length} read` : typeof s.items === "number" ? ` · ${s.items} items` : "";
+  // Since #6408 a run keeps which documents were read (what the plan's code steps kept); an older run read them all.
+  const k = s.documents?.length && ui.readSet ? s.documents.filter((d) => ui.readSet.has(d.id)).length : s.documents?.length ?? 0;
+  const n = s.documents?.length ? (k === s.documents.length ? ` · ${k} read` : ` · ${s.documents.length} found, ${k} read`) : typeof s.items === "number" ? ` · ${s.items} items` : "";
   const inner = `${logoHtml(m)}<span class="pt-main"><span class="pt-name">${esc(m.label)}${s.tool?.startsWith("for each:") ? " (for each)" : ""}</span><span class="pt-src">${esc(m.source)}${esc(n)}</span><span class="pt-src wf-said">${esc(what)}</span></span>${chip(s, liveN === s.n)}`;
   if (!s.documents?.length) return `<li class="wf-row lg">${inner}</li>`;
   const open = ui.row === s.n;
@@ -153,6 +155,7 @@ function stepRow(s, ui, liveN) {
  */
 export function stages(run, ui = {}, who = (s) => s?.model ?? "") {
   const phase = ui.phase ?? "done";
+  ui = { ...ui, readSet: run.readDocIds ? new Set(run.readDocIds) : null };
   const at = ["plan", "buy", "read", "write", "done"].indexOf(phase);
   const st = (i, warn) => (at > i ? (warn ? "warn" : "done") : at === i ? "running" : "planned");
   const steps = run.steps ?? [];
