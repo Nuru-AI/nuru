@@ -84,6 +84,11 @@ textarea::placeholder { color: var(--text-3); }
 @media (hover: hover) { .mmore:hover { background: var(--paper); color: var(--text); } }
 .mlist { position: absolute; left: 8px; right: 8px; top: calc(100% + 6px); z-index: 20; max-width: 380px; background: var(--white); border: 1px solid var(--border); border-radius: 14px; box-shadow: 0 12px 32px rgba(14, 26, 56, .14); padding: 6px; display: grid; gap: 2px; }
 .mlist[hidden] { display: none; }
+/* ui-ux-pro-max pass: the list opens from its button (state-transition, 160ms ease-out), presses answer at once. */
+.mlist:not([hidden]) { animation: mlist-in 160ms var(--ease-out); transform-origin: top left; }
+@keyframes mlist-in { from { opacity: 0; transform: translateY(-4px) scale(.98); } }
+.mmore:active, .try-tabs button:active, .try .examples button:active { background: var(--paper); }
+@media (prefers-reduced-motion: reduce) { .mlist:not([hidden]) { animation: none; } }
 .mlist .mhint { font-size: 13px; color: var(--text-3); margin: 6px 10px 8px; }
 .mopt { position: relative; display: grid; grid-template-columns: auto auto 1fr; align-items: center; gap: 10px; min-height: 48px; padding: 8px 10px; border: 1px solid transparent; border-radius: 10px; cursor: pointer; }
 .mopt input { position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer; width: 100%; }
@@ -104,7 +109,7 @@ textarea::placeholder { color: var(--text-3); }
   .try-tabs [role="tablist"] { flex: 1 1 100%; min-width: 0; flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; margin: 0 -4px; padding: 0 4px; } .try-tabs { flex-wrap: wrap; } .try-tabs button { flex: none; } }
 /* Example questions by topic: one row of topics, the open topic's questions under it. */
 .try { display: grid; grid-template-columns: minmax(0, 1fr); gap: 8px; min-width: 0; }
-.try-tabs { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.try-tabs { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
 .try-l { font-size: 13px; font-weight: 600; color: var(--text-3); margin-right: 4px; }
 .try-tabs button { min-height: 44px; padding: 0 12px; background: transparent; border: 1px solid transparent; border-radius: 999px; font: 600 13px var(--body); color: var(--text-2); cursor: pointer; }
 .try-tabs button[aria-selected="true"] { background: var(--navy); color: var(--warm-white); }
@@ -625,6 +630,7 @@ $("mlist").addEventListener("change", () => showModel());
 $("mlist").addEventListener("click", (e) => { if (e.target.matches('input[name="model"]') && e.detail) listOpen(false, true); });
 $("mlist").addEventListener("keydown", (e) => { if (e.key === "Escape" || e.key === "Enter") { e.preventDefault(); listOpen(false, true); } });
 document.addEventListener("click", (e) => { if (!$("mlist").hidden && !e.target.closest("#mlist, #mmore")) listOpen(false); });
+$("mlist").addEventListener("focusout", (e) => { if (!$("mlist").hidden && !e.relatedTarget?.closest?.("#mlist, #mmore") && e.relatedTarget) listOpen(false); });
 const modelsReady = fetch("/api/models").then((r) => r.json()).then(async ({ default: def, models }) => {
   const st = STAGES ?? await stagesReady;
   const ordered = [...models].sort((a, b) => Number(b.id === def) - Number(a.id === def));
