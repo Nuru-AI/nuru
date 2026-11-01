@@ -124,6 +124,9 @@ button.primary[disabled] { opacity: .5; cursor: progress; }
 .sf-note { max-width: 62ch; font-size: 14px; line-height: 1.6; margin: 0; }
 .sf-bottom { margin-top: 28px; padding-top: 18px; border-top: 1px solid rgba(212,160,116,.15); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 6px 16px; font-family: var(--mono); font-size: 12px; color: #8592B5; }
 [hidden] { display: none !important; }
+.brief .notices { margin: 14px 0 0; font-size: 13px; line-height: 1.5; color: var(--text-3); max-width: 72ch; }
+.brief .notices p { margin: 4px 0; }
+.sf-note + .sf-note { margin-top: 10px; }
 </style>
 </head>
 <body>
@@ -190,6 +193,7 @@ button.primary[disabled] { opacity: .5; cursor: progress; }
         <p class="sf-tag">Every service, by the sip.</p>
       </div>
       <p class="sf-note">Nuru runs on free models, with NVIDIA Nemotron as the default: free through BlockRun, and on Nebius Token Factory where no free route serves it. Every source, web search included, is bought per call through Sippar in USDC on Base, and named on each response. Dataconomy articles are read with the publisher's agreement, and the publisher is paid per read.</p>
+      <p class="sf-note">Nuru reads public sources live and writes a short brief from what they returned. Briefs show what the sources said at the time of the search. They can be incomplete or out of date, and they are not medical, legal or financial advice. Check anything important at the source linked in the brief.</p>
     </div>
     <div class="sf-bottom"><span>© 2026 Sippar</span><a href="https://github.com/Nuru-AI/nuru">Nuru on GitHub</a></div>
   </div>
@@ -253,6 +257,19 @@ function byline(run) {
   return `<p class="byline">${[part("Planned", by.planner), part("Written", by.writer)].filter(Boolean).join(" ")}</p>`;
 }
 
+// The notices under every brief (Sippar draft docs/research/2026-11-01_NURU_DISCLAIMER_AND_WORDING_DRAFT.md):
+// when it was read, and a health or market line only when the run read that kind of source.
+const HEALTH_SOURCES = ["healthparse", "openfda"];
+const MARKET_SOURCES = ["token-intel", "nansen-crypto-screener", "quicknode-blockchain-data", "coingecko", "defillama", "sec-edgar"];
+function notices(run) {
+  const used = (ids) => run.steps.some((s) => ids.some((id) => String(s.tool || "").includes(id)));
+  const when = run.finishedAt ? new Date(run.finishedAt).toISOString().slice(0, 16).replace("T", " ") + " UTC" : "";
+  const lines = [`Read live${when ? ` on ${when}` : ""} from the sources cited above. A source can miss records, so a topic the brief does not mention may still exist.`];
+  if (used(HEALTH_SOURCES)) lines.push("Health records and reports are not verified and do not prove a product caused an event. Talk to a doctor or pharmacist before acting on anything here.");
+  if (used(MARKET_SOURCES)) lines.push("Prices and figures are from the moment they were read and can change quickly. This is not investment advice.");
+  return `<div class="notices">${lines.map((l) => `<p>${esc(l)}</p>`).join("")}</div>`;
+}
+
 function render(run) {
   $("steps").innerHTML = run.steps.map((s) => stepRow(s)).join("");
   const claims = Object.fromEntries(run.claims.map((c) => [c.id, c]));
@@ -260,7 +277,8 @@ function render(run) {
   const b = run.brief;
   $("brief").innerHTML = `<h2>${esc(b.title)}</h2><p class="summary">${esc(b.summary)}</p>${byline(run)}
     <ul class="points">${b.points.map((p, i) => `<li>${esc(p.text)} ${p.evidence.map((e) => `<button class="cite" aria-expanded="false" data-c="${esc(e)}" data-p="${i}">${esc(e)}</button>`).join("")}<div class="ev" id="ev${i}"></div></li>`).join("")}</ul>
-    ${b.gaps?.length ? `<div class="gaps"><h3>What the sources did not cover</h3><ul>${b.gaps.map((g) => `<li>${esc(g)}</li>`).join("")}</ul></div>` : ""}`;
+    ${b.gaps?.length ? `<div class="gaps"><h3>What the sources did not cover</h3><ul>${b.gaps.map((g) => `<li>${esc(g)}</li>`).join("")}</ul></div>` : ""}
+    ${notices(run)}`;
   $("brief").querySelectorAll(".cite").forEach((btn) => btn.addEventListener("click", () => {
     const c = claims[btn.dataset.c]; const box = $("ev" + btn.dataset.p);
     const open = btn.getAttribute("aria-expanded") === "true";
