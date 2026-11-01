@@ -78,6 +78,20 @@ export const META = {
   papers: { label: "Papers", source: "Scholarly papers (open metadata)" },
 };
 
+/** The makers of the free chat models a visitor may pick, by the first part of the model id. A maker with no entry
+ *  shows its name and first letter, never a guessed logo. */
+export const MAKERS = {
+  nvidia: { name: "NVIDIA", site: "nvidia.com" }, poolside: { name: "Poolside", site: "poolside.ai" },
+  meta: { name: "Meta", site: "meta.ai" }, "meta-llama": { name: "Meta", site: "meta.ai" }, qwen: { name: "Qwen", site: "qwen.ai" },
+  deepseek: { name: "DeepSeek", site: "deepseek.com" }, mistralai: { name: "Mistral", site: "mistral.ai" }, google: { name: "Google", site: "gemini.google.com" },
+  openai: { name: "OpenAI", site: "openai.com" }, "z-ai": { name: "Z.ai", site: "z.ai" }, moonshotai: { name: "Moonshot", site: "moonshot.ai" },
+};
+export function makerOf(id) {
+  const k = String(id || "").split("/")[0].toLowerCase();
+  return MAKERS[k] ?? { name: k ? k[0].toUpperCase() + k.slice(1) : "Model" };
+}
+export const makerLogo = (maker) => logoHtml({ label: maker.name, source: maker.name, site: maker.site });
+
 /** A product's label, source and site: the step's own words from the catalog when the run kept them, else the table,
  *  else the seller's name. */
 export function metaOf(id, step = {}) {
@@ -186,7 +200,7 @@ export function stages(run, ui = {}, who = (s) => s?.model ?? "") {
     : plan ? `Nuru's own planner${writtenBy}` : "Nuru's fixed list of sources";
   const planFailed = planBuy && planBuy.error;
   const s1 = { n: 1, title: "Write the plan", who: planWho, st: st(0, !plan || !!planFailed),
-    out: plan ? `${plural(plan.steps.length, "step")}, ${usd(plan.check?.costUSD)} at live prices${planFailed ? ". Sippar's plan could not be used, so Nuru's own planner wrote this one" : ""}` : phase === "plan" ? "Writing" : "No plan; Nuru read its fixed list",
+    out: plan ? `${plural(plan.steps.length, "step")}${planFailed ? `. Sippar's plan cost ${usd(planBuy.payment?.priceUsd)} and could not be used, so Nuru's own planner wrote this one` : planBuy?.payment?.priceUsd ? `; the plan cost ${usd(planBuy.payment.priceUsd)}` : ", planned free"}` : phase === "plan" ? "Writing" : "No plan; Nuru read its fixed list",
     body: () => [
       planBuy ? `<ul class="wf-rows">${stepRow({ ...planBuy, input: {}, error: planFailed ? `${planBuy.error}. Nuru's own planner wrote the plan instead.` : "" , documents: [] }, ui, ui.live)}</ul>` : "",
       sipparPlanned && by.skills?.length ? `<p class="hint">Guided by the skill${by.skills.length > 1 ? "s" : ""} ${by.skills.map((k) => esc(k.name || k.id)).join(" and ")}.</p>` : "",
@@ -240,16 +254,33 @@ export function openStage(list, ui) {
 }
 
 /** The whole list, in the card's frame. */
+/** A finished brief's whole making in one line: who planned it, what was bought, what it cost and how many quotes
+ *  were found word for word. The same numbers the stages and "Who was paid" show. */
+export function summaryLine(run) {
+  const steps = run.steps ?? [];
+  const bought = steps.filter((s) => !isPlanStep(s) && !isMove(s));
+  const paidN = bought.filter((s) => s.payment?.tx).length, freeN = bought.filter((s) => !s.payment?.tx && (s.rail === "free" || s.payment?.note)).length;
+  const total = steps.reduce((a, s) => a + (s.payment?.tx ? s.payment.priceUsd || 0 : 0), 0);
+  const by = run.servedBy?.planner;
+  // Short on purpose (Elad 2026-11-01: "clean the page so there won't be so much text"); the steps hold the detail.
+  const planned = by?.provider === "sippar" ? "Sippar's planner" : run.plan ? "Nuru's planner" : "Fixed list";
+  const sources = [paidN ? `${paidN} bought` : "", freeN ? `${freeN} free` : ""].filter(Boolean).join(", ") || "no source read";
+  const verified = (run.claims ?? []).filter((c) => c.verified).length;
+  return [planned, sources, usd(total), `${plural(verified, "quote")} checked`].join(" · ");
+}
+
 export function stagesHtml(run, ui = {}, who) {
+  // A finished brief shows its making as one line that opens to the steps; a live one shows the steps as they run.
+  if (ui.collapsed) return `<button type="button" class="wf-sumline" data-wfall aria-expanded="false" aria-controls="wf-flow"><span>${esc(summaryLine(run))}</span><span class="wf-more-l">Show the steps</span></button>`;
   const list = stages(run, ui, who);
   const open = openStage(list, ui);
-  return `<ol class="wf-flow" aria-label="How this brief was made">${list.map((x) => stageHtml(x, x.n === open)).join("")}</ol>`;
+  return `${ui.phase === "done" ? `<button type="button" class="wf-sumline open" data-wfall aria-expanded="true" aria-controls="wf-flow"><span>${esc(summaryLine(run))}</span><span class="wf-more-l">Hide the steps</span></button>` : ""}<ol class="wf-flow" id="wf-flow" aria-label="How this brief was made">${list.map((x) => stageHtml(x, x.n === open)).join("")}</ol>`;
 }
 
 /** A logo that does not come back, or comes back as the icon service's tiny placeholder, shows its letter (results.ts). */
 export function wireLogos(scope) {
   scope.querySelectorAll("img[data-fallback]").forEach((img) => {
-    const box = () => img.closest(".ico");
+    const box = () => img.closest(".ico, .cite-ico");
     const fail = () => box()?.classList.add("failed");
     const loaded = () => { if (img.naturalWidth > 0 && img.naturalWidth < 12) fail(); box()?.classList.add("loaded"); };
     if (img.complete) { if (img.naturalWidth === 0) fail(); else loaded(); return; }

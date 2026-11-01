@@ -2,7 +2,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "fs";
-import { stages, stagesHtml, metaOf, moveWords } from "../public/stages.mjs";
+import { stages, stagesHtml, metaOf, moveWords, summaryLine } from "../public/stages.mjs";
 
 const run = (id) => JSON.parse(readFileSync(new URL(`./fixtures/saved-briefs/${id}.json`, import.meta.url), "utf8"));
 // Sippar planned it; a free FDA source and a paid paper search were read (2026-11-01, free sources' first live brief).
@@ -21,7 +21,7 @@ test("a plan Sippar wrote names Sippar's workflow planner; one Nuru wrote after 
   assert.equal(a.st, "done");
   assert.match(b.who, /^Nuru's own planner, written by /);
   assert.equal(b.st, "warn");
-  assert.match(b.out, /Sippar's plan could not be used, so Nuru's own planner wrote this one/);
+  assert.match(b.out, /Sippar's plan cost \$0\.10 and could not be used, so Nuru's own planner wrote this one/);
 });
 
 test("the data stage counts what came back and what was paid, from the run's own steps", () => {
@@ -61,7 +61,7 @@ test("a live run: the stage at work is running, later ones wait, nothing claims 
   assert.equal(buying[3].out, "Waiting");
   const writing = stages({ ...pubmed, brief: undefined, claims: [] }, { phase: "write" }, who);
   assert.equal(writing[3].out, "Read; the quotes show with the brief", "a live run never shows 0 of 0 quotes as done");
-  assert.match(stages({ ...pubmed, plan: { ...pubmed.plan, steps: pubmed.plan.steps.slice(0, 1) } }, {}, who)[0].out, /^1 step, /, "one step, not one steps");
+  assert.match(stages({ ...pubmed, plan: { ...pubmed.plan, steps: pubmed.plan.steps.slice(0, 1) } }, {}, who)[0].out, /^1 step[;.]/, "one step, not one steps");
 });
 
 test("one stage opens at a time: the visitor's choice, else the data", () => {
@@ -97,4 +97,21 @@ test("a source's row says how many of its documents were read when the plan's co
   const html = stagesHtml({ ...pubmed, readDocIds: ids }, {}, who);
   assert.match(html, /20 found, 10 read/);
   assert.match(stagesHtml(pubmed, {}, who), /· 20 read/, "an older run, from before the read list, read them all");
+});
+
+
+test("the plan stage shows what the plan cost, the number the ledger shows", () => {
+  assert.match(stages(fda, {}, who)[0].out, /; the plan cost \$0\.10$/);
+});
+
+test("a finished brief's making is one line that opens to the steps, with the ledger's own total", () => {
+  assert.equal(summaryLine(fda), "Sippar's planner · 1 bought, 1 free · $0.18 · 11 quotes checked");
+  assert.equal(summaryLine(pubmed), "Nuru's planner · 1 bought · $0.18 · 3 quotes checked");
+  const closed = stagesHtml(fda, { phase: "done", collapsed: true }, who);
+  assert.match(closed, /data-wfall aria-expanded="false"/);
+  assert.doesNotMatch(closed, /wf-stage/, "collapsed: no stages drawn");
+  const open = stagesHtml(fda, { phase: "done" }, who);
+  assert.match(open, /data-wfall aria-expanded="true"/);
+  assert.match(open, /class="wf-stage/);
+  assert.doesNotMatch(stagesHtml(fda, { phase: "buy" }, who), /data-wfall/, "a live run shows its steps, no summary");
 });

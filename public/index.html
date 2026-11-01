@@ -13,6 +13,7 @@
 /* The bright style of sippar.network's connector, SeedStore and Unlock pages (Elad, 2026-10-30): warm white, navy ink,
    copper on navy for actions, Orbitron for the title and product name, Inter for the rest. Fonts are local. */
 @font-face { font-family: "Inter"; src: url("brand/inter-v20-latin.woff2?v=2") format("woff2"); font-weight: 100 900; font-display: swap; }
+@font-face { font-family: "JetBrains Mono"; src: url("brand/jetbrains-mono-v24-latin.woff2") format("woff2"); font-weight: 100 800; font-display: swap; }
 @font-face { font-family: "Orbitron"; src: url("brand/orbitron-v35-latin-700.woff2") format("woff2"); font-weight: 700; font-display: swap; }
 :root {
   --navy: #0E1A38; --navy-deep: #08102B; --copper: #D4A074; --copper-600: #906035;
@@ -22,7 +23,7 @@
   --ok: #2E6B45; --warn: #8A4B0F;
   --display: Orbitron, "Eurostile", system-ui, sans-serif;
   --body: Inter, system-ui, -apple-system, "Segoe UI", sans-serif;
-  --mono: ui-monospace, Menlo, "SF Mono", monospace;
+  --mono: "JetBrains Mono", ui-monospace, Menlo, "SF Mono", monospace;
   --gutter: clamp(16px, 4vw, 40px); --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
   --r: 10px;
 }
@@ -45,7 +46,7 @@ header.top .wrap { display: flex; align-items: center; justify-content: space-be
 .ptitle { font-family: var(--display); font-weight: 700; font-size: 13px; letter-spacing: .14em; text-transform: uppercase; color: var(--text-3); white-space: nowrap; }
 .walletchip { font: 500 13px/1 var(--mono); color: var(--text-2); background: var(--white); border: 1px solid var(--border); border-radius: 999px; padding: 9px 12px; white-space: nowrap; }
 .walletchip b { color: var(--text); font-weight: 600; }
-@media (max-width: 560px) { .ptitle { font-size: 10px; letter-spacing: .08em; } .brand { gap: 10px; } }
+@media (max-width: 560px) { .ptitle { font-size: 12px; letter-spacing: .08em; } .brand { gap: 10px; } }
 @media (max-width: 374px) { .ptitle, .pdiv { display: none; } }
 
 /* The question */
@@ -54,12 +55,71 @@ header.top .wrap { display: flex; align-items: center; justify-content: space-be
 .play::before { content: ""; width: 7px; height: 7px; transform: rotate(45deg); background: currentColor; }
 h1 { font-family: var(--display); font-weight: 700; font-size: clamp(28px, 4.2vw, 44px); line-height: 1.08; letter-spacing: -.01em; margin: 0 0 14px; max-width: 22ch; text-wrap: balance; }
 .lede { color: var(--text-2); font-size: clamp(15.5px, 1.6vw, 18px); max-width: 62ch; margin: 0 0 28px; }
-form { display: grid; gap: 12px; max-width: 760px; background: var(--white); border: 1px solid var(--border); border-radius: 20px; padding: clamp(18px, 3vw, 26px); }
+form { display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; max-width: 760px; background: var(--white); border: 1px solid var(--border); border-radius: 20px; padding: clamp(18px, 3vw, 26px); }
 label { font-size: 14px; font-weight: 600; color: var(--text-2); }
 textarea, input, select { width: 100%; background: var(--warm-white); color: var(--text); border: 1px solid var(--border); border-radius: var(--r); padding: 14px 16px; font: inherit; }
-textarea { min-height: 84px; resize: vertical; }
+textarea { min-height: 104px; resize: vertical; }
 textarea::placeholder { color: var(--text-3); }
 .row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 12px; align-items: end; }
+/* The question box (Elad 2026-11-01: "improve the 'your question' box"; then "fold the free models so it will only show
+   one default option and have an other models button... inline the input box"). One composer: the question, and under
+   it in the same box the model in use, Other models, the count and the button. */
+.composer { background: var(--warm-white); border: 1px solid var(--border); border-radius: 16px; transition: border-color 150ms var(--ease-out); }
+.composer:focus-within { border-color: var(--navy); box-shadow: 0 0 0 1px var(--navy); }
+.composer textarea#question { display: block; background: transparent; border: 0; border-radius: 16px 16px 0 0; padding: 16px 16px 8px; min-height: 96px; font-size: 17px; line-height: 1.5; outline: none; }
+.cbar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 8px 10px 10px 12px; position: relative; }
+.cgo { margin-left: auto; display: inline-flex; align-items: center; gap: 12px; }
+.composer textarea#question { resize: none; }
+.qcount { font: 13px var(--mono); color: var(--text-3); font-variant-numeric: tabular-nums; }
+.qcount.near { color: var(--warn); }
+.cbar button.primary { min-height: 44px; padding: 0 18px; font-size: 15px; }
+/* The model in use, and the others a tap away. The choice is a filled dot and a navy border, never colour alone. */
+.mcur { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; font-size: 14px; color: var(--text-2); }
+.mcur b { font-weight: 600; color: var(--text); }
+.mlogo { width: 24px; height: 24px; flex: none; border-radius: 7px; background: var(--white); border: 1px solid var(--border-2); display: grid; place-items: center; overflow: hidden; font: 700 12px var(--body); color: var(--text-3); }
+.mlogo img { width: 16px; height: 16px; }
+.mmore { min-height: 44px; padding: 0 12px; background: transparent; border: 1px solid var(--border-2); border-radius: 999px; font: 600 13px var(--body); color: var(--text-2); cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
+.mmore::after { content: ""; width: 6px; height: 6px; border-right: 1.5px solid currentColor; border-bottom: 1.5px solid currentColor; transform: translateY(-2px) rotate(45deg); transition: transform 150ms var(--ease-out); }
+.mmore[aria-expanded="true"]::after { transform: translateY(1px) rotate(-135deg); }
+@media (hover: hover) { .mmore:hover { background: var(--paper); color: var(--text); } }
+.mlist { position: absolute; left: 8px; right: 8px; top: calc(100% + 6px); z-index: 20; max-width: 380px; background: var(--white); border: 1px solid var(--border); border-radius: 14px; box-shadow: 0 12px 32px rgba(14, 26, 56, .14); padding: 6px; display: grid; gap: 2px; }
+.mlist[hidden] { display: none; }
+/* ui-ux-pro-max pass: the list opens from its button (state-transition, 160ms ease-out), presses answer at once. */
+.mlist:not([hidden]) { animation: mlist-in 160ms var(--ease-out); transform-origin: top left; }
+@keyframes mlist-in { from { opacity: 0; transform: translateY(-4px) scale(.98); } }
+.mmore:active { background: var(--paper); }
+@media (prefers-reduced-motion: reduce) { .mlist:not([hidden]) { animation: none; } }
+.mlist .mhint { font-size: 13px; color: var(--text-3); margin: 6px 10px 8px; }
+.mopt { position: relative; display: grid; grid-template-columns: auto auto 1fr; align-items: center; gap: 10px; min-height: 48px; padding: 8px 10px; border: 1px solid transparent; border-radius: 10px; cursor: pointer; }
+.mopt input { position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer; width: 100%; }
+.mopt .mdot { width: 18px; height: 18px; border-radius: 50%; border: 2px solid var(--text-3); background: var(--white); display: grid; place-items: center; }
+.mopt input:checked ~ .mdot { border-color: var(--navy); }
+.mopt input:checked ~ .mdot::after { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--navy); }
+.mopt:has(input:checked) { border-color: var(--navy); background: var(--warm-white); }
+.mopt:has(input:focus-visible) { outline: 2px solid var(--navy); outline-offset: 1px; }
+.mopt .mtxt { display: grid; min-width: 0; }
+.mopt .mname { font-size: 14px; font-weight: 600; color: var(--text); overflow-wrap: anywhere; }
+.mopt .mby { font-size: 12.5px; color: var(--text-3); }
+@media (hover: hover) { .mopt:hover { background: var(--paper); } }
+.go-note { margin: 0; }
+.kbd { white-space: nowrap; font: 12px var(--mono); color: var(--text-2); }
+@media (hover: none) { .kbd-l { display: none; } }
+/* A phone: the model on its own line, Other models and the button under it; the count only near the limit. */
+@media (max-width: 520px) { .mcur { flex-basis: 100%; min-height: 32px; } .qcount:not(.near) { display: none; } }
+/* One example question at a time; the wand shows another (Elad 2026-11-01). Ten questions across health, science,
+   economy, crypto and AI, each answerable from sources Nuru reads. */
+.try { display: grid; grid-template-columns: minmax(0, 1fr); gap: 8px; min-width: 0; }
+.try-l { font-size: 13px; font-weight: 600; color: var(--text-3); }
+.try-row { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.try-q { flex: 1 1 auto; min-width: 0; min-height: 44px; text-align: left; background: var(--warm-white); color: var(--text-2); border: 1px solid var(--border-2); border-radius: 14px; padding: 10px 14px; font: 14px/1.4 var(--body); cursor: pointer; }
+.try-q.swap { animation: try-swap 200ms var(--ease-out); }
+@keyframes try-swap { from { opacity: 0; transform: translateY(3px); } }
+.try-next { flex: none; width: 44px; height: 44px; display: grid; place-items: center; background: transparent; color: var(--text-2); border: 1px solid var(--border-2); border-radius: 50%; cursor: pointer; }
+.try-next svg { transition: transform 200ms var(--ease-out); }
+.try-next:active svg { transform: rotate(-20deg); }
+@media (hover: hover) { .try-q:hover, .try-next:hover { background: var(--paper); color: var(--text); } }
+.try-q:active, .try-next:active { background: var(--paper); }
+@media (prefers-reduced-motion: reduce) { .try-q.swap { animation: none; } .try-next svg { transition: none; } }
 select { appearance: none; min-height: 50px; padding-right: 40px; cursor: pointer; background-image: linear-gradient(45deg, transparent 50%, var(--text-2) 50%), linear-gradient(135deg, var(--text-2) 50%, transparent 50%); background-position: calc(100% - 20px) 50%, calc(100% - 15px) 50%; background-size: 5px 5px; background-repeat: no-repeat; }
 
 @media (max-width: 520px) { .row { grid-template-columns: 1fr; } }
@@ -70,7 +130,7 @@ button.primary[disabled] { opacity: .5; cursor: progress; }
 .hint { font-size: 14px; color: var(--text-3); margin: 0; }
 .hint.lead-hint { color: var(--text-2); }
 .examples { display: flex; flex-wrap: wrap; gap: 8px; }
-.examples button { background: var(--warm-white); color: var(--text-2); border: 1px solid var(--border-2); border-radius: 999px; padding: 8px 14px; min-height: 40px; font: 14px var(--body); cursor: pointer; text-align: left; }
+.examples button { background: var(--warm-white); color: var(--text-2); border: 1px solid var(--border-2); border-radius: 999px; padding: 8px 14px; min-height: 44px; font: 14px var(--body); cursor: pointer; text-align: left; }
 @media (hover: hover) { .examples button:hover { background: var(--paper); color: var(--text); } }
 .err { color: var(--warn); }
 @media (prefers-reduced-motion: reduce) { button.primary:active { transform: none; } }
@@ -86,11 +146,13 @@ button.primary[disabled] { opacity: .5; cursor: progress; }
 @media (max-width: 1099px) { .ask-grid { grid-template-columns: minmax(0, 760px); } }
 .menu-box .menu-count { font-size: 14px; color: var(--text-2); margin: 0 0 12px; }
 .menu-box .menu-chips { margin-bottom: 10px; }
-.menu-box .menu-chips button { min-height: 36px; padding: 6px 12px; font-size: 13.5px; }
+.menu-box .menu-tabs { display: contents; }
+.menu-box .more-topics { background: transparent; border-style: dashed; color: var(--navy); font-weight: 600; }
+.menu-box .menu-chips button { min-height: 44px; padding: 6px 12px; font-size: 13.5px; }
 .menu-box .menu-chips button[aria-selected="true"] { background: var(--navy); color: var(--white); border-color: var(--navy); }
 .menu-box .menu-chips .n { font-variant-numeric: tabular-nums; opacity: .7; margin-left: 2px; }
 .menu-box .menu-rows { display: grid; gap: 4px; list-style: none; margin: 0; padding: 0; }
-.menu-box .menu-rows .wf-row { background: var(--white); border-radius: 10px; min-height: 52px; }
+.menu-box .menu-rows li.wf-row { background: var(--white); border-radius: 10px; min-height: 52px; padding: 10px 12px; }
 .brief { background: var(--white); border: 1px solid var(--border); border-radius: 20px; padding: clamp(20px, 3vw, 32px); }
 .brief h2 { font-size: clamp(22px, 2.6vw, 28px); line-height: 1.2; letter-spacing: -.02em; margin: 0 0 12px; font-weight: 800; text-wrap: balance; }
 .brief .summary { color: var(--text); font-size: 18px; max-width: 68ch; }
@@ -98,11 +160,25 @@ button.primary[disabled] { opacity: .5; cursor: progress; }
 .points { list-style: none; padding: 0; margin: 24px 0; display: grid; gap: 14px; max-width: 72ch; }
 .points li { padding-left: 16px; border-left: 2px solid var(--copper); }
 .cite { display: inline-flex; align-items: center; margin-left: 4px; padding: 1px 8px; border-radius: 6px; border: 1px solid var(--copper-600); background: var(--white); color: var(--copper-600); font: 600 13px/1.6 var(--mono); cursor: pointer; vertical-align: baseline; }
-.cite[aria-expanded="true"] { background: var(--navy); border-color: var(--navy); color: var(--copper); }
+.cite { position: relative; }
+.cite::after { content: ""; position: absolute; inset: -10px -3px; }
+.brief .cite { height: 24px; gap: 5px; padding: 0 9px 0 3px; margin-left: 4px; border-radius: 999px; border: 1px solid #CFC6B6; background: var(--paper);
+  color: var(--text); font: 600 12.5px/1 var(--body); font-variant-numeric: tabular-nums; vertical-align: 1px; transition: border-color .15s ease-out, background-color .15s ease-out; }
+@media (hover: hover) { .brief .cite:hover { border-color: var(--text-3); background: var(--white); } }
+.brief .cite:focus-visible { outline: 2px solid var(--navy); outline-offset: 2px; }
+.brief .cite .cite-ico { position: relative; width: 18px; height: 18px; border-radius: 50%; background: #fff; box-shadow: inset 0 0 0 1px #CFC6B6; display: grid; place-items: center; overflow: hidden; flex: none; }
+.brief .cite .cite-ico img { width: 12px; height: 12px; border-radius: 2px; opacity: 0; }
+.brief .cite .cite-ico.loaded:not(.failed) img { opacity: 1; }
+.brief .cite .cite-ico .ico-l { position: absolute; inset: 0; display: grid; place-items: center; font-size: 9.5px; font-weight: 700; color: #445; }
+.brief .cite .cite-ico.loaded:not(.failed) .ico-l { display: none; }
+.brief .cite .cite-ico.failed img { display: none; }
+@media (prefers-reduced-motion: reduce) { .brief .cite { transition: none; } }
+.brief .cite[aria-expanded="true"] { background: var(--navy); border-color: var(--navy); color: var(--copper); }
 .evidence { margin: 10px 0 2px; padding: 12px 14px; background: var(--paper); border-radius: var(--r); font-size: 15px; }
 .evidence q { display: block; color: var(--text); margin-bottom: 6px; }
 .evidence .meta { color: var(--text-2); font-size: 14px; }
-.gaps h3, .side h3 { font-size: 15px; font-weight: 700; margin: 24px 0 8px; color: var(--text); }
+.gaps h3, .side h3, .side h2 { font-size: 15px; font-weight: 700; margin: 24px 0 8px; color: var(--text); }
+.side > h2:first-child { margin-top: 0; }
 .side > h3:first-child { margin-top: 0; }
 .gaps ul { color: var(--text-2); margin: 0; padding-left: 20px; max-width: 70ch; }
 .side { background: var(--paper); border-radius: 20px; padding: clamp(18px, 3vw, 24px); }
@@ -137,11 +213,17 @@ button.primary[disabled] { opacity: .5; cursor: progress; }
 /* How the brief was made, in the card's own frame: Sippar's MCP card styles for a planned workflow
    (Nuru-AI/sippar src/mcp-apps/payment-card/payment-card.html, card build 80b0da688a8d), scoped to .wfx,
    with the card's own default tokens. */
-.wfx { --bg: #ffffff; --bg-2: #f5f4ed; --bg-3: #faf9f5; --fg: #141413; --fg-2: #3d3d3a; --fg-3: #73726c;
-  --line: rgb(31 30 29 / 0.15); --line-2: rgb(31 30 29 / 0.3); --ok: #265b19; --ok-bg: #e9f1dc; --warn: #5a4815; --warn-bg: #f6eedf;
-  --bad: #7f2c28; --bad-bg: #f7ecec; --info: #3266ad; --ring: rgb(50 102 173 / 0.5); --r-sm: 6px; --r-md: 8px; --r-lg: 10px; --bw: 0.5px;
+.wfx { --bg: var(--white); --bg-2: var(--paper); --bg-3: var(--warm-white); --fg: var(--text); --fg-2: var(--text-2); --fg-3: var(--text-3);
+  --line: var(--border); --line-2: #CFC6B6; --ok: var(--navy); --ok-bg: var(--paper); --warn: var(--warn); --warn-bg: #F6EEDF;
+  --bad: #7f2c28; --bad-bg: #f7ecec; --info: var(--copper-600); --ring: rgb(14 26 56 / 0.45); --r-sm: 6px; --r-md: 8px; --r-lg: 10px; --bw: 1px;
   --t-xs: 12px; --t-sm: 14px; color: var(--fg); }
 .wfx .wf-sbody { font-size: var(--t-sm); color: var(--fg-2); }
+/* A finished brief's making in one line that opens to the steps (critique P1: the panel buried the brief). */
+.wfx .wf-sumline { all: unset; box-sizing: border-box; display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 6px 16px; width: 100%;
+  min-height: 44px; padding: 10px 14px; border: 1px solid var(--border); border-radius: 12px; background: var(--white); cursor: pointer; font-size: 14.5px; line-height: 1.5; color: var(--text-2); }
+.wfx .wf-sumline .wf-more-l { font-weight: 600; color: var(--navy); white-space: nowrap; text-decoration: underline; text-underline-offset: 3px; }
+.wfx .wf-sumline:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
+.wfx .wf-sumline.open { margin-bottom: 12px; }
 .wfx .wf-sbody p { margin: 6px 0; }
 .wfx .wf-h { font-size: var(--t-sm); margin: 12px 0 6px; color: var(--fg); }
 .wfx q { color: var(--fg); }
@@ -277,48 +359,54 @@ button.primary[disabled] { opacity: .5; cursor: progress; }
 <main id="main">
   <section class="ask wrap">
     <span class="play">Agent: Nuru</span>
-    <h1>The agent that pays per sip and unlocks the web</h1>
-    <p class="lede">With a pay-per-call budget, the digital world is flat. Ask a question: a free model plans the job, Nuru's wallet pays each source per call, and every point in the answer opens to its quote, its source and its payment on Base.</p>
+    <h1>Nuru research agent</h1>
+    <p class="lede">Ask a question. Nuru reads paid and free sources and writes a short brief; every point opens to its quote.</p>
     <div class="ask-grid">
     <form id="f">
       <label for="question">Your question</label>
-      <textarea id="question" required maxlength="400" placeholder="What is the current evidence that GLP-1 drugs reduce the risk of Alzheimer's disease?"></textarea>
-      <div class="row">
-        <div>
-          <label for="model">Free model</label>
-          <select id="model" aria-describedby="model-hint"><option value="nvidia/nemotron-3-ultra-550b">NVIDIA Nemotron 3 Ultra</option></select>
+      <div class="composer">
+        <textarea id="question" required maxlength="400" rows="3" placeholder="Ask a research question in your own words" aria-describedby="qkeys"></textarea>
+        <div class="cbar">
+          <span class="mcur" id="mcur"><span class="mlogo" aria-hidden="true">N</span><span><b id="mcur-name">Nemotron 3 Ultra</b> · free</span></span>
+          <button type="button" class="mmore" id="mmore" aria-expanded="false" aria-controls="mlist">Other models</button>
+          <div class="mlist wfx" id="mlist" role="radiogroup" aria-label="Free model" hidden>
+            <p class="mhint" id="model-hint">All free. If one does not answer, Nemotron takes over.</p>
+            <div id="model"><label class="mopt"><input type="radio" name="model" value="nvidia/nemotron-3-ultra-550b" checked><span class="mdot" aria-hidden="true"></span><span class="mlogo" aria-hidden="true">N</span><span class="mtxt"><span class="mname">Nemotron 3 Ultra</span><span class="mby">NVIDIA · Default</span></span></label></div>
+          </div>
+          <span class="cgo"><span class="qcount" id="qcount" aria-live="polite">0 / 400</span>
+          <button class="primary" id="go" type="submit">Research it</button></span>
         </div>
-        <button class="primary" id="go" type="submit">Research it</button>
       </div>
-      <div class="examples" aria-label="Example questions">
-        <button type="button">What is the current evidence that GLP-1 drugs reduce the risk of Alzheimer's disease?</button>
-        <button type="button">How are publishers getting paid when AI agents read their articles?</button>
-        <button type="button">What changed in open-weight model inference costs this year?</button>
+      <p class="hint go-note" id="qkeys">About 3 minutes · 3 briefs a day<span class="kbd-l"> · <span class="kbd">⌘/Ctrl + Enter</span> to send</span></p>
+      <div class="try">
+        <span class="try-l" id="try-l">Try a question</span>
+        <div class="try-row">
+          <button type="button" class="try-q" id="try-q" aria-describedby="try-l">What is the current evidence that GLP-1 drugs reduce the risk of Alzheimer's disease?</button>
+          <button type="button" class="try-next" id="try-next" aria-label="Show another example question" title="Another example"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4l-10 16"/><path d="M12.5 6.5l3 3"/><path d="M19 3v4M17 5h4"/><path d="M19 13v3M17.5 14.5h3"/><path d="M8 3v2M7 4h2"/></svg></button>
+        </div>
       </div>
-      <p class="hint lead-hint" id="model-hint">This is Nuru's playground, and it runs on free models, with NVIDIA Nemotron as the default. Sippar's workflow planner plans each brief, guided by agent skills it finds for the job, and the model you pick writes it; if that model does not answer, Nemotron takes over and the brief says so. The data each brief reads is bought per call from the agent's wallet, up to 3 briefs per visitor a day.</p>
-      <p class="hint">A brief takes two to four minutes and usually spends between $0.15 and $0.40 from the agent's wallet, the plan included.</p>
       <p class="err" id="err" role="alert" hidden></p>
     </form>
     <aside class="side menu-box" aria-labelledby="menu-h">
-      <h3 id="menu-h">What Nuru can read</h3>
+      <h2 id="menu-h">What Nuru can read</h2>
       <div class="wfx" id="menu"><p class="hint">Reading the list of sources.</p></div>
     </aside>
     </div>
   </section>
 
-  <section class="wrap result" id="result" hidden aria-live="polite">
+  <section class="wrap result" id="result" hidden>
     <div class="side made" aria-labelledby="made-h">
-      <h3 id="made-h">How this brief was made</h3>
+      <h2 id="made-h">How this brief was made</h2>
       <div class="wfx" id="steps"></div>
     </div>
     <article class="brief" id="brief">
-      <p class="status" id="status">Planning the reading</p>
+      <p class="status" id="status" role="status">Planning the reading</p>
     </article>
     <aside class="side paid" aria-label="Who was paid">
       <div id="ledgerbox" hidden>
-        <h3>Who was paid</h3>
+        <h2>Who was paid</h2>
         <table class="ledger" id="ledger"></table>
-        <h3>The models, and where they ran</h3>
+        <h2>Models</h2>
         <div class="models" id="models"></div>
       </div>
     </aside>
@@ -332,7 +420,7 @@ button.primary[disabled] { opacity: .5; cursor: progress; }
         <a href="https://sippar.network" aria-label="Sippar home"><img class="sfw" src="brand/sippar-wordmark.svg" alt="Sippar" width="166" height="36"></a>
         <p class="sf-tag">Every service, by the sip.</p>
       </div>
-      <p class="sf-note">Nuru runs on free models, with NVIDIA Nemotron as the default: free through BlockRun, and on Nebius Token Factory where no free route serves it. Every source, web search included, is bought per call through Sippar in USDC on Base, and named on each response. Dataconomy articles are read with the publisher's agreement, and the publisher is paid per read.</p>
+      <p class="sf-note">Free models, NVIDIA Nemotron by default. Every paid source is bought per call through Sippar in USDC on Base; Dataconomy is paid per read, by agreement.</p>
       <p class="sf-note">Nuru reads public sources live and writes a short brief from what they returned. Briefs show what the sources said at the time of the search. They can be incomplete or out of date, and they are not medical, legal or financial advice. Check anything important at the source linked in the brief.</p>
     </div>
     <div class="sf-bottom"><span>© 2026 Sippar</span><a href="https://github.com/Nuru-AI/nuru">Nuru on GitHub</a></div>
@@ -351,7 +439,27 @@ async function wallet() {
 }
 wallet();
 
-document.querySelectorAll(".examples button").forEach((b) => b.addEventListener("click", () => { $("question").value = b.textContent; $("question").focus(); }));
+// One example at a time; the wand shows the next, starting from a different one on each visit.
+const EXAMPLES = [
+  "What is the current evidence that GLP-1 drugs reduce the risk of Alzheimer's disease?",
+  "What do recent studies say about microplastics in drinking water?",
+  "How has inflation in Argentina changed over the last ten years?",
+  "Which DeFi protocols grew their total value locked the most this year?",
+  "What changed in open-weight model inference costs this year?",
+  "Which blood pressure medicines did the FDA recall this year, and why?",
+  "Where were the strongest earthquakes in the past month?",
+  "How are publishers getting paid when AI agents read their articles?",
+  "How have the biggest stablecoins' market caps moved this year?",
+  "Which JavaScript packages for building AI agents are growing fastest?",
+];
+let exI = Math.floor(Math.random() * EXAMPLES.length);
+const showEx = (swap) => { const q = $("try-q"); q.textContent = EXAMPLES[exI]; if (swap) { q.classList.remove("swap"); void q.offsetWidth; q.classList.add("swap"); } };
+showEx(false);
+$("try-q").addEventListener("click", () => { $("question").value = EXAMPLES[exI]; countQ(); $("question").focus(); });
+$("try-next").addEventListener("click", () => { exI = (exI + 1) % EXAMPLES.length; showEx(true); });
+const countQ = () => { const n = $("question").value.length; $("qcount").textContent = `${n} / 400`; $("qcount").classList.toggle("near", n > 360); };
+$("question").addEventListener("input", countQ);
+$("question").addEventListener("keydown", (e) => { if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) { e.preventDefault(); $("f").requestSubmit(); } });
 
 
 // Which model planned and which wrote, as recorded by the run (runs before 2026-10-30 21:00 UTC have no servedBy).
@@ -374,16 +482,18 @@ function byline(run) {
     // A plan bought from Sippar's workflow planner: the AntSeed model and seller that wrote it, and the skills it read.
     if (s.provider === "sippar") {
       const skills = (s.skills || []).map((k) => esc(k.name || k.id)).filter(Boolean);
-      return `${role} by Sippar's workflow planner, written by ${esc(modelName(s.model))}${s.seller ? ` (sold by ${esc(s.seller)} on AntSeed)` : " on AntSeed"}${skills.length ? `, guided by the skill${skills.length > 1 ? "s" : ""} ${skills.join(" and ")}` : ""}.`;
+      return "";
     }
-    let t = `${role} by ${esc(modelName(s.model))} ${WHERE_SERVED[s.provider] || ""}.`;
+    // Who planned and wrote it is in the line above the brief and the Models panel; here only a takeover, as the
+    // model picker promises.
     if (picked && normId(s.model).startsWith(normId(picked)) === false) {
       const verb = role === "Planned" ? "plan" : "write";
-      t += ` ${esc(modelName(picked))} could not ${verb} it, so Nemotron took over.`;
+      return `${esc(modelName(picked))} could not ${verb} it, so Nemotron took over.`;
     }
-    return t;
+    return "";
   };
-  return `<p class="byline">${[part("Planned", by.planner), part("Written", by.writer)].filter(Boolean).join(" ")}</p>`;
+  const t = [part("Planned", by.planner), part("Written", by.writer)].filter(Boolean).join(" ");
+  return t ? `<p class="byline">${t}</p>` : "";
 }
 
 // The notices under every brief (Sippar draft docs/research/2026-11-01_NURU_DISCLAIMER_AND_WORDING_DRAFT.md):
@@ -404,16 +514,25 @@ function notices(run) {
   return `<div class="notices">${lines.map((l) => `<p>${esc(l)}</p>`).join("")}</div>`;
 }
 
+/** A citation chip, as Sippar's MCP card draws one: the source site's icon on a white disc, then a readable number. */
+function citeChip(c, id, i) {
+  const host = (() => { try { return new URL(c?.url).hostname.replace(/^www\./, ""); } catch { return ""; } })();
+  const n = String(id).replace(/^C/i, "");
+  const img = host && /^[a-z0-9.-]+$/i.test(host) ? `<img src="https://icons.duckduckgo.com/ip3/${esc(host)}.ico" alt="" loading="lazy" referrerpolicy="no-referrer" data-fallback>` : "";
+  return `<button class="cite" aria-expanded="false" data-c="${esc(id)}" data-p="${i}" aria-label="Source ${esc(n)}: ${esc(c?.publisher || host || "source")}" title="${esc(c?.publisher || host)}"><span class="cite-ico ${img ? "" : "failed"}">${img}<span class="ico-l" aria-hidden="true">${esc((c?.publisher || host || "?").replace(/[^A-Za-z0-9]/g, "")[0]?.toUpperCase() ?? "?")}</span></span><span>${esc(n)}</span></button>`;
+}
+
 function render(run) {
   wfUi = {};
-  drawStages(run, { phase: "done" });
+  drawStages(run, { phase: "done", collapsed: true });
   const claims = Object.fromEntries(run.claims.map((c) => [c.id, c]));
   const docStep = (docId) => run.steps.find((s) => (s.documents || []).some((d) => d.id === docId));
   const b = run.brief;
   $("brief").innerHTML = `<h2>${esc(b.title)}</h2><p class="summary">${esc(b.summary)}</p>${byline(run)}
-    <ul class="points">${b.points.map((p, i) => `<li>${esc(p.text)} ${p.evidence.map((e) => `<button class="cite" aria-expanded="false" data-c="${esc(e)}" data-p="${i}">${esc(e)}</button>`).join("")}<div class="ev" id="ev${i}"></div></li>`).join("")}</ul>
+    <ul class="points">${b.points.map((p, i) => `<li>${esc(p.text)} ${p.evidence.map((e) => citeChip(claims[e], e, i)).join("")}<div class="ev" id="ev${i}"></div></li>`).join("")}</ul>
     ${b.gaps?.length ? `<div class="gaps"><h3>What the sources did not cover</h3><ul>${b.gaps.map((g) => `<li>${esc(g)}</li>`).join("")}</ul></div>` : ""}
     ${notices(run)}`;
+  stagesReady.then((m) => m.wireLogos($("brief")));
   $("brief").querySelectorAll(".cite").forEach((btn) => btn.addEventListener("click", () => {
     const c = claims[btn.dataset.c]; const box = $("ev" + btn.dataset.p);
     const open = btn.getAttribute("aria-expanded") === "true";
@@ -426,7 +545,7 @@ function render(run) {
   }));
   const L = run.ledger;
   $("ledger").innerHTML = Object.entries(L.bySeller).map(([k, v]) => `<tr><td>${esc(k)}</td><td class="n">${usd(v)}</td></tr>`).join("") +
-    `<tr class="total"><td>${L.paidReads} paid reads</td><td class="n">${usd(L.spentUsd)}</td></tr>`;
+    `<tr class="total"><td>Total, ${L.paidReads} ${L.paidReads === 1 ? "purchase" : "purchases"}</td><td class="n">${usd(L.spentUsd)}</td></tr>`;
   // Which provider served each model (a run saved before 2026-10-30 has no byProvider and shows only the models).
   const WHERE = { blockrun: "BlockRun (free)", tokenfactory: "Nebius Token Factory", openrouter: "OpenRouter (free)" };
   $("models").innerHTML = Object.entries(run.nemotron.byModel).map(([m, u]) => `<div><span>${esc(m.split("/")[1])}</span><span>${u.calls} calls · ${(u.inputTokens + u.outputTokens).toLocaleString()} tokens</span></div>`).join("") +
@@ -436,14 +555,21 @@ function render(run) {
 }
 
 // What Nuru can read (menu.mjs): the planner's own sources, read live, one topic open at a time.
-let menuSources = null, menuTopic;
+let menuSources = null, menuTopic, menuAll = false;
 const drawMenu = async () => {
   const m = await import("./menu.mjs"), st = STAGES ?? await stagesReady;
-  $("menu").innerHTML = menuSources ? m.menuHtml(menuSources, { topic: menuTopic }) : `<p class="hint">The list of sources could not be read just now.</p>`;
+  $("menu").innerHTML = menuSources ? m.menuHtml(menuSources, { topic: menuTopic, all: menuAll }) : `<p class="hint">The list of sources could not be read just now.</p>`;
   st.wireLogos($("menu"));
 };
 fetch("/api/sources").then((r) => (r.ok ? r.json() : null)).then((d) => { menuSources = d?.sources ?? null; drawMenu(); }).catch(() => drawMenu());
-$("menu").addEventListener("click", (e) => { const b = e.target.closest("[data-topic]"); if (!b) return; menuTopic = b.dataset.topic; drawMenu().then(() => document.getElementById("mt-" + menuTopic)?.focus()); });
+$("menu").addEventListener("keydown", (e) => {
+  const tab = e.target.closest('[role="tab"]'); if (!tab || !["ArrowLeft", "ArrowRight", "Home", "End"].includes(e.key)) return;
+  const tabs = [...$("menu").querySelectorAll('[role="tab"]')], i = tabs.indexOf(tab);
+  const to = e.key === "Home" ? tabs[0] : e.key === "End" ? tabs[tabs.length - 1] : tabs[(i + (e.key === "ArrowRight" ? 1 : tabs.length - 1)) % tabs.length];
+  e.preventDefault(); to.click();
+});
+$("menu").addEventListener("click", (e) => {
+  if (e.target.closest("[data-moretopics]")) { menuAll = !menuAll; drawMenu().then(() => $("menu").querySelector("[data-moretopics]")?.focus()); return; } const b = e.target.closest("[data-topic]"); if (!b) return; menuTopic = b.dataset.topic; drawMenu().then(() => document.getElementById("mt-" + menuTopic)?.focus()); });
 
 // The stages, in the card's frame (stages.mjs). Which stage and row are open is the visitor's choice.
 let STAGES = null, wfRun = null, wfUi = {};
@@ -457,6 +583,8 @@ async function drawStages(run, ui = {}) {
 }
 $("steps").addEventListener("click", (e) => {
   const row = e.target.closest("[data-wfopen]"), st = e.target.closest("[data-wfstage]");
+  const all = e.target.closest("[data-wfall]");
+  if (all) { wfUi.collapsed = !wfUi.collapsed; if (wfRun) drawStages(wfRun).then(() => $("steps").querySelector("[data-wfall]")?.focus()); return; }
   if (row) { const n = Number(row.dataset.wfopen); wfUi.row = wfUi.row === n ? undefined : n; }
   else if (st) wfUi.stage = st.getAttribute("aria-expanded") === "true" ? null : Number(st.dataset.wfstage);
   else return;
@@ -470,13 +598,14 @@ $("f").addEventListener("submit", async (e) => {
   const question = $("question").value.trim(); if (!question) return;
   $("err").hidden = true; $("go").disabled = true; $("go").textContent = "Researching";
   $("result").hidden = false; $("steps").innerHTML = ""; $("ledgerbox").hidden = true; wfUi = {};
-  $("brief").innerHTML = `<p class="status" id="status">Planning the reading</p>`;
+  $("brief").innerHTML = `<p class="status" id="status" role="status">Planning the reading</p>`;
+  $("result").scrollIntoView({ block: "start", behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
   const steps = [];
   // The run as it is being built: its steps, the plan once it is checked, and where it is (plan, buy, read, write).
   const live = { steps, servedBy: {} };
   let phase = "plan", liveN;
   try {
-    const res = await fetch("/api/run", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ question, model: $("model").value }) });
+    const res = await fetch("/api/run", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ question, model: pickedModel() }) });
     if (!res.ok || !res.body) { throw new Error((await res.json().catch(() => ({}))).error || "The run could not start."); }
     const reader = res.body.getReader(); const dec = new TextDecoder(); let buf = "";
     for (;;) {
@@ -514,13 +643,32 @@ $("f").addEventListener("submit", async (e) => {
 });
 
 // The free models to pick from, read live by the server from BlockRun's catalog; the default stays selected.
-const modelsReady = fetch("/api/models").then((r) => r.json()).then(({ default: def, models }) => {
-  $("model").innerHTML = models.map((m) => `<option value="${esc(m.id)}"${m.id === def ? " selected" : ""}>${esc(m.name)}${m.id === def ? " (default)" : ""}</option>`).join("");
+const pickedModel = () => document.querySelector('input[name="model"]:checked')?.value;
+const pickModel = (id) => { const r = [...document.querySelectorAll('input[name="model"]')].find((x) => x.value === id); if (r) { r.checked = true; showModel(); } return !!r; };
+// The model in use shows in the question box; the others fold under Other models (Elad 2026-11-01).
+const showModel = () => { const o = document.querySelector('input[name="model"]:checked')?.closest(".mopt"); if (!o) return; $("mcur").querySelector(".mlogo").innerHTML = o.querySelector(".mlogo").innerHTML; $("mcur-name").textContent = o.querySelector(".mname").textContent; };
+const listOpen = (on, back) => { $("mlist").hidden = !on; $("mmore").setAttribute("aria-expanded", on); if (on) document.querySelector('input[name="model"]:checked')?.focus(); else if (back) $("mmore").focus(); };
+$("mmore").addEventListener("click", () => listOpen($("mlist").hidden));
+$("mlist").addEventListener("change", () => showModel());
+$("mlist").addEventListener("click", (e) => { if (e.target.matches('input[name="model"]') && e.detail) listOpen(false, true); });
+$("mlist").addEventListener("keydown", (e) => { if (e.key === "Escape" || e.key === "Enter") { e.preventDefault(); listOpen(false, true); } });
+document.addEventListener("click", (e) => { if (!$("mlist").hidden && !e.target.closest("#mlist, #mmore")) listOpen(false); });
+$("mlist").addEventListener("focusout", (e) => { if (!$("mlist").hidden && !e.relatedTarget?.closest?.("#mlist, #mmore") && e.relatedTarget) listOpen(false); });
+const modelsReady = fetch("/api/models").then((r) => r.json()).then(async ({ default: def, models }) => {
+  const st = STAGES ?? await stagesReady;
+  const ordered = [...models].sort((a, b) => Number(b.id === def) - Number(a.id === def));
+  $("model").innerHTML = ordered.map((m) => {
+    const maker = st.makerOf(m.id), name = String(m.name).replace(/\s*\(Free\)\s*$/i, "").replace(/^(NVIDIA|Poolside)\s+/i, "");
+    return `<label class="mopt"><input type="radio" name="model" value="${esc(m.id)}"${m.id === def ? " checked" : ""}><span class="mdot" aria-hidden="true"></span><span class="mlogo" aria-hidden="true">${st.makerLogo(maker)}</span><span class="mtxt"><span class="mname">${esc(name)}</span><span class="mby">${esc(maker.name)}${m.id === def ? " · Default" : ""}</span></span></label>`;
+  }).join("");
+  st.wireLogos($("model"));
+  showModel();
+  st.wireLogos($("mcur"));
   MODEL_NAMES = Object.fromEntries(models.map((m) => [m.id, String(m.name).replace(/\s*\(Free\)\s*$/i, "")]));
 }).catch(() => {});
 
 const saved = new URLSearchParams(location.search).get("run");
-if (saved) fetch("/api/runs/" + saved).then((r) => r.ok ? r.json() : null).then(async (run) => { if (run) { $("result").hidden = false; $("question").value = run.question; await modelsReady; if (run.models?.picked && [...$("model").options].some((o) => o.value === run.models.picked)) $("model").value = run.models.picked; render(run); } });
+if (saved) fetch("/api/runs/" + saved).then((r) => r.ok ? r.json() : null).then(async (run) => { if (run) { $("result").hidden = false; $("question").value = run.question; countQ(); await modelsReady; if (run.models?.picked) pickModel(run.models.picked); render(run); $("result").scrollIntoView({ block: "start" }); } });
 </script>
 </body>
 </html>
