@@ -691,6 +691,10 @@ document.addEventListener("click", (e) => { if (!$("mlist").hidden && !e.target.
 $("mlist").addEventListener("focusout", (e) => { if (!$("mlist").hidden && !e.relatedTarget?.closest?.("#mlist, #mmore") && e.relatedTarget) listOpen(false); });
 const modelsReady = fetch("/api/models").then((r) => r.json()).then(async ({ default: def, models }) => {
   const st = STAGES ?? await stagesReady;
+  // The default can be served off the free list (Token Factory, where no free route serves it): it is still an option,
+  // named from its id, so the box never shows a model no radio stands for.
+  const nameOf = (id) => String(id).split("/")[1].split("-").map((w) => /^\d+b$/i.test(w) ? w.toUpperCase() : w[0].toUpperCase() + w.slice(1)).join(" ");
+  if (def && !models.some((m) => m.id === def)) models = [{ id: def, name: nameOf(def) }, ...models];
   const ordered = [...models].sort((a, b) => Number(b.id === def) - Number(a.id === def));
   $("model").innerHTML = ordered.map((m) => {
     const maker = st.makerOf(m.id), name = String(m.name).replace(/\s*\(Free\)\s*$/i, "").replace(/^(NVIDIA|Poolside)\s+/i, "");
