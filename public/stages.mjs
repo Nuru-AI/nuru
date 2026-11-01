@@ -254,8 +254,8 @@ export function openStage(list, ui) {
 }
 
 /** The whole list, in the card's frame. */
-/** A finished brief's whole making in one line: who planned it, what was bought and what it cost, how many quotes
- *  were found word for word, who wrote it. The same numbers the stages and "Who was paid" show. */
+/** A finished brief's whole making in one line: who planned it, what was bought, what it cost and how many quotes
+ *  were found word for word. The same numbers the stages and "Who was paid" show. */
 export function summaryLine(run) {
   const steps = run.steps ?? [];
   const bought = steps.filter((s) => !isPlanStep(s) && !isMove(s));
@@ -271,10 +271,10 @@ export function summaryLine(run) {
 
 export function stagesHtml(run, ui = {}, who) {
   // A finished brief shows its making as one line that opens to the steps; a live one shows the steps as they run.
-  if (ui.collapsed) return `<button type="button" class="wf-sumline" data-wfall aria-expanded="false" aria-controls="wf-flow"><span>${esc(summaryLine(run, who))}</span><span class="wf-more-l">Show the steps</span></button>`;
+  if (ui.collapsed) return `<button type="button" class="wf-sumline" data-wfall aria-expanded="false" aria-controls="wf-flow"><span>${esc(summaryLine(run))}</span><span class="wf-more-l">Show the steps</span></button>`;
   const list = stages(run, ui, who);
   const open = openStage(list, ui);
-  return `${ui.phase === "done" ? `<button type="button" class="wf-sumline open" data-wfall aria-expanded="true" aria-controls="wf-flow"><span>${esc(summaryLine(run, who))}</span><span class="wf-more-l">Hide the steps</span></button>` : ""}<ol class="wf-flow" id="wf-flow" aria-label="How this brief was made">${list.map((x) => stageHtml(x, x.n === open)).join("")}</ol>`;
+  return `${ui.phase === "done" ? `<button type="button" class="wf-sumline open" data-wfall aria-expanded="true" aria-controls="wf-flow"><span>${esc(summaryLine(run))}</span><span class="wf-more-l">Hide the steps</span></button>` : ""}<ol class="wf-flow" id="wf-flow" aria-label="How this brief was made">${list.map((x) => stageHtml(x, x.n === open)).join("")}</ol>`;
 }
 
 /** A logo that does not come back, or comes back as the icon service's tiny placeholder, shows its letter (results.ts). */
