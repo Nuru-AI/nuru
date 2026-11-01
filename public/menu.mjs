@@ -57,7 +57,8 @@ export function menuHtml(all, ui = {}) {
     <div class="examples menu-chips"><div role="tablist" aria-label="Topics" class="menu-tabs">${shown.map(([k, name, ic]) =>
       `<button type="button" role="tab" data-topic="${k}" aria-selected="${k === open}" tabindex="${k === open ? 0 : -1}" id="mt-${k}" aria-controls="menu-rows">${icon(ic)}${esc(name)} <span class="n">${by.get(k).length}</span></button>`).join("")}</div>${more}</div>
     <ul class="wf-rows menu-rows" id="menu-rows" role="tabpanel" aria-labelledby="mt-${open}">${rows.map((p) => {
-      const m = metaOf(p.id, { label: p.shortName, source: p.source, seller: p.name });
+      // Nuru's own table first, so every platform reads the way the connector's menu presents it; else the catalog's.
+      const own = metaOf(p.id), m = own.label !== p.id ? own : metaOf(p.id, { label: p.shortName, source: p.source, seller: p.name });
       return `<li class="wf-row lg">${logoHtml(m)}<span class="pt-main"><span class="pt-name">${esc(m.label)}</span><span class="pt-src">${esc(m.source)}</span></span><span class="wf-st ${p.free ? "ok" : "muted"}">${esc(price(p))}</span></li>`;
     }).join("")}</ul>`;
 }
