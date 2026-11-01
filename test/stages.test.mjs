@@ -91,3 +91,10 @@ test("nothing a source returned is drawn unescaped", () => {
   assert.doesNotMatch(html, /<script>|<img src=x/);
   assert.doesNotMatch(html, /href="javascript:/i, "only http(s) links are drawn as links");
 });
+
+test("a source's row says how many of its documents were read when the plan's code kept fewer (#6408)", () => {
+  const ids = pubmed.steps[1].documents.slice(0, 10).map((d) => d.id);
+  const html = stagesHtml({ ...pubmed, readDocIds: ids }, {}, who);
+  assert.match(html, /20 found, 10 read/);
+  assert.match(stagesHtml(pubmed, {}, who), /· 20 read/, "an older run, from before the read list, read them all");
+});
