@@ -145,7 +145,10 @@ button.primary[disabled] { opacity: .5; cursor: progress; }
 .ask-grid { display: grid; grid-template-columns: minmax(0, 620px) minmax(0, 1fr); gap: 24px; align-items: start; }
 @media (max-width: 1099px) { .ask-grid { grid-template-columns: minmax(0, 760px); } }
 /* All / Paid / Free: one segmented switch; the choice is a filled navy segment, never colour alone (aria-checked). */
-.kind-sw { display: inline-flex; gap: 2px; padding: 2px; margin: 0 0 12px; background: var(--warm-white); border: 1px solid var(--border-2); border-radius: 999px; }
+.menu-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 12px; margin-bottom: 12px; }
+.menu-box .menu-head h2 { margin: 0; }
+#menu-kind { margin-left: auto; }
+.kind-sw { display: inline-flex; gap: 2px; padding: 2px; margin: 0; background: var(--warm-white); border: 1px solid var(--border-2); border-radius: 999px; }
 .kind-sw button { min-height: 44px; padding: 0 14px; border: 0; border-radius: 999px; background: transparent; font: 600 13px var(--body); color: var(--text-2); cursor: pointer; }
 .kind-sw button .n { font-weight: 400; color: var(--text-3); margin-left: 2px; }
 .kind-sw button[aria-checked="true"] { background: var(--navy); color: var(--warm-white); }
@@ -393,8 +396,8 @@ button.primary[disabled] { opacity: .5; cursor: progress; }
       </div>
       <p class="err" id="err" role="alert" hidden></p>
     </form>
-    <aside class="side menu-box" aria-labelledby="menu-h">
-      <h2 id="menu-h">What Nuru can read</h2>
+    <aside class="side menu-box" id="menubox" aria-labelledby="menu-h">
+      <div class="menu-head"><h2 id="menu-h">What Nuru can read</h2><div id="menu-kind"></div></div>
       <div class="wfx" id="menu"><p class="hint">Reading the list of sources.</p></div>
     </aside>
     </div>
@@ -566,17 +569,19 @@ const drawMenu = async () => {
   const m = await import("./menu.mjs"), st = STAGES ?? await stagesReady;
   $("menu").innerHTML = menuSources ? m.menuHtml(menuSources, { topic: menuTopic, all: menuAll, kind: menuKind }) : `<p class="hint">The list of sources could not be read just now.</p>`;
   st.wireLogos($("menu"));
+  // The All / Paid / Free switch sits at the top right of the section, beside its heading (Elad 2026-11-01).
+  $("menu-kind").replaceChildren(...$("menu").querySelectorAll(".kind-sw"));
 };
 fetch("/api/sources").then((r) => (r.ok ? r.json() : null)).then((d) => { menuSources = d?.sources ?? null; drawMenu(); }).catch(() => drawMenu());
-$("menu").addEventListener("keydown", (e) => {
+$("menubox").addEventListener("keydown", (e) => {
   // Arrow keys move along the topic tabs, and along the All / Paid / Free switch.
   const tab = e.target.closest('[role="tab"], [role="radio"]'); if (!tab || !["ArrowLeft", "ArrowRight", "Home", "End"].includes(e.key)) return;
-  const tabs = [...$("menu").querySelectorAll(`[role="${tab.getAttribute("role")}"]`)], i = tabs.indexOf(tab);
+  const tabs = [...$("menubox").querySelectorAll(`[role="${tab.getAttribute("role")}"]`)], i = tabs.indexOf(tab);
   const to = e.key === "Home" ? tabs[0] : e.key === "End" ? tabs[tabs.length - 1] : tabs[(i + (e.key === "ArrowRight" ? 1 : tabs.length - 1)) % tabs.length];
   e.preventDefault(); to.click();
 });
-$("menu").addEventListener("click", (e) => {
-  const k = e.target.closest("[data-kind]"); if (k) { menuKind = k.dataset.kind; drawMenu().then(() => $("menu").querySelector(`[data-kind="${menuKind}"]`)?.focus()); return; }
+$("menubox").addEventListener("click", (e) => {
+  const k = e.target.closest("[data-kind]"); if (k) { menuKind = k.dataset.kind; drawMenu().then(() => $("menubox").querySelector(`[data-kind="${menuKind}"]`)?.focus()); return; }
   if (e.target.closest("[data-moretopics]")) { menuAll = !menuAll; drawMenu().then(() => $("menu").querySelector("[data-moretopics]")?.focus()); return; } const b = e.target.closest("[data-topic]"); if (!b) return; menuTopic = b.dataset.topic; drawMenu().then(() => document.getElementById("mt-" + menuTopic)?.focus()); });
 
 // The stages, in the card's frame (stages.mjs). Which stage and row are open is the visitor's choice.
