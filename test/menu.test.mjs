@@ -71,3 +71,11 @@ test("six topics up front, the rest behind More topics; the open topic always sh
   assert.equal((html.match(/role="tab"[^>]*tabindex="0"/g) || []).length, 1, "one Tab stop for the topic row");
   assert.equal((html.match(/role="radio"[^>]*tabindex="0"/g) || []).length, 1, "one Tab stop for the switch");
 });
+
+test("each topic chip carries its icon once the icon file has loaded, and only words before", async () => {
+  assert.doesNotMatch(menuHtml(sources, { topic: "research" }), /<svg class="i"/, "no icon file, no icon");
+  await import("../public/icons.js");
+  const html = menuHtml(sources, { topic: "research" });
+  assert.match(html, /data-topic="research"[^>]*><svg class="i"[^>]*aria-hidden="true">/);
+  for (const [, , ic] of (await import("../public/menu.mjs")).TOPICS) assert.ok(globalThis.NURU_ICONS[ic], `icon ${ic} is in icons.js`);
+});
