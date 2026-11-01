@@ -13,6 +13,7 @@
 /* The bright style of sippar.network's connector, SeedStore and Unlock pages (Elad, 2026-10-30): warm white, navy ink,
    copper on navy for actions, Orbitron for the title and product name, Inter for the rest. Fonts are local. */
 @font-face { font-family: "Inter"; src: url("brand/inter-v20-latin.woff2?v=2") format("woff2"); font-weight: 100 900; font-display: swap; }
+@font-face { font-family: "JetBrains Mono"; src: url("brand/jetbrains-mono-v24-latin.woff2") format("woff2"); font-weight: 100 800; font-display: swap; }
 @font-face { font-family: "Orbitron"; src: url("brand/orbitron-v35-latin-700.woff2") format("woff2"); font-weight: 700; font-display: swap; }
 :root {
   --navy: #0E1A38; --navy-deep: #08102B; --copper: #D4A074; --copper-600: #906035;
@@ -22,7 +23,7 @@
   --ok: #2E6B45; --warn: #8A4B0F;
   --display: Orbitron, "Eurostile", system-ui, sans-serif;
   --body: Inter, system-ui, -apple-system, "Segoe UI", sans-serif;
-  --mono: ui-monospace, Menlo, "SF Mono", monospace;
+  --mono: "JetBrains Mono", ui-monospace, Menlo, "SF Mono", monospace;
   --gutter: clamp(16px, 4vw, 40px); --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
   --r: 10px;
 }
@@ -45,7 +46,7 @@ header.top .wrap { display: flex; align-items: center; justify-content: space-be
 .ptitle { font-family: var(--display); font-weight: 700; font-size: 13px; letter-spacing: .14em; text-transform: uppercase; color: var(--text-3); white-space: nowrap; }
 .walletchip { font: 500 13px/1 var(--mono); color: var(--text-2); background: var(--white); border: 1px solid var(--border); border-radius: 999px; padding: 9px 12px; white-space: nowrap; }
 .walletchip b { color: var(--text); font-weight: 600; }
-@media (max-width: 560px) { .ptitle { font-size: 10px; letter-spacing: .08em; } .brand { gap: 10px; } }
+@media (max-width: 560px) { .ptitle { font-size: 12px; letter-spacing: .08em; } .brand { gap: 10px; } }
 @media (max-width: 374px) { .ptitle, .pdiv { display: none; } }
 
 /* The question */
@@ -57,7 +58,7 @@ h1 { font-family: var(--display); font-weight: 700; font-size: clamp(28px, 4.2vw
 form { display: grid; gap: 12px; max-width: 760px; background: var(--white); border: 1px solid var(--border); border-radius: 20px; padding: clamp(18px, 3vw, 26px); }
 label { font-size: 14px; font-weight: 600; color: var(--text-2); }
 textarea, input, select { width: 100%; background: var(--warm-white); color: var(--text); border: 1px solid var(--border); border-radius: var(--r); padding: 14px 16px; font: inherit; }
-textarea { min-height: 84px; resize: vertical; }
+textarea { min-height: 104px; resize: vertical; }
 textarea::placeholder { color: var(--text-3); }
 .row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 12px; align-items: end; }
 select { appearance: none; min-height: 50px; padding-right: 40px; cursor: pointer; background-image: linear-gradient(45deg, transparent 50%, var(--text-2) 50%), linear-gradient(135deg, var(--text-2) 50%, transparent 50%); background-position: calc(100% - 20px) 50%, calc(100% - 15px) 50%; background-size: 5px 5px; background-repeat: no-repeat; }
@@ -70,7 +71,7 @@ button.primary[disabled] { opacity: .5; cursor: progress; }
 .hint { font-size: 14px; color: var(--text-3); margin: 0; }
 .hint.lead-hint { color: var(--text-2); }
 .examples { display: flex; flex-wrap: wrap; gap: 8px; }
-.examples button { background: var(--warm-white); color: var(--text-2); border: 1px solid var(--border-2); border-radius: 999px; padding: 8px 14px; min-height: 40px; font: 14px var(--body); cursor: pointer; text-align: left; }
+.examples button { background: var(--warm-white); color: var(--text-2); border: 1px solid var(--border-2); border-radius: 999px; padding: 8px 14px; min-height: 44px; font: 14px var(--body); cursor: pointer; text-align: left; }
 @media (hover: hover) { .examples button:hover { background: var(--paper); color: var(--text); } }
 .err { color: var(--warn); }
 @media (prefers-reduced-motion: reduce) { button.primary:active { transform: none; } }
@@ -86,11 +87,13 @@ button.primary[disabled] { opacity: .5; cursor: progress; }
 @media (max-width: 1099px) { .ask-grid { grid-template-columns: minmax(0, 760px); } }
 .menu-box .menu-count { font-size: 14px; color: var(--text-2); margin: 0 0 12px; }
 .menu-box .menu-chips { margin-bottom: 10px; }
-.menu-box .menu-chips button { min-height: 36px; padding: 6px 12px; font-size: 13.5px; }
+.menu-box .menu-tabs { display: contents; }
+.menu-box .more-topics { background: transparent; border-style: dashed; color: var(--navy); font-weight: 600; }
+.menu-box .menu-chips button { min-height: 44px; padding: 6px 12px; font-size: 13.5px; }
 .menu-box .menu-chips button[aria-selected="true"] { background: var(--navy); color: var(--white); border-color: var(--navy); }
 .menu-box .menu-chips .n { font-variant-numeric: tabular-nums; opacity: .7; margin-left: 2px; }
 .menu-box .menu-rows { display: grid; gap: 4px; list-style: none; margin: 0; padding: 0; }
-.menu-box .menu-rows .wf-row { background: var(--white); border-radius: 10px; min-height: 52px; }
+.menu-box .menu-rows li.wf-row { background: var(--white); border-radius: 10px; min-height: 52px; padding: 10px 12px; }
 .brief { background: var(--white); border: 1px solid var(--border); border-radius: 20px; padding: clamp(20px, 3vw, 32px); }
 .brief h2 { font-size: clamp(22px, 2.6vw, 28px); line-height: 1.2; letter-spacing: -.02em; margin: 0 0 12px; font-weight: 800; text-wrap: balance; }
 .brief .summary { color: var(--text); font-size: 18px; max-width: 68ch; }
@@ -98,11 +101,14 @@ button.primary[disabled] { opacity: .5; cursor: progress; }
 .points { list-style: none; padding: 0; margin: 24px 0; display: grid; gap: 14px; max-width: 72ch; }
 .points li { padding-left: 16px; border-left: 2px solid var(--copper); }
 .cite { display: inline-flex; align-items: center; margin-left: 4px; padding: 1px 8px; border-radius: 6px; border: 1px solid var(--copper-600); background: var(--white); color: var(--copper-600); font: 600 13px/1.6 var(--mono); cursor: pointer; vertical-align: baseline; }
+.cite { position: relative; }
+.cite::after { content: ""; position: absolute; inset: -10px -3px; }
 .cite[aria-expanded="true"] { background: var(--navy); border-color: var(--navy); color: var(--copper); }
 .evidence { margin: 10px 0 2px; padding: 12px 14px; background: var(--paper); border-radius: var(--r); font-size: 15px; }
 .evidence q { display: block; color: var(--text); margin-bottom: 6px; }
 .evidence .meta { color: var(--text-2); font-size: 14px; }
-.gaps h3, .side h3 { font-size: 15px; font-weight: 700; margin: 24px 0 8px; color: var(--text); }
+.gaps h3, .side h3, .side h2 { font-size: 15px; font-weight: 700; margin: 24px 0 8px; color: var(--text); }
+.side > h2:first-child { margin-top: 0; }
 .side > h3:first-child { margin-top: 0; }
 .gaps ul { color: var(--text-2); margin: 0; padding-left: 20px; max-width: 70ch; }
 .side { background: var(--paper); border-radius: 20px; padding: clamp(18px, 3vw, 24px); }
@@ -137,11 +143,17 @@ button.primary[disabled] { opacity: .5; cursor: progress; }
 /* How the brief was made, in the card's own frame: Sippar's MCP card styles for a planned workflow
    (Nuru-AI/sippar src/mcp-apps/payment-card/payment-card.html, card build 80b0da688a8d), scoped to .wfx,
    with the card's own default tokens. */
-.wfx { --bg: #ffffff; --bg-2: #f5f4ed; --bg-3: #faf9f5; --fg: #141413; --fg-2: #3d3d3a; --fg-3: #73726c;
-  --line: rgb(31 30 29 / 0.15); --line-2: rgb(31 30 29 / 0.3); --ok: #265b19; --ok-bg: #e9f1dc; --warn: #5a4815; --warn-bg: #f6eedf;
-  --bad: #7f2c28; --bad-bg: #f7ecec; --info: #3266ad; --ring: rgb(50 102 173 / 0.5); --r-sm: 6px; --r-md: 8px; --r-lg: 10px; --bw: 0.5px;
+.wfx { --bg: var(--white); --bg-2: var(--paper); --bg-3: var(--warm-white); --fg: var(--text); --fg-2: var(--text-2); --fg-3: var(--text-3);
+  --line: var(--border); --line-2: #CFC6B6; --ok: var(--navy); --ok-bg: var(--paper); --warn: var(--warn); --warn-bg: #F6EEDF;
+  --bad: #7f2c28; --bad-bg: #f7ecec; --info: var(--copper-600); --ring: rgb(14 26 56 / 0.45); --r-sm: 6px; --r-md: 8px; --r-lg: 10px; --bw: 1px;
   --t-xs: 12px; --t-sm: 14px; color: var(--fg); }
 .wfx .wf-sbody { font-size: var(--t-sm); color: var(--fg-2); }
+/* A finished brief's making in one line that opens to the steps (critique P1: the panel buried the brief). */
+.wfx .wf-sumline { all: unset; box-sizing: border-box; display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 6px 16px; width: 100%;
+  min-height: 44px; padding: 10px 14px; border: 1px solid var(--border); border-radius: 12px; background: var(--white); cursor: pointer; font-size: 14.5px; line-height: 1.5; color: var(--text-2); }
+.wfx .wf-sumline .wf-more-l { font-weight: 600; color: var(--navy); white-space: nowrap; text-decoration: underline; text-underline-offset: 3px; }
+.wfx .wf-sumline:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
+.wfx .wf-sumline.open { margin-bottom: 12px; }
 .wfx .wf-sbody p { margin: 6px 0; }
 .wfx .wf-h { font-size: var(--t-sm); margin: 12px 0 6px; color: var(--fg); }
 .wfx q { color: var(--fg); }
@@ -277,8 +289,8 @@ button.primary[disabled] { opacity: .5; cursor: progress; }
 <main id="main">
   <section class="ask wrap">
     <span class="play">Agent: Nuru</span>
-    <h1>The agent that pays per sip and unlocks the web</h1>
-    <p class="lede">With a pay-per-call budget, the digital world is flat. Ask a question: a free model plans the job, Nuru's wallet pays each source per call, and every point in the answer opens to its quote, its source and its payment on Base.</p>
+    <h1>Nuru research agent</h1>
+    <p class="lede">Ask a question. Nuru plans which sources to read, buys each one per call through Sippar or reads free public data, and writes a short brief where every point opens to its quote and its payment.</p>
     <div class="ask-grid">
     <form id="f">
       <label for="question">Your question</label>
@@ -295,30 +307,30 @@ button.primary[disabled] { opacity: .5; cursor: progress; }
         <button type="button">How are publishers getting paid when AI agents read their articles?</button>
         <button type="button">What changed in open-weight model inference costs this year?</button>
       </div>
-      <p class="hint lead-hint" id="model-hint">This is Nuru's playground, and it runs on free models, with NVIDIA Nemotron as the default. Sippar's workflow planner plans each brief, guided by agent skills it finds for the job, and the model you pick writes it; if that model does not answer, Nemotron takes over and the brief says so. The data each brief reads is bought per call from the agent's wallet, up to 3 briefs per visitor a day.</p>
+      <p class="hint lead-hint" id="model-hint">Free AI models plan and write each brief, NVIDIA Nemotron by default. The sources are paid from the agent's wallet, up to 3 briefs per visitor a day.</p>
       <p class="hint">A brief takes two to four minutes and usually spends between $0.15 and $0.40 from the agent's wallet, the plan included.</p>
       <p class="err" id="err" role="alert" hidden></p>
     </form>
     <aside class="side menu-box" aria-labelledby="menu-h">
-      <h3 id="menu-h">What Nuru can read</h3>
+      <h2 id="menu-h">What Nuru can read</h2>
       <div class="wfx" id="menu"><p class="hint">Reading the list of sources.</p></div>
     </aside>
     </div>
   </section>
 
-  <section class="wrap result" id="result" hidden aria-live="polite">
+  <section class="wrap result" id="result" hidden>
     <div class="side made" aria-labelledby="made-h">
-      <h3 id="made-h">How this brief was made</h3>
+      <h2 id="made-h">How this brief was made</h2>
       <div class="wfx" id="steps"></div>
     </div>
     <article class="brief" id="brief">
-      <p class="status" id="status">Planning the reading</p>
+      <p class="status" id="status" role="status">Planning the reading</p>
     </article>
     <aside class="side paid" aria-label="Who was paid">
       <div id="ledgerbox" hidden>
-        <h3>Who was paid</h3>
+        <h2>Who was paid</h2>
         <table class="ledger" id="ledger"></table>
-        <h3>The models, and where they ran</h3>
+        <h2>The models, and where they ran</h2>
         <div class="models" id="models"></div>
       </div>
     </aside>
@@ -406,7 +418,7 @@ function notices(run) {
 
 function render(run) {
   wfUi = {};
-  drawStages(run, { phase: "done" });
+  drawStages(run, { phase: "done", collapsed: true });
   const claims = Object.fromEntries(run.claims.map((c) => [c.id, c]));
   const docStep = (docId) => run.steps.find((s) => (s.documents || []).some((d) => d.id === docId));
   const b = run.brief;
@@ -426,7 +438,7 @@ function render(run) {
   }));
   const L = run.ledger;
   $("ledger").innerHTML = Object.entries(L.bySeller).map(([k, v]) => `<tr><td>${esc(k)}</td><td class="n">${usd(v)}</td></tr>`).join("") +
-    `<tr class="total"><td>${L.paidReads} paid reads</td><td class="n">${usd(L.spentUsd)}</td></tr>`;
+    `<tr class="total"><td>Total, ${L.paidReads} ${L.paidReads === 1 ? "purchase" : "purchases"}</td><td class="n">${usd(L.spentUsd)}</td></tr>`;
   // Which provider served each model (a run saved before 2026-10-30 has no byProvider and shows only the models).
   const WHERE = { blockrun: "BlockRun (free)", tokenfactory: "Nebius Token Factory", openrouter: "OpenRouter (free)" };
   $("models").innerHTML = Object.entries(run.nemotron.byModel).map(([m, u]) => `<div><span>${esc(m.split("/")[1])}</span><span>${u.calls} calls · ${(u.inputTokens + u.outputTokens).toLocaleString()} tokens</span></div>`).join("") +
@@ -436,14 +448,21 @@ function render(run) {
 }
 
 // What Nuru can read (menu.mjs): the planner's own sources, read live, one topic open at a time.
-let menuSources = null, menuTopic;
+let menuSources = null, menuTopic, menuAll = false;
 const drawMenu = async () => {
   const m = await import("./menu.mjs"), st = STAGES ?? await stagesReady;
-  $("menu").innerHTML = menuSources ? m.menuHtml(menuSources, { topic: menuTopic }) : `<p class="hint">The list of sources could not be read just now.</p>`;
+  $("menu").innerHTML = menuSources ? m.menuHtml(menuSources, { topic: menuTopic, all: menuAll }) : `<p class="hint">The list of sources could not be read just now.</p>`;
   st.wireLogos($("menu"));
 };
 fetch("/api/sources").then((r) => (r.ok ? r.json() : null)).then((d) => { menuSources = d?.sources ?? null; drawMenu(); }).catch(() => drawMenu());
-$("menu").addEventListener("click", (e) => { const b = e.target.closest("[data-topic]"); if (!b) return; menuTopic = b.dataset.topic; drawMenu().then(() => document.getElementById("mt-" + menuTopic)?.focus()); });
+$("menu").addEventListener("keydown", (e) => {
+  const tab = e.target.closest('[role="tab"]'); if (!tab || !["ArrowLeft", "ArrowRight", "Home", "End"].includes(e.key)) return;
+  const tabs = [...$("menu").querySelectorAll('[role="tab"]')], i = tabs.indexOf(tab);
+  const to = e.key === "Home" ? tabs[0] : e.key === "End" ? tabs[tabs.length - 1] : tabs[(i + (e.key === "ArrowRight" ? 1 : tabs.length - 1)) % tabs.length];
+  e.preventDefault(); to.click();
+});
+$("menu").addEventListener("click", (e) => {
+  if (e.target.closest("[data-moretopics]")) { menuAll = !menuAll; drawMenu().then(() => $("menu").querySelector("[data-moretopics]")?.focus()); return; } const b = e.target.closest("[data-topic]"); if (!b) return; menuTopic = b.dataset.topic; drawMenu().then(() => document.getElementById("mt-" + menuTopic)?.focus()); });
 
 // The stages, in the card's frame (stages.mjs). Which stage and row are open is the visitor's choice.
 let STAGES = null, wfRun = null, wfUi = {};
@@ -457,6 +476,8 @@ async function drawStages(run, ui = {}) {
 }
 $("steps").addEventListener("click", (e) => {
   const row = e.target.closest("[data-wfopen]"), st = e.target.closest("[data-wfstage]");
+  const all = e.target.closest("[data-wfall]");
+  if (all) { wfUi.collapsed = !wfUi.collapsed; if (wfRun) drawStages(wfRun).then(() => $("steps").querySelector("[data-wfall]")?.focus()); return; }
   if (row) { const n = Number(row.dataset.wfopen); wfUi.row = wfUi.row === n ? undefined : n; }
   else if (st) wfUi.stage = st.getAttribute("aria-expanded") === "true" ? null : Number(st.dataset.wfstage);
   else return;
@@ -470,7 +491,8 @@ $("f").addEventListener("submit", async (e) => {
   const question = $("question").value.trim(); if (!question) return;
   $("err").hidden = true; $("go").disabled = true; $("go").textContent = "Researching";
   $("result").hidden = false; $("steps").innerHTML = ""; $("ledgerbox").hidden = true; wfUi = {};
-  $("brief").innerHTML = `<p class="status" id="status">Planning the reading</p>`;
+  $("brief").innerHTML = `<p class="status" id="status" role="status">Planning the reading</p>`;
+  $("result").scrollIntoView({ block: "start", behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
   const steps = [];
   // The run as it is being built: its steps, the plan once it is checked, and where it is (plan, buy, read, write).
   const live = { steps, servedBy: {} };
@@ -520,7 +542,7 @@ const modelsReady = fetch("/api/models").then((r) => r.json()).then(({ default: 
 }).catch(() => {});
 
 const saved = new URLSearchParams(location.search).get("run");
-if (saved) fetch("/api/runs/" + saved).then((r) => r.ok ? r.json() : null).then(async (run) => { if (run) { $("result").hidden = false; $("question").value = run.question; await modelsReady; if (run.models?.picked && [...$("model").options].some((o) => o.value === run.models.picked)) $("model").value = run.models.picked; render(run); } });
+if (saved) fetch("/api/runs/" + saved).then((r) => r.ok ? r.json() : null).then(async (run) => { if (run) { $("result").hidden = false; $("question").value = run.question; await modelsReady; if (run.models?.picked && [...$("model").options].some((o) => o.value === run.models.picked)) $("model").value = run.models.picked; render(run); $("result").scrollIntoView({ block: "start" }); } });
 </script>
 </body>
 </html>

@@ -46,3 +46,14 @@ test("nothing from the catalog is drawn unescaped", () => {
   const html = menuHtml([{ id: "evil", name: "<img src=x onerror=alert(1)>", topic: "search", priceUSD: 0.01, summary: "<script>x</script>" }], {});
   assert.doesNotMatch(html, /<img src=x|<script>/);
 });
+
+
+test("six topics up front, the rest behind More topics; the open topic always shows", () => {
+  const many = sourcesOf({ products: ["search","social","news","company","crypto","health","data","reference","travel"].map((topic, i) => ({ id: `p${i}`, name: `P${i}`, topic, priceUSD: 0.01 })) });
+  const html = menuHtml(many, {});
+  assert.equal((html.match(/role="tab"/g) || []).length, 6);
+  assert.match(html, /More topics \(3\)/);
+  assert.equal((menuHtml(many, { all: true }).match(/role="tab"/g) || []).length, 9);
+  assert.match(menuHtml(many, { topic: "travel" }), /data-topic="travel" aria-selected="true"/, "a chosen later topic still shows");
+  assert.equal((html.match(/tabindex="0"/g) || []).length, 1, "one Tab stop for the topic row");
+});

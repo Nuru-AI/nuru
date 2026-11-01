@@ -186,7 +186,7 @@ export function stages(run, ui = {}, who = (s) => s?.model ?? "") {
     : plan ? `Nuru's own planner${writtenBy}` : "Nuru's fixed list of sources";
   const planFailed = planBuy && planBuy.error;
   const s1 = { n: 1, title: "Write the plan", who: planWho, st: st(0, !plan || !!planFailed),
-    out: plan ? `${plural(plan.steps.length, "step")}, ${usd(plan.check?.costUSD)} at live prices${planFailed ? ". Sippar's plan could not be used, so Nuru's own planner wrote this one" : ""}` : phase === "plan" ? "Writing" : "No plan; Nuru read its fixed list",
+    out: plan ? `${plural(plan.steps.length, "step")}${planFailed ? `. Sippar's plan cost ${usd(planBuy.payment?.priceUsd)} and could not be used, so Nuru's own planner wrote this one` : planBuy?.payment?.priceUsd ? `; the plan cost ${usd(planBuy.payment.priceUsd)}` : ", planned free"}` : phase === "plan" ? "Writing" : "No plan; Nuru read its fixed list",
     body: () => [
       planBuy ? `<ul class="wf-rows">${stepRow({ ...planBuy, input: {}, error: planFailed ? `${planBuy.error}. Nuru's own planner wrote the plan instead.` : "" , documents: [] }, ui, ui.live)}</ul>` : "",
       sipparPlanned && by.skills?.length ? `<p class="hint">Guided by the skill${by.skills.length > 1 ? "s" : ""} ${by.skills.map((k) => esc(k.name || k.id)).join(" and ")}.</p>` : "",
@@ -240,10 +240,28 @@ export function openStage(list, ui) {
 }
 
 /** The whole list, in the card's frame. */
+/** A finished brief's whole making in one line: who planned it, what was bought and what it cost, how many quotes
+ *  were found word for word, who wrote it. The same numbers the stages and "Who was paid" show. */
+export function summaryLine(run, who = (s) => s?.model ?? "") {
+  const steps = run.steps ?? [];
+  const planBuy = steps.find(isPlanStep);
+  const bought = steps.filter((s) => !isPlanStep(s) && !isMove(s));
+  const paidN = bought.filter((s) => s.payment?.tx).length, freeN = bought.filter((s) => !s.payment?.tx && (s.rail === "free" || s.payment?.note)).length;
+  const total = steps.reduce((a, s) => a + (s.payment?.tx ? s.payment.priceUsd || 0 : 0), 0);
+  const by = run.servedBy?.planner;
+  const planned = by?.provider === "sippar" ? "Planned by Sippar's workflow planner" : run.plan ? "Planned by Nuru's own planner" : "Read from Nuru's fixed list";
+  const sources = [paidN ? plural(paidN, "source") + " bought" : "", freeN ? `${freeN} free` : ""].filter(Boolean).join(" and ") || "no source read";
+  const verified = (run.claims ?? []).filter((c) => c.verified).length;
+  return [planned, `${sources}, ${usd(total)} in all${planBuy?.payment?.tx ? (planBuy.error ? ", with Sippar's plan that could not be used" : " with the plan") : ""}`, `${plural(verified, "quote")} found word for word`,
+    run.servedBy?.writer?.model ? `written by ${who(run.servedBy.writer)}` : ""].filter(Boolean).join(" · ");
+}
+
 export function stagesHtml(run, ui = {}, who) {
+  // A finished brief shows its making as one line that opens to the steps; a live one shows the steps as they run.
+  if (ui.collapsed) return `<button type="button" class="wf-sumline" data-wfall aria-expanded="false" aria-controls="wf-flow"><span>${esc(summaryLine(run, who))}</span><span class="wf-more-l">Show the steps</span></button>`;
   const list = stages(run, ui, who);
   const open = openStage(list, ui);
-  return `<ol class="wf-flow" aria-label="How this brief was made">${list.map((x) => stageHtml(x, x.n === open)).join("")}</ol>`;
+  return `${ui.phase === "done" ? `<button type="button" class="wf-sumline open" data-wfall aria-expanded="true" aria-controls="wf-flow"><span>${esc(summaryLine(run, who))}</span><span class="wf-more-l">Hide the steps</span></button>` : ""}<ol class="wf-flow" id="wf-flow" aria-label="How this brief was made">${list.map((x) => stageHtml(x, x.n === open)).join("")}</ol>`;
 }
 
 /** A logo that does not come back, or comes back as the icon service's tiny placeholder, shows its letter (results.ts). */
