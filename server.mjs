@@ -6,6 +6,7 @@ import { loadWallet } from "./lib/pay.mjs";
 import { research } from "./lib/agent.mjs";
 import { freeModels, DEFAULT_FREE_MODEL } from "./lib/tf.mjs";
 import { limits, RUNS_PER_IP_PER_DAY, DAILY_SPEND_USD } from "./lib/limits.mjs";
+import { loadCatalog, sourcesOf } from "./lib/catalog.mjs";
 
 const PORT = Number(process.env.PORT || 8790);
 // A run must be able to fund its own ceiling before it starts: a brief that dies halfway
@@ -27,6 +28,7 @@ function clientIp(req) {
   return (peer === "127.0.0.1" || peer === "::1") && fwd ? fwd : peer;
 }
 const wallet = loadWallet();
+let sourcesCache = null;
 let busy = false;
 
 const TYPES = { ".html": "text/html; charset=utf-8", ".css": "text/css", ".js": "text/javascript", ".mjs": "text/javascript", ".svg": "image/svg+xml", ".woff2": "font/woff2", ".json": "application/json", ".png": "image/png" };
@@ -41,6 +43,11 @@ createServer(async (req, res) => {
   try {
     if (url.pathname === "/api/wallet") {
       return send(res, 200, { address: wallet.address, balanceUsd: await wallet.balance().catch(() => null) });
+    }
+    // What the planner can read, for the page's menu: Sippar's live catalog plus the free sources, kept ten minutes.
+    if (url.pathname === "/api/sources") {
+      if (!sourcesCache || Date.now() - sourcesCache.at > 600_000) sourcesCache = { at: Date.now(), list: sourcesOf(await loadCatalog()) };
+      return send(res, 200, { sources: sourcesCache.list });
     }
     // The free models a visitor may pick, from BlockRun's live catalog; the default first.
     if (url.pathname === "/api/models") {
