@@ -78,6 +78,20 @@ export const META = {
   papers: { label: "Papers", source: "Scholarly papers (open metadata)" },
 };
 
+/** The makers of the free chat models a visitor may pick, by the first part of the model id. A maker with no entry
+ *  shows its name and first letter, never a guessed logo. */
+export const MAKERS = {
+  nvidia: { name: "NVIDIA", site: "nvidia.com" }, poolside: { name: "Poolside", site: "poolside.ai" },
+  meta: { name: "Meta", site: "meta.ai" }, "meta-llama": { name: "Meta", site: "meta.ai" }, qwen: { name: "Qwen", site: "qwen.ai" },
+  deepseek: { name: "DeepSeek", site: "deepseek.com" }, mistralai: { name: "Mistral", site: "mistral.ai" }, google: { name: "Google", site: "gemini.google.com" },
+  openai: { name: "OpenAI", site: "openai.com" }, "z-ai": { name: "Z.ai", site: "z.ai" }, moonshotai: { name: "Moonshot", site: "moonshot.ai" },
+};
+export function makerOf(id) {
+  const k = String(id || "").split("/")[0].toLowerCase();
+  return MAKERS[k] ?? { name: k ? k[0].toUpperCase() + k.slice(1) : "Model" };
+}
+export const makerLogo = (maker) => logoHtml({ label: maker.name, source: maker.name, site: maker.site });
+
 /** A product's label, source and site: the step's own words from the catalog when the run kept them, else the table,
  *  else the seller's name. */
 export function metaOf(id, step = {}) {
@@ -267,7 +281,7 @@ export function stagesHtml(run, ui = {}, who) {
 /** A logo that does not come back, or comes back as the icon service's tiny placeholder, shows its letter (results.ts). */
 export function wireLogos(scope) {
   scope.querySelectorAll("img[data-fallback]").forEach((img) => {
-    const box = () => img.closest(".ico");
+    const box = () => img.closest(".ico, .cite-ico");
     const fail = () => box()?.classList.add("failed");
     const loaded = () => { if (img.naturalWidth > 0 && img.naturalWidth < 12) fail(); box()?.classList.add("loaded"); };
     if (img.complete) { if (img.naturalWidth === 0) fail(); else loaded(); return; }
