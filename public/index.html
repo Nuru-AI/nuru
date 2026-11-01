@@ -3,16 +3,16 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Nuru, built on Sippar</title>
+<title>Playground, built on Sippar</title>
 <meta name="description" content="Nuru pays per call for the data it reads. A free model plans the job, with NVIDIA Nemotron as the default, the agent wallet pays each source, and every point links to its quote and its payment.">
 <meta name="theme-color" content="#FAF8F4">
 <meta name="color-scheme" content="light">
-<link rel="preload" href="brand/inter-v20-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="brand/inter-v20-latin.woff2?v=2" as="font" type="font/woff2" crossorigin>
 <script src="logos.js" defer></script>
 <style>
 /* The bright style of sippar.network's connector, SeedStore and Unlock pages (Elad, 2026-10-30): warm white, navy ink,
    copper on navy for actions, Orbitron for the title and product name, Inter for the rest. Fonts are local. */
-@font-face { font-family: "Inter"; src: url("brand/inter-v20-latin.woff2") format("woff2"); font-weight: 100 900; font-display: swap; }
+@font-face { font-family: "Inter"; src: url("brand/inter-v20-latin.woff2?v=2") format("woff2"); font-weight: 100 900; font-display: swap; }
 @font-face { font-family: "Orbitron"; src: url("brand/orbitron-v35-latin-700.woff2") format("woff2"); font-weight: 700; font-display: swap; }
 :root {
   --navy: #0E1A38; --navy-deep: #08102B; --copper: #D4A074; --copper-600: #906035;
@@ -268,7 +268,7 @@ button.primary[disabled] { opacity: .5; cursor: progress; }
     <div class="brand">
       <a href="https://sippar.network" aria-label="Sippar home"><img src="brand/sippar-wordmark-ink.svg" alt="Sippar" width="88" height="19"></a>
       <span class="pdiv" aria-hidden="true"></span>
-      <span class="ptitle">Nuru</span>
+      <span class="ptitle">Playground</span>
     </div>
     <span class="walletchip" id="wallet" title="The agent's own wallet on Base">wallet <b id="bal">…</b></span>
   </div>
@@ -276,7 +276,7 @@ button.primary[disabled] { opacity: .5; cursor: progress; }
 
 <main id="main">
   <section class="ask wrap">
-    <span class="play">Playground</span>
+    <span class="play">Agent: Nuru</span>
     <h1>The agent that pays per sip and unlocks the web</h1>
     <p class="lede">With a pay-per-call budget, the digital world is flat. Ask a question: a free model plans the job, Nuru's wallet pays each source per call, and every point in the answer opens to its quote, its source and its payment on Base.</p>
     <div class="ask-grid">
