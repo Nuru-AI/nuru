@@ -229,3 +229,47 @@ test("a page read from a Google result keeps that result's place in Google", asy
   const read = run.steps.find((s) => s.id === "s2").documents;
   assert.deepEqual(read.map((d) => d.rank), google.response.results.slice(0, 3).map((r) => r.position));
 });
+
+/* As Sippar's plan runner: one more try when the seller failed and nothing was paid; a second input when the first is empty. */
+test("a seller failure with nothing paid is tried once more, and the second try serves", async () => {
+  let n = 0;
+  doors = { "google-results": { probe: () => offer(0.0025), paid: () => (++n === 1 ? json({ success: false, error: "The data provider did not complete the request", paid: false }, 502) : delivered(google, "0xg", 0.0025)) } };
+  const run = run0();
+  const spent = await runCatalogPlan({ run, plan: { steps: [{ id: "s1", product: "sippar-web-search", input: { query: "agent payments" } }] }, catalog, wallet, emit: () => {} });
+  const [s1] = run.steps;
+  assert.equal(run.steps.length, 1, "no plan B: the same seller served on the second try");
+  assert.ok(s1.items > 0 && !s1.error);
+  assert.match(s1.retried, /did not complete/);
+  assert.match(s1.note, /second try served/);
+  assert.equal(calls.filter((c) => c.paid).length, 2);
+  assert.equal(spent, 0.0025, "one payment");
+});
+
+test("never tried again: a call that was paid and failed, or an input the door refused", async () => {
+  doors = { "web-search": { probe: () => offer(0.05), paid: paidThenFailed }, "google-results": { probe: () => offer(0.0025), paid: () => json({ success: false, error: "query is required" }, 400) } };
+  const run = run0();
+  await runCatalogPlan({ run, plan: { steps: [{ id: "s1", product: "tavily-web-search", input: { query: "q" } }] }, catalog, wallet, emit: () => {} });
+  assert.equal(calls.filter((c) => c.paid && c.id === "web-search").length, 1, "the paid failure is not bought again");
+  assert.equal(calls.filter((c) => c.paid && c.id === "google-results").length, 1, "plan B's refused input is not asked again");
+});
+
+test("a step's second input is bought only when the first came back empty, and the check counts it", async () => {
+  const plan = { steps: [{ id: "s1", product: "sippar-web-search", input: { query: "\"agent payments\" x402 Base USDC" }, fallback: { query: "agent payments" } }] };
+  const check = checkPlan(plan, catalog.shelf, 0.3);
+  assert.ok(check.ok && check.calls === 2 && check.costUSD === 0.005, JSON.stringify(check));
+  assert.ok(!checkPlan({ steps: [{ ...plan.steps[0], fallback: "agent payments" }] }, catalog.shelf, 0.3).ok, "a fallback must be an input");
+
+  let n = 0;
+  doors = { "google-results": { probe: () => offer(0.0025), paid: () => delivered(++n === 1 ? { response: { results: [] } } : google, `0xg${n}`, 0.0025) } };
+  const run = run0();
+  await runCatalogPlan({ run, plan, catalog, wallet, emit: () => {} });
+  assert.equal(run.steps.length, 2);
+  assert.deepEqual(run.steps.map((s) => [s.id, s.items > 0]), [["s1", false], ["s1", true]]);
+  assert.match(run.steps[1].note, /second input was bought/);
+  assert.ok(run.readDocIds.length && run.readDocIds.every((id) => id.startsWith("S2.")));
+
+  n = 1; calls = [];
+  const run2 = run0();
+  await runCatalogPlan({ run: run2, plan, catalog, wallet, emit: () => {} });
+  assert.equal(run2.steps.length, 1, "a first input with items buys no second");
+});
