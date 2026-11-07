@@ -1,0 +1,1996 @@
+{
+"_note": "Sippar's live sell catalog read 2026-11-07 ~21:00 UTC, trimmed to the fields lib/catalog.mjs reads (Nuru-AI/sippar#7065). Rows lib/catalog.mjs defaultFilter leaves out (per-model image and video, per-chain pages) are dropped.",
+"products": [
+{
+"id": "grounded-search",
+"name": "Grounded Web Search",
+"priceUSD": 0.05,
+"description": "Live-web answer with source citations, from Tavily search. One question in, one sourced answer out.",
+"input": {
+"query": "What changed in the x402 ecosystem this week?"
+},
+"health": "working",
+"topic": "search",
+"shortName": "Answers",
+"source": "Tavily",
+"summary": "A sourced answer to one question from the live web."
+},
+{
+"id": "web-search",
+"name": "Web Search (Tavily)",
+"priceUSD": 0.05,
+"description": "Tavily's live web search response, unchanged: ranked results with page excerpts, URLs and scores, plus Tavily's own answer. Narrow it to chosen sites (include_domains, exclude_domains), a date window (time_range, or start_date and end_date), news or finance sources (topic) or a country (country); a narrowed search can return fewer results and costs the same. When a reseller serves the call, the page names it and what it keeps (Spraay keeps the answer and each result's title, URL, excerpt, score and date). Source: Tavily (tavily.com).",
+"input": {
+"query": "What is the x402 payment protocol?"
+},
+"inputOptions": [
+{
+"field": "topic",
+"required": false,
+"description": "news for news articles (each with its publish date), finance for financial sources; leave it out for the whole web."
+},
+{
+"field": "time_range",
+"required": false,
+"description": "Only pages from the last day, week, month or year. Send this or start_date/end_date, not both."
+},
+{
+"field": "start_date",
+"required": false,
+"description": "Only pages from this date on, written YYYY-MM-DD."
+},
+{
+"field": "end_date",
+"required": false,
+"description": "Only pages up to this date, written YYYY-MM-DD; it must be later than start_date (for one day, send time_range day)."
+},
+{
+"field": "include_domains",
+"required": false,
+"description": "Only these sites, as bare names such as [\"instagram.com\", \"ticketmaster.com\"], at most 20."
+},
+{
+"field": "exclude_domains",
+"required": false,
+"description": "Leave these sites out, as bare names such as [\"wikipedia.org\"], at most 20."
+},
+{
+"field": "country",
+"required": false,
+"description": "Rank results from this country first, as a country name in words, such as \"united kingdom\"."
+},
+{
+"field": "include_images",
+"required": false,
+"description": "true to add Tavily's image URLs for the query; leave it out for none."
+},
+{
+"field": "max_results",
+"required": false,
+"description": "How many results: a whole number from 20 to 25. Leave it out for 20. Anything else is refused before payment."
+}
+],
+"health": "working",
+"topic": "search",
+"antseedModels": [
+{
+"id": "tavily-web-search"
+}
+]
+},
+{
+"id": "google-results",
+"name": "Google Search Results",
+"priceUSD": 0.0025,
+"description": "The first page of Google's results for one search, unchanged: up to ten organic results (position, URL, title, Google's description, sitelinks), plus Google's knowledge panel and related searches when it shows them. Links and titles, not page text. Read live by an Apify Actor (Google Search Results SERP Scraper, by ScraperLink). Source: Google.",
+"input": {
+"query": "Nebius official website"
+},
+"health": "working",
+"topic": "search",
+"shortName": "Google results",
+"source": "Google",
+"summary": "The first page of Google results for one search: links and titles.",
+"antseedModels": [
+{
+"id": "sippar-web-search"
+}
+]
+},
+{
+"id": "healthparse",
+"name": "US Healthcare Records (HealthParse)",
+"priceUSD": 0.08,
+"description": "HealthParse's US public healthcare records, unchanged, state-wide: hospitals, nursing homes, home health, surgical centers, health centers, shortage areas, 340B entities and health nonprofits in a state (100 rows a page), plus national price statistics by billing code. Send one request line such as hospitals/search?state=TX. Source: HealthParse (healthparse.io, a ParseData brand). Not a consumer report.",
+"input": {
+"query": "hospitals/search?state=TX"
+},
+"health": "working",
+"topic": "more",
+"shortName": "Healthcare",
+"source": "HealthParse",
+"summary": "US public healthcare records for a state."
+},
+{
+"id": "x-social",
+"name": "X Social Media (search)",
+"priceUSD": 0.02,
+"description": "Public X/Twitter posts matching a query, unchanged as the provider returns them. Operators seen working: from:, lang:, since:, quoted phrases (min_faves: and -word exclusions are not applied). Some provider results are not accurate (off-topic posts, spam); a bare coin ticker tends to return giveaway spam. Source named on every response; provider glim.sh.",
+"input": {
+"query": "x402 lang:en since:2026-10-01"
+},
+"inputOptions": [
+{
+"field": "time",
+"required": false,
+"description": "only posts from the last day, week, month or year (sent to X as a start date). Leave out for any date."
+},
+{
+"field": "sort",
+"required": false,
+"description": "top (most engaged, the default) or latest (newest first)."
+}
+],
+"health": "working",
+"topic": "social",
+"antseedModels": [
+{
+"id": "sippar-x-social"
+}
+]
+},
+{
+"id": "github",
+"name": "GitHub (repositories, files, code search)",
+"priceUSD": 0.02,
+"description": "Public GitHub data, unchanged as glim.sh returns it. Send one line: owner/repo (metadata and README), owner/repo/tree/<branch>/<folder> (a file list), owner/repo/blob/<branch>/<path> (one file), owner/repo/issues/N, /pull/N, /discussions/N, /releases or /commits/<branch>; anything else is a GitHub search in GitHub's own syntax (repo:, path:, language:, symbol:). A page over 96 KB is not served; the answer says how to narrow it. Source: glim.sh; repository content stays under each repository's license.",
+"input": {
+"query": "Nuru-AI/seedstore"
+},
+"inputOptions": [
+{
+"field": "page",
+"required": false,
+"description": "The next page of a search or a list: a whole number (up to 10 for a search, 100 for commits, releases or branches)."
+},
+{
+"field": "repo",
+"required": false,
+"description": "owner/name: scope a search to one repository (makes the line a search)."
+},
+{
+"field": "kind",
+"required": false,
+"description": "The search kind: repos, conversations (issues and PRs), discussions or code. Optional; inferred from the query."
+},
+{
+"field": "per_page",
+"required": false,
+"description": "How many results: up to 30 for a search (discussions at most 10), up to 100 for commits, releases or branches."
+}
+],
+"health": "working",
+"topic": "code",
+"antseedModels": [
+{
+"id": "sippar-github"
+}
+]
+},
+{
+"id": "amazon",
+"name": "Amazon (product search and product details)",
+"priceUSD": 0.03,
+"description": "Amazon product listings, unchanged as glim.sh returns them, on amazon.com, .co.uk, .de, .fr, .es and .it. Send one line: a search (ranked products with ASIN, price gross and VAT-excluded net, rating, review count), bestsellers:<category> (a category's bestsellers), or an ASIN or amazon.<tld>/dp/<ASIN> URL from a search result (buybox offer, other sellers, delivery, top reviews). Optional fields: tld, page, sort_by, min_reviews, include_paid, include_suggested, response_format (this door answers in glim.sh's detailed format, with product image URLs, unless you send concise). Source: glim.sh; data from Amazon.",
+"input": {
+"query": "usb c charger"
+},
+"inputOptions": [
+{
+"field": "tld",
+"required": false,
+"description": "Marketplace: com, co.uk, de, fr, es or it. Default com."
+},
+{
+"field": "page",
+"required": false,
+"description": "Search results page, 1 to 20."
+},
+{
+"field": "sort_by",
+"required": false,
+"description": "most_recent, price_low_to_high, price_high_to_low, featured, average_review, bestsellers or most_reviewed."
+},
+{
+"field": "min_reviews",
+"required": false,
+"description": "Only products with at least this many reviews."
+},
+{
+"field": "include_paid",
+"required": false,
+"description": "true to keep sponsored results (kept apart in the answer)."
+},
+{
+"field": "include_suggested",
+"required": false,
+"description": "true to keep Amazon's suggested products."
+},
+{
+"field": "response_format",
+"required": false,
+"description": "detailed (this door's default, with product image URLs) or concise."
+}
+],
+"health": "working",
+"topic": "shopping",
+"antseedModels": [
+{
+"id": "sippar-amazon"
+}
+]
+},
+{
+"id": "google-flights",
+"name": "Google Flights (via stabletravel)",
+"priceUSD": 0.06,
+"description": "Google Flights results for one route and date, unchanged as stabletravel returns them: best and other flights with prices, airlines, times and stops, plus Google's price insights (price level, typical range, price history). Send one line: FROM TO DATE [RETURN-DATE] [ADULTS] [OPTIONS], e.g. TLV ATH 2026-10-26 class:business; options class:, children:, infants:, lap:, currency:. Source: Google Flights via stabletravel.dev (Merit Systems).",
+"input": {
+"query": "TLV ATH 2026-10-26"
+},
+"health": "working",
+"topic": "travel",
+"antseedModels": [
+{
+"id": "sippar-flight-search"
+}
+]
+},
+{
+"id": "news-search",
+"name": "News search and headlines (Google News via OpenWeb Ninja)",
+"priceUSD": 0.01,
+"description": "News for one line from Google News via OpenWeb Ninja, values as returned: headline, source, publication date, authors, link and a short snippet per article, plus the thumbnail and source-icon links Google News gives (URLs on Google's image host, never the images); no article text. Send a search, e.g. Federal Reserve interest rates, or the word headlines for the day's top stories, or headlines and a topic, e.g. headlines business. Source: Google News via OpenWeb Ninja.",
+"input": {
+"query": "Federal Reserve interest rates"
+},
+"inputOptions": [
+{
+"field": "time",
+"required": false,
+"description": "a search only: articles from the last day, week, month or year. Default week."
+},
+{
+"field": "sort",
+"required": false,
+"description": "a search only: relevance (the default) or date (newest first)."
+}
+],
+"health": "working",
+"topic": "news",
+"antseedModels": [
+{
+"id": "sippar-news-search"
+}
+]
+},
+{
+"id": "dataconomy-search",
+"name": "Dataconomy article search (Dataconomy)",
+"priceUSD": 0.02,
+"description": "Articles from Dataconomy (dataconomy.com, the tech and data publication) matching one search, fetched live from the publisher for this call: up to ten, newest first, each with its headline, author, publication date, canonical link and the publisher's own excerpt (a sentence or two), not the article's text. For the whole text of one article, send its link to dataconomy-article. Send one line of search words, e.g. stablecoin payments. Source: Dataconomy.",
+"input": {
+"query": "stablecoin payments"
+},
+"health": "working",
+"topic": "news"
+},
+{
+"id": "dataconomy-article",
+"name": "Dataconomy article (Dataconomy)",
+"priceUSD": 0.02,
+"description": "One Dataconomy article (dataconomy.com) by its link, fetched live from the publisher for this call: headline, author, publication date, canonical link and the whole article as clean text. Send the article's https link, e.g. https://dataconomy.com/2026/10/21/what-10-trillion-in-invoice-data-says-about-the-gap-between-automation-and-autonomy/. A link that is not a dataconomy.com article is refused before payment; a link with no article answers 404 with the payment unused. Source: Dataconomy.",
+"input": {
+"url": "https://dataconomy.com/2026/10/21/what-10-trillion-in-invoice-data-says-about-the-gap-between-automation-and-autonomy/"
+},
+"health": "working",
+"topic": "news"
+},
+{
+"id": "image-generation",
+"name": "Image generation (Qwen-Image or Z-Image Turbo via AntSeed)",
+"priceUSD": 0.03,
+"description": "One image made from your description by an open-weight model, bought on AntSeed from a pinned seller and returned as the seller sent it (a PNG or WebP about 1024 pixels wide; the model sets the exact size). Send one line describing the image, e.g. a copper lighthouse on a navy rock, flat illustration. Optional model: qwen-image (the default, about 30 seconds) or z-image-turbo (faster, about 10 seconds). For words in the image (signs, labels, titles), use qwen-image: z-image-turbo often misspells them. Optional output_format: png, jpeg or webp (much smaller), on either model. qwen-image makes its own size; with model z-image-turbo, optional size (1024x1024, 1536x1024, 1024x1536, 1792x1024 or 1024x1792; 1024x1792 is tall, close to 9:16) is honoured. Same price at every option. Source: the model named on the answer, via AntSeed.",
+"input": {
+"query": "a copper lighthouse on a navy rock, flat illustration"
+},
+"inputOptions": [
+{
+"field": "model",
+"required": false,
+"description": "qwen-image (default; use it when the image has words in it) or z-image-turbo (faster, often misspells words). Both open-weight."
+},
+{
+"field": "size",
+"required": false,
+"description": "optional, with model z-image-turbo only: 1024x1024, 1536x1024, 1024x1536, 1792x1024 or 1024x1792 (width x height). qwen-image sets its own size."
+},
+{
+"field": "output_format",
+"required": false,
+"description": "optional, either model: png, jpeg or webp (webp and jpeg are much smaller)."
+}
+],
+"health": "working",
+"topic": "images",
+"shortName": "Sippar's pick",
+"source": "Qwen or Z-Image",
+"summary": "One image from your description, at one price; Sippar picks the model."
+},
+{
+"id": "ai-visibility",
+"name": "AI visibility check (what AI models say about a brand, via AntSeed)",
+"priceUSD": 0.71,
+"priceFrom": true,
+"description": "What AI chat models say about a brand when buyers ask them, from the models' own knowledge (no web search unless you turn it on). Send the brand name, plus a category (what it sells, e.g. pay-per-call data APIs for AI agents). Sippar asks a panel of buyer questions, written by three personas or sent by you, to each model. Sippar picks the three personas itself, from 1,000,000 US people (NVIDIA Nemotron-Personas-USA) plus 3 business roles: a judgement model reads your category into a profile and picks the three who fit. Leave personas out to get this; naming personas limits the panel to a short published list. With askAs persona, each question is asked as the person who wrote it. Sippar returns every answer unchanged with a count of how often and in what order the brand and your competitors appear, each question tagged with the buyer stage it tests (problem, solution, product or most aware). With search on, it also counts which sites the answers cited. A summary comes with it (summary off to skip it and its cost): a strong AI model bought on AntSeed reads the answers and says which brands came up, how the answers described the brand and which sites they leaned on, facts only, with no verdict, score or numbers of its own; Sippar checks each item against the answers and puts its own counts beside it, and every answer still ships unchanged. Each model is named as its AntSeed seller labels it, with the seller; Sippar does not verify what a seller runs. One call is one window, a baseline, not a trend. Choose a kind of model with modelGroup (free sellers, open-weight models, or one flagship per lab) and how many questions with questions (a quick check of 3, the standard 6, or a full panel of 12); send neither for the standard four models and 6 questions. Price depends on the models, questions and samples you choose, follows the sellers' live rates, and is quoted before you pay. Source: the models and sellers named on each answer, via AntSeed.",
+"input": {
+"query": "Sippar"
+},
+"inputOptions": [
+{
+"field": "category",
+"required": false,
+"description": "what the brand sells, one line, e.g. pay-per-call data APIs for AI agents. Required unless you send prompts."
+},
+{
+"field": "competitors",
+"required": false,
+"description": "optional: up to 5 competitor names, comma-separated; each answer counts them too. Give other spellings after a slash (e.g. Al Arz / \u05d0\u05dc \u05d0\u05e8\u05d6 / \u05d0\u05dc-\u05d0\u05e8\u05d6); they count under the first."
+},
+{
+"field": "aliases",
+"required": false,
+"description": "optional: up to 5 other names the brand goes by, comma-separated, including other spellings and scripts (e.g. Har Bracha, Har Brakha, \u05d4\u05e8 \u05d1\u05e8\u05db\u05d4)."
+},
+{
+"field": "domain",
+"required": false,
+"description": "optional: the brand's site, e.g. sippar.network; with search on, each answer says whether it cited it."
+},
+{
+"field": "prompts",
+"required": false,
+"description": "optional: your own questions, up to 12, as a list, or one string separated by | or one per line. They replace the persona panel; send the panel a call returned to compare two windows."
+},
+{
+"field": "personas",
+"required": false,
+"description": "optional, best left out: Sippar then picks the three personas that fit your category from 1,000,000 US people. Naming up to 3 ids, comma-separated, limits you to a short published list of business roles and consumers (https://sippar.network/api/sippar/sell/ai-visibility/personas)."
+},
+{
+"field": "askAs",
+"required": false,
+"description": "optional: persona asks each question as the persona that wrote it, one line of who is asking (age, sex, occupation, city and state, two hobbies) before the question; each answer names who it was asked as and the summary splits mentions by persona. Same price. Off by default; not with your own prompts."
+},
+{
+"field": "asker",
+"required": false,
+"description": "optional: one line about who is asking, up to 160 characters, e.g. I'm a procurement lead at a 200-person logistics company in Ohio. It goes before every panel question (yours or the personas'); the prompted question and the two controls stay bare. Each such answer says askedAs you, and the summary counts them under byPersona.you. Same price. A line that names the brand or a competitor is refused before payment (describe the company instead). Not with askAs persona."
+},
+{
+"field": "models",
+"required": false,
+"description": "optional: up to 8 model ids, comma-separated. Default gpt-5.4, deepseek-v4-pro, kimi-k3, grok-4.5. One call holds up to 60 answers, which is 4 models at the default 2 samples or 6 at samples 1; for more models, make several calls one after another. On Sippar's MCP connector, the ai_visibility tool takes up to 24 models and 240 answers in one request and splits it for you, every model asked the same questions. Any chat model sold on AntSeed right now, frontier and open, including ones with free sellers; the list with each model's price per answer: https://sippar.network/api/sippar/sell/ai-visibility/models"
+},
+{
+"field": "modelGroup",
+"required": false,
+"description": "optional, instead of models: free (four models from free sellers only, no web search), open (four open-weight models: DeepSeek, Kimi, GLM, MiniMax) or frontier (one flagship per lab: OpenAI, Anthropic, Google, xAI). Sippar takes the first model sold right now for each maker and names the models in the answer."
+},
+{
+"field": "questions",
+"required": false,
+"description": "optional: quick (3 questions, 1 sample each, a glance; fits up to 8 models), standard (6 questions, 2 samples, the default) or full (12 questions, 1 sample). Not with your own prompts."
+},
+{
+"field": "samples",
+"required": false,
+"description": "optional: how many times each model answers each question, 1 to 3 (default 2)."
+},
+{
+"field": "search",
+"required": false,
+"description": "optional: on asks each model with web search switched on where its seller runs it (sellers reselling Venice do; others answer from the model's own knowledge, and each answer says which). Off by default."
+},
+{
+"field": "maxPrice",
+"required": false,
+"description": "optional: a price ceiling in USD per million tokens (0 to 50, e.g. 0.5; 0 = free sellers only). Only sellers at or under it are asked, and the price is lower; a model with no seller under it fails the call before you are charged."
+},
+{
+"field": "summary",
+"required": false,
+"description": "optional: on (the default) adds a facts-only summary of the answers, written by a strong AI model bought on AntSeed and named with its seller: the brands that came up, how the answers described yours, and the sites they leaned on, each with Sippar's own count beside it, and no verdict, score or numbers from the model. Priced in; off skips it and its cost. The answers ship in full either way."
+},
+{
+"field": "panel",
+"required": false,
+"description": "leave it out: set by Sippar's ai_visibility workflow, so every part of a bigger run asks the questions its first part wrote (the panel that call returned)."
+},
+{
+"field": "readAnswers",
+"required": false,
+"description": "leave it out: set by Sippar's ai_visibility workflow, so the summary of a bigger run is written once, over every part's answers."
+}
+],
+"health": "working",
+"topic": "models",
+"shortName": "AI visibility",
+"source": "AI models via AntSeed",
+"summary": "What AI models say about a brand, every answer shown with a mention count."
+},
+{
+"id": "competitor-synthesis",
+"name": "Competitor run synthesis (a strong AI model via AntSeed)",
+"priceUSD": 0.1,
+"priceFrom": true,
+"description": "The reading of a finished Sippar competitor-discovery run, written by a strong chat model bought on AntSeed: the competitors grouped per cell (direct, indirect, replacement, potential, status quo and absorbers, unverified), each in one line from its own page, and every factual claim with the run's links that show it, as one JSON object. With run set to audience, the reading of a finished audience-discovery run instead: where buyers talk and what they ask, as themes and claims with the run's links, and no numbers (Sippar shows its own from the run). Send the run's text and its length as size. The model is named as its AntSeed seller labels it, with the seller; Sippar does not verify what a seller runs. Source: the model and seller named on the answer, via AntSeed.",
+"input": {
+"query": "Competitor discovery run for \"Nebius\", 1 cell: ended ..."
+},
+"inputOptions": [
+{
+"field": "size",
+"required": false,
+"description": "required: the run's length in characters; the price is for this size, and a longer run is refused."
+},
+{
+"field": "model",
+"required": false,
+"description": "optional: the AntSeed chat model that writes it. Default: the first sold now of claude-opus-5.5, gpt-6.1-sol, gpt-6-astra, kimi-k3."
+},
+{
+"field": "run",
+"required": false,
+"description": "optional: \"competitor\" (the default) for a competitor-discovery run, \"audience\" for an audience-discovery run (themes and claims with the run's links, and no numbers: Sippar shows its own)."
+}
+],
+"health": "working",
+"topic": "workflows",
+"shortName": "Run synthesis",
+"source": "AI models via AntSeed",
+"summary": "The reading of a competitor-discovery run, written by a strong AI model, every claim with its links."
+},
+{
+"id": "workflow-planner",
+"name": "Workflow planner (skills-guided, a strong AI model via AntSeed)",
+"priceUSD": 0.1,
+"description": "A workflow plan over Sippar's own products for one request: Sippar searches skills.sh for agent skills about the job, Jev (bought on AntSeed) picks the ones that fit and checks they describe steps, and a strong chat model bought on AntSeed writes the plan as one JSON object: paid steps on Sippar's products and code moves between them (merge, dedupe, filter, rank, top, for_each). Send the product sheet as the query and its length as size, with request and job. The plan is not checked or run here; Sippar's MCP door does that. Each skill is named with its licence and how it was picked; the model is named as its AntSeed seller labels it, with the seller. Source: skills.sh, and the model and sellers named on the answer, via AntSeed.",
+"input": {
+"query": "- sippar-video-search: Video search and video details. $0.03 a call. ..."
+},
+"inputOptions": [
+{
+"field": "size",
+"required": false,
+"description": "required: the sheet's length in characters; the price is for this size, and a longer sheet is refused."
+},
+{
+"field": "request",
+"required": false,
+"description": "required: the person's request, in their words."
+},
+{
+"field": "job",
+"required": false,
+"description": "required: a few words naming the job, for the skills search (e.g. \"youtube trend research\")."
+},
+{
+"field": "budget",
+"required": false,
+"description": "optional: the most the planned paid steps may cost, in USD."
+},
+{
+"field": "model",
+"required": false,
+"description": "optional: the AntSeed chat model that writes it. Default: the first sold now of nemotron-3-ultra-free, nemotron-3-ultra, claude-opus-5.5, gpt-6.1-sol, gemini-3.1-pro."
+}
+],
+"health": "working",
+"topic": "workflows",
+"shortName": "Workflow plan",
+"source": "AI models via AntSeed",
+"summary": "A plan over Sippar's products for one request, guided by agent skills Sippar finds for the job."
+},
+{
+"id": "media-workflow",
+"name": "Media workflow (stills, then clips, planned by a strong AI model via AntSeed)",
+"priceUSD": 0.21,
+"priceFrom": true,
+"description": "The plan for a picture or video job over Sippar's picture and video models: Sippar searches skills.sh for film and shot-list skills, Jev (bought on AntSeed) picks the ones that fit and checks they describe steps, and a strong chat model bought on AntSeed (claude-opus-5.5 first) writes the plan as one JSON object: the stills, an approval so the person sees them before any clip is bought, then the clips, each starting from a still or the clip before it; or a photo search (Amazon) whose photos start the clips. Send the sheet of models as the query and its length as size, with request (and job, optional). The plan is checked and run by Sippar's MCP door (media_workflow), never here: a clip from a real product photo only on a model that keeps the product's text. Each skill is named with its licence and how it was picked; the model is named as its AntSeed seller labels it, with the seller. Source: skills.sh, and the model and sellers named on the answer, via AntSeed.",
+"input": {
+"query": "- video-wan-3-0-image-to-video: Video: Wan 3.0 image to video. $0.65 a clip. ..."
+},
+"inputOptions": [
+{
+"field": "size",
+"required": false,
+"description": "required: the sheet's length in characters; the price is for this size, and a longer sheet is refused."
+},
+{
+"field": "request",
+"required": false,
+"description": "required: the person's request, in their words."
+},
+{
+"field": "job",
+"required": false,
+"description": "optional: a few words for the skills search (default \"ai video storyboard shot list\")."
+},
+{
+"field": "budget",
+"required": false,
+"description": "optional: the most the planned pictures and clips may cost, in USD."
+},
+{
+"field": "model",
+"required": false,
+"description": "optional: the AntSeed chat model that writes it. Default: claude-opus-5.5, else the planner's own order."
+}
+],
+"health": "working",
+"topic": "workflows",
+"shortName": "Media workflow",
+"source": "AI models via AntSeed",
+"summary": "Pictures, then clips from them: Sippar plans the shots, you approve the stills, then it makes each clip."
+},
+{
+"id": "audience-profile",
+"name": "Audience profile (Jev over 1,000,000 US personas)",
+"priceUSD": 0.02,
+"description": "Who chooses and pays for a product or category (for a business purchase, who decides on it, not only who uses it), as traits (sex, age, marital status, education, region and states, job group and exact jobs, interests) each with the probabilities Jev gave, how many of 1,000,000 synthetic US adults fit and their share, and sample people as NVIDIA wrote them. Send the product or category in one line as the query; people sets how many sample people (1 to 20, default 10). The people are synthetic US adults grounded in US Census distributions, not real customers; the same category draws the same people. Source: NVIDIA Nemotron-Personas-USA (CC BY 4.0) on an Internet Computer canister; traits chosen by Jev (TypeSafe).",
+"input": {
+"query": "payroll software for restaurants"
+},
+"inputOptions": [
+{
+"field": "people",
+"required": false,
+"description": "optional: how many sample people to return, 1 to 20 (default 10)."
+}
+],
+"health": "working",
+"topic": "workflows",
+"shortName": "Audience",
+"source": "NVIDIA personas + Jev",
+"summary": "Who is most likely to buy a product: traits with Jev's probabilities, how many of 1,000,000 US people fit, and sample people."
+},
+{
+"id": "second-opinion",
+"name": "Second opinion panel (several AI models via AntSeed)",
+"priceUSD": 0.32,
+"priceFrom": true,
+"description": "A second opinion from several AI models at once. Send one brief: the question or decision, with the material it is about (a plan, a draft, code, a design, notes), up to 88,000 characters. Each model reads it on its own and answers with what it recommends, the strongest case against it, the runner-up and the risks; Sippar returns every answer unchanged, side by side, with no score or verdict, so you compare them. Default: three different model families, the strongest sold right now (Claude, GPT and Gemini when sold). For one other model's opinion, send opinions=1 and caller set to your own model family (claude, gpt, gemini, grok, kimi, deepseek): you get the strongest model sold now from another family. Or name 1 to 6 models to choose your own, or name families (families=grok,kimi) to get each family's strongest model sold now. For a quicker panel, send tier=quick: the smaller, faster model of each family instead of its strongest. To have each model read the brief from a different angle, send lenses: one short line per model, in the order they are asked, separated by | (for example \"answer as our CFO | answer as a first-time customer | answer as a security reviewer\"); each answer comes back with its lens. To bring web pages, send urls with up to 3 links: Sippar reads each page live for this call with its web-content reader and adds its text to the brief under its link and the reader's name, up to 15,000 characters a page (a longer page is cut, and the answer says so); a page that cannot be read is listed as not read, and the models are told it is missing. Each page adds $0.0035 and its share of the brief to the price. Social-platform posts (X, LinkedIn, Instagram, TikTok, Facebook, Reddit, Threads, YouTube) are not read: a platform's posts stay on the platform, so paste the part you need into the brief. Everything you send, the brief and the pages, goes to the AntSeed sellers named on each answer, who are anonymous to Sippar: never send secrets, keys or private customer data. To ask the same models one follow-up question after reading their answers, send the question as the query and earlierAnswers: each model's earlier answer, keyed by its model id; each model is sent only its own earlier answer and the question, never another model's. A follow-up is a new purchase, priced on each model's earlier answer plus the question; Sippar keeps nothing between the two calls, so the earlier answers must come with the request. To hear the answers once you have them, buy again with readAloud (the answers, keyed by model id) and voiceModel (one of Sippar's voice models): each answer comes back read aloud whole, each in a different preset voice, as audio files you can play or save; it is a new purchase priced on that text before you pay. Each model is named as its AntSeed seller labels it, with the seller (a follow-up can be served by a different seller); Sippar does not verify what a seller runs. Price depends on the brief's length, the pages and the models, and is quoted before you pay. Source: the models and sellers named on each answer, via AntSeed, and each page named with its reader.",
+"input": {
+"query": "Should we price our API per call or per month? Context: ..."
+},
+"inputOptions": [
+{
+"field": "models",
+"required": false,
+"description": "optional: 1 to 6 model ids, comma-separated; pick different families for a real second opinion. Default: the strongest sold now from three families. Any chat model sold on AntSeed right now; the list: https://sippar.network/api/sippar/sell/ai-visibility/models"
+},
+{
+"field": "opinions",
+"required": false,
+"description": "optional: how many model families answer, 1 to 6 (default 3), each its strongest model sold now. opinions=1 is one other model's opinion. Not with models."
+},
+{
+"field": "caller",
+"required": false,
+"description": "optional: your own model family (claude, gpt, gemini, grok, kimi, deepseek), skipped so every opinion comes from a different family than yours."
+},
+{
+"field": "families",
+"required": false,
+"description": "optional: 1 to 6 model families, comma-separated (claude, gpt, gemini, grok, kimi, deepseek), each answered by its strongest model sold now (its quick model with tier=quick), in your order. Not with models or opinions."
+},
+{
+"field": "tier",
+"required": false,
+"description": "optional: quick asks the smaller, faster model of each family (for example Claude Haiku, GPT mini, Gemini Flash) instead of its strongest. Works with opinions, caller and families; not with models. Chat models only; sellers with a free rate are included."
+},
+{
+"field": "lenses",
+"required": false,
+"description": "optional: one short line per model (up to 160 characters each), in the order the models are asked, separated by | or one per line, for example \"answer as our CFO | answer as a first-time customer\". Each is added to that model's request and shown with its answer. One lens for each model asked. The models are asked in family order (claude, gpt, gemini, grok, kimi, deepseek, skipping caller's family), or in your own order with families or models."
+},
+{
+"field": "urls",
+"required": false,
+"description": "optional: 1 to 3 web page links (a list, or one string separated by spaces or commas). Each page is read live for this call and its text, up to 15,000 characters, is added to the brief under its link; each adds $0.0035 and its share of the brief to the price. The pages go to the anonymous AntSeed sellers with the brief. Social-platform posts (X, LinkedIn, Instagram, TikTok, Facebook, Reddit, Threads, YouTube) are refused: paste what you need instead."
+},
+{
+"field": "earlierAnswers",
+"required": false,
+"description": "optional, for one follow-up question to the same models: a JSON object of model id to that model's earlier answer text, from an earlier second-opinion result ({\"claude-opus-5.5\": \"...\", \"gpt-6.1-sol\": \"...\"}); the query is then the follow-up question. Each model gets only its own earlier answer and the question. 1 to 6 models; not with models, opinions, caller, tier, families, lenses or urls."
+},
+{
+"field": "readAloud",
+"required": false,
+"description": "optional, to have answers read aloud once you have them: through the Sippar connector, \"purchase:<purchaseId>\" of your own delivered second-opinion result (within 15 minutes; Sippar reads its answers exactly as delivered), or a JSON object of model id to that model's answer text, from an earlier second-opinion result (any of its answers). A new purchase, priced on the text you send: each answer comes back as audio, read whole, each part under its own heading as its own file and a long part split at sentence ends. 1 to 7 answers, at most 60 files. Send it with voiceModel and no other option (the query is not read)."
+},
+{
+"field": "voiceModel",
+"required": false,
+"description": "with readAloud: the voice model that reads, one of Sippar's voice products: chatterbox-hd, elevenlabs-turbo-v2-5, gemini-3-1-flash, gradium-v1, inworld-1-5-max, kokoro, minimax-speech-02-hd, qwen3-0-6b, qwen3-1-7b, xai-v1."
+},
+{
+"field": "voices",
+"required": false,
+"description": "optional, with readAloud: one of the voice model's own preset voices per answer, in the order the answers are sent, separated by | (default: a different voice for each answer). Custom or cloned voices are not offered."
+},
+{
+"field": "audioFormat",
+"required": false,
+"description": "optional, with readAloud: the audio format, one the voice model lists (default mp3 where it has one)."
+}
+],
+"health": "working",
+"topic": "models",
+"shortName": "Second opinion",
+"source": "AI models via AntSeed",
+"summary": "One brief read by several AI models on their own, every answer side by side."
+},
+{
+"id": "council",
+"name": "Model council (AI models answer, review each other, and a chair decides, via AntSeed)",
+"priceUSD": 1.52,
+"priceFrom": true,
+"description": "A council of AI models on one question. Send one brief: the decision or question, with the material it is about, up to 40,000 characters. First each model answers on its own (what it recommends, the case against, the runner-up, the risks). Then each reviews every answer as Response A, B, C, without being told who wrote which, and ranks them. Then a chair, a model from a family not on the panel, writes the final answer: its recommendation, where the answers agree and split, and what the brief leaves out. You get every answer unchanged, every review, each model's average place (counted by Sippar's code) and the chair's verdict, each named with its model and seller. Default panel: the strongest sold now from three families (Claude, GPT and Gemini when sold), chaired by a fourth. Send caller with your own model family to keep it off the panel and the chair. For one other model's opinion, or answers with no verdict, use second-opinion. To hear the verdict and answers once you have them, buy again with readAloud (each text keyed by who wrote it) and voiceModel: each is read aloud whole, in a different preset voice each, priced on that text before you pay. Each model is named as its AntSeed seller labels it; Sippar does not verify what a seller runs. Price depends on the brief's length and the models, and is quoted before you pay. Source: the models and sellers named on each answer, review and verdict, via AntSeed.",
+"input": {
+"query": "Should we price our API per call or per month? Context: ..."
+},
+"inputOptions": [
+{
+"field": "models",
+"required": false,
+"description": "optional: the panel, 2 to 6 model ids, comma-separated. Default: the strongest sold now from three families. Any chat model sold on AntSeed right now; the list: https://sippar.network/api/sippar/sell/ai-visibility/models"
+},
+{
+"field": "chair",
+"required": false,
+"description": "optional: the model that writes the verdict; it must not be on the panel. Default: the strongest sold now from a family off the panel."
+},
+{
+"field": "caller",
+"required": false,
+"description": "optional: your own model family (claude, gpt, gemini, grok, kimi, deepseek), kept off the panel and the chair."
+},
+{
+"field": "readAloud",
+"required": false,
+"description": "optional, to have answers read aloud once you have them: through the Sippar connector, \"purchase:<purchaseId>\" of your own delivered council result (within 15 minutes; Sippar reads its answers exactly as delivered), or a JSON object of model id to that model's answer text, from an earlier council result (the chair's verdict and any answers, keyed by who wrote them). A new purchase, priced on the text you send: each answer comes back as audio, read whole, each part under its own heading as its own file and a long part split at sentence ends. 1 to 7 answers, at most 60 files. Send it with voiceModel and no other option (the query is not read)."
+},
+{
+"field": "voiceModel",
+"required": false,
+"description": "with readAloud: the voice model that reads, one of Sippar's voice products: chatterbox-hd, elevenlabs-turbo-v2-5, gemini-3-1-flash, gradium-v1, inworld-1-5-max, kokoro, minimax-speech-02-hd, qwen3-0-6b, qwen3-1-7b, xai-v1."
+},
+{
+"field": "voices",
+"required": false,
+"description": "optional, with readAloud: one of the voice model's own preset voices per answer, in the order the answers are sent, separated by | (default: a different voice for each answer). Custom or cloned voices are not offered."
+},
+{
+"field": "audioFormat",
+"required": false,
+"description": "optional, with readAloud: the audio format, one the voice model lists (default mp3 where it has one)."
+}
+],
+"health": "working",
+"topic": "models",
+"shortName": "Model council",
+"source": "AI models via AntSeed",
+"summary": "AI models answer one brief, review each other without names, and a chair from another family writes the verdict."
+},
+{
+"id": "ask-model",
+"name": "Ask one AI model (its plain answer, via AntSeed)",
+"priceUSD": 0.1,
+"priceFrom": true,
+"description": "One AI model, your own prompt, its answer exactly as written. Send the whole job as the prompt, up to 88,000 characters (code, a draft, a composition, a long brief), name the model (or a family for its strongest model sold now), and optionally your own instructions and an answer cap. Sippar adds nothing to the prompt: no framing, no headings. The answer comes back with the model and the AntSeed seller that served it, why it stopped (finish \"length\" means your cap cut it; the partial answer is returned and billed) and its token counts. Priced before you pay from the prompt's length and your cap, at the model's live seller rate, never under $0.10. The prompt goes to an anonymous AntSeed seller: send no secrets. Long answers can take several minutes: send Prefer: respond-async.",
+"input": {
+"query": "Write a one-file HTML page that ... (the whole job, with its material)"
+},
+"inputOptions": [
+{
+"field": "model",
+"required": false,
+"description": "the model: one id sold on AntSeed right now, as its seller labels it (the list: https://sippar.network/api/sippar/sell/ai-visibility/models). Or send family instead."
+},
+{
+"field": "family",
+"required": false,
+"description": "or the family (claude, gpt, gemini, grok, kimi, deepseek): its strongest model sold now. Not with model."
+},
+{
+"field": "maxTokens",
+"required": false,
+"description": "optional: the answer's length cap in tokens, 1,000 to 12,000 (default 6,000). You pay for the cap you ask; a reasoning model may spend part of it thinking."
+},
+{
+"field": "instructions",
+"required": false,
+"description": "optional: your own standing instructions, up to 8,000 characters. Sent as the system message and again at the top of the prompt, because some sellers replace the system message with their own."
+}
+],
+"health": "slow",
+"topic": "models",
+"shortName": "Ask one model",
+"source": "AI models via AntSeed",
+"summary": "One AI model, your own prompt and instructions, its answer exactly as written."
+},
+{
+"id": "lodging-search",
+"name": "Hotels, hostels and stays (Google Maps via OpenWeb Ninja)",
+"priceUSD": 0.01,
+"description": "Places to stay for one search from Google Maps via OpenWeb Ninja, values as returned: name, type, star class, guest rating and reviews, amenities, address, links, and the price Google shows for its default night; end the line with 'offers' for each booking site's price. Send one line, e.g. hostels in Lisbon. Source: Google Maps via OpenWeb Ninja.",
+"input": {
+"query": "hotels in Athens"
+},
+"health": "working",
+"topic": "travel",
+"antseedModels": [
+{
+"id": "sippar-hotel-search"
+}
+]
+},
+{
+"id": "job-search",
+"name": "Job postings (Google for Jobs via OpenWeb Ninja)",
+"priceUSD": 0.05,
+"description": "Job postings for one search, details and links only, values as returned: title, employer, the site that published the posting, employment type, place, posted time, pay where stated, and the links to the posting and to apply. No description text. Send one line, e.g. data engineer jobs in Austin, TX; add 'country de' for another country. Source: Google for Jobs via OpenWeb Ninja.",
+"input": {
+"query": "data engineer jobs in Austin, TX"
+},
+"health": "slow",
+"topic": "jobs",
+"antseedModels": [
+{
+"id": "sippar-job-search"
+}
+]
+},
+{
+"id": "linkedin-social",
+"name": "LinkedIn Social Media (search)",
+"priceUSD": 0.03,
+"priceFrom": true,
+"description": "Public LinkedIn posts matching a query: for each post the link, publish date, author (name, profile link, followers), reaction and comment counts, and an \"In short\" line, one sentence Sippar writes about the post with an AI model, in its own words. Post text is not included; open the link to read a post. Ten posts per call at the listed price; \"posts\" collects up to 50 in one call, priced per ten (the 402 quotes it). Keywords work best. Source named on every response; provider Social Fetch, or LinkedIn Post Search by HarvestAPI on Apify when Social Fetch cannot take payment. Also, with a linkedin.com/company link and priced per kind (the 402 quotes it): \"by\":\"company-posts\" the company's recent posts (details and an In short line), \"by\":\"company\" its facts (name, industry, type, website, logo, size band, followers, headquarters; never its description), \"by\":\"headcount\" its employee count and breakdown by group, and \"by\":\"ads\" its LinkedIn Ad Library ads, or ads for keywords (advertiser, link, dates, format, impressions band and an In short line; never the ad text). Provider Social Fetch, or an Apify Actor (LinkedIn Company Posts Scraper by HarvestAPI, LinkedIn Ads Scraper by silva95gustavo) when Social Fetch cannot take payment. Person profiles are not offered.",
+"input": {
+"query": "stablecoin payments"
+},
+"inputOptions": [
+{
+"field": "by",
+"required": false,
+"description": "posts (default: posts for a search), company-posts (a linkedin.com/company link: its recent posts), company (a company link: its facts, never its description), headcount (a company link: its employee count and breakdown by group) or ads (a company link or keywords: LinkedIn Ad Library ads). The last four take no other option and are priced per kind (the 402 quotes it); posts and ads return details and an In short line, never the text. Person profiles are not offered."
+},
+{
+"field": "cursor",
+"required": false,
+"description": "The next.cursor value from a previous answer, for the following ten posts."
+},
+{
+"field": "posts",
+"required": false,
+"description": "Collect up to this many posts (1 to 50) in one call. Priced per ten posts asked for: the product's price times the number of tens, rounded up; the 402 quotes it."
+},
+{
+"field": "time",
+"required": false,
+"description": "a post search only: posts from the last day, week, month or year (LinkedIn's own date filter). Leave out for any date."
+}
+],
+"health": "working",
+"topic": "social",
+"antseedModels": [
+{
+"id": "sippar-linkedin-social"
+}
+]
+},
+{
+"id": "reddit-social",
+"name": "Reddit Social Media (search)",
+"priceUSD": 0.02,
+"priceFrom": true,
+"description": "Public Reddit posts matching a query: for each post the title, thread link, subreddit, author username, publish date, score, comment count, and an \"In short\" line, one sentence Sippar writes about what the post says with an AI model, in its own words (a link or picture post with no text has none). Post text and comments are not included; open the link to read a thread. Up to 10 posts per call, about 15 seconds. Keywords work best. Source named on every response; provider Social Fetch, or Reddit Search Scraper by ClearPath on Apify when Social Fetch cannot take payment. Also, each priced on its own (the 402 quotes it): \"by\":\"subreddit\" a subreddit's posts (r/name or its link; \"sort\" hot, new or top, and \"time\" with top), \"by\":\"comments\" the first ten comments on one thread link (author, date, score, reply depth and link, plus an In short line), \"by\":\"subreddit-facts\" a subreddit's weekly active users and created date, plus subscribers and the adult-content flag when the supplier gives them. Details only: never post or comment text, never a user lookup. Provider Social Fetch, or an Apify Actor (Reddit Subreddit Scraper and Reddit Comments Scraper by harshmaur, Reddit Community Profile by truefetch) when Social Fetch cannot take payment.",
+"input": {
+"query": "stablecoin payments"
+},
+"inputOptions": [
+{
+"field": "by",
+"required": false,
+"description": "search (default: posts for keywords), subreddit (the query is a subreddit, r/name or its link: its posts, hot by default), comments (the query is a link to one thread: its first ten comments) or subreddit-facts (the query is a subreddit: its weekly active users and created date, plus subscribers and the adult-content flag when the supplier gives them). Details only, never post or comment text; posts and comments carry an In short line. Each kind is priced on its own (the 402 quotes it). No user lookups."
+},
+{
+"field": "cursor",
+"required": false,
+"description": "the next.cursor value from a previous answer, for the following posts"
+},
+{
+"field": "time",
+"required": false,
+"description": "day, week, month, year or all"
+},
+{
+"field": "sort",
+"required": false,
+"description": "with \"by\":\"subreddit\" only: hot (default), new or top; with top, \"time\" picks the window"
+}
+],
+"health": "working",
+"topic": "social",
+"antseedModels": [
+{
+"id": "sippar-reddit-social"
+}
+]
+},
+{
+"id": "facebook-social",
+"name": "Facebook Social Media (Meta Ad Library and page posts)",
+"priceUSD": 0.03,
+"priceFrom": true,
+"description": "Facebook and Instagram ads from the Meta Ad Library, and a public page's recent posts, as the provider returns them. Keyword search of the Ad Library across all advertisers by default; \"by\":\"company\" lists the ads one company or page runs; \"by\":\"page\" with a facebook.com page link returns that page's recent posts. Ad Library filters: country, status, sortBy, mediaType, startDate, endDate; both kinds page with cursor. Source named on every response; provider Social Fetch, or an Apify Actor (Facebook Ad Library Scraper by igolaizola, Facebook Page ID Finder by automation_craft for a company's ads, Facebook Page Posts Scraper by memo23) when Social Fetch cannot take payment. Also, each bought from an Apify Actor and priced per kind (the 402 quotes it): \"by\":\"post-search\" public posts for a keyword, \"by\":\"comments\" the comments on one post link, \"by\":\"reviews\" a page's reviews, \"by\":\"reels\" a page's reels, \"by\":\"events\" public events for a keyword; ten results each. Reels and events are served as the Actor returns them. Post search, comments and reviews are people's own words, so they come as details only: the link, author, date and counts, plus an \"In short\" line Sippar writes with an AI model; open the link to read the text on Facebook.",
+"input": {
+"query": "running shoes"
+},
+"inputOptions": [
+{
+"field": "by",
+"required": false,
+"description": "keyword (default: search the Ad Library across advertisers), company (the ads one company or page runs), page (a facebook.com page link: its recent posts), post-search (a keyword: public posts that mention it), comments (a link to one public post or video: its comments), reviews (a page link: its reviews), reels (a page link: its reels) or events (a keyword, what and/or where: public events). The last five return 10 results and take no other option; post-search, comments and reviews return details and an In short line, not the text."
+},
+{
+"field": "country",
+"required": false,
+"description": "Ad Library country: a 2-letter code such as US, or ALL."
+},
+{
+"field": "status",
+"required": false,
+"description": "Ad status: all, active or inactive."
+},
+{
+"field": "sortBy",
+"required": false,
+"description": "impressions or most-recent."
+},
+{
+"field": "mediaType",
+"required": false,
+"description": "all, image, video, meme, image-and-meme or none."
+},
+{
+"field": "startDate",
+"required": false,
+"description": "Ads running from this date, YYYY-MM-DD."
+},
+{
+"field": "endDate",
+"required": false,
+"description": "Ads running until this date, YYYY-MM-DD."
+},
+{
+"field": "cursor",
+"required": false,
+"description": "The nextCursor value from a previous answer, for the next page."
+}
+],
+"health": "working",
+"topic": "social",
+"antseedModels": [
+{
+"id": "sippar-facebook-social"
+}
+]
+},
+{
+"id": "instagram-social",
+"name": "Instagram Social Media",
+"priceUSD": 0.04,
+"priceFrom": true,
+"description": "Public Instagram data, ten results a call, each kind bought live from an Apify Actor and priced per kind (the 402 quotes it). \"by\":\"posts\" (default) an account's recent posts, \"by\":\"reels\" its reels, \"by\":\"profile\" its public facts (bio, counts, links): the query is the account's @name or profile link. Posts, reels and profile are served as the Actor returns them, without tagged users or other people's comments. \"by\":\"hashtag\" posts for one hashtag; \"by\":\"comments\" the comments on one public post or reel, from its link. Those two are people's own words, so they come as details only: the link, author, date and counts, plus an \"In short\" line Sippar writes with an AI model; open the link to read the text on Instagram. Source named on every response: Instagram Post, Reel, Profile, Hashtag and Comment Scrapers by Apify.",
+"input": {
+"query": "@natgeo"
+},
+"inputOptions": [
+{
+"field": "by",
+"required": false,
+"description": "posts (default: an account's recent posts), reels (its reels), profile (its public facts: bio, counts, links); for these three the query is an @name or an instagram.com profile link. hashtag (the query is one hashtag: posts that carry it) or comments (the query is a link to one public post or reel: its comments). Ten results each, one for profile; no other option. hashtag and comments return details and an In short line, not the text."
+}
+],
+"health": "working",
+"topic": "social",
+"shortName": "Instagram",
+"source": "Instagram",
+"summary": "An account's posts, reels or profile, a hashtag's posts, or a post's comments.",
+"antseedModels": [
+{
+"id": "sippar-instagram-social"
+}
+]
+},
+{
+"id": "tiktok-social",
+"name": "TikTok Social Media",
+"priceUSD": 0.07,
+"priceFrom": true,
+"description": "Public TikTok videos, bought live from an Apify Actor by Clockworks for each request and priced per kind (the 402 quotes it). \"by\":\"profile\" (the default) with a profile link or @handle returns its ten latest videos; \"by\":\"video\" with a video link returns that video's details; both are served as the Actor returns them. \"by\":\"search\" (a keyword), \"by\":\"hashtag\" (one hashtag), \"by\":\"sound\" (a tiktok.com/music/ link) return ten videos each, and \"by\":\"comments\" (a video link) ten of its comments; those are people's own words, so they come as details only: the link, author, date, counts and the video's cover, plus an \"In short\" line Sippar writes with an AI model; open the link to watch on TikTok. No other option. Source named on every response.",
+"input": {
+"query": "https://www.tiktok.com/@nasa"
+},
+"inputOptions": [
+{
+"field": "by",
+"required": false,
+"description": "profile (default: a tiktok.com/@handle link or @handle, its videos), video (one video link, its details), search (a keyword, videos), hashtag (one hashtag, its videos), comments (one video link, its comments) or sound (a tiktok.com/music/ link, videos using it). Ten results each, one for video. search, hashtag, comments and sound return details and an In short line, not the caption or comment."
+}
+],
+"health": "working",
+"topic": "social",
+"shortName": "TikTok",
+"source": "TikTok",
+"summary": "A profile's videos, one video, or videos for a search, hashtag or sound, and a video's comments.",
+"antseedModels": [
+{
+"id": "sippar-tiktok-social"
+}
+]
+},
+{
+"id": "video-search",
+"name": "Video search and video details",
+"priceUSD": 0.03,
+"priceFrom": true,
+"description": "Public YouTube videos. Send search words for up to 20 matching videos (title, link, channel, views, length, the age YouTube shows), or one video's link for its details (publish time, views, likes, comment count, genre, keywords, chapters, caption languages, related videos). Descriptions, transcripts and comments are not included; open the link to watch. Optional search filters: sort, uploaded, duration. Source named on every response; providers ScrapeMole and Social Fetch. Also, each priced on its own (the 402 quotes it): \"by\":\"channel\" with a channel link or @handle, its latest videos; \"by\":\"channel-facts\", its subscribers, video count, total views and verified mark; \"by\":\"shorts\" with search words, Shorts only; \"by\":\"comments\" with one video's link, its comments as details only: the link, author, date, likes and reply count, plus an \"In short\" line Sippar writes with an AI model; open the link to read a comment on YouTube. No descriptions or transcripts in any of them.",
+"input": {
+"query": "home espresso machine review"
+},
+"inputOptions": [
+{
+"field": "by",
+"required": false,
+"description": "Leave out for a search or one video's details (the query decides). channel (a YouTube channel link or @handle: its latest videos), channel-facts (a channel link: subscribers, video count, total views, verified), shorts (search words: Shorts only) or comments (one video's link: its comments as link, author, date, likes and reply count plus an In short line, not the text). These take no other option; each is priced on its own (the 402 quotes it)."
+},
+{
+"field": "sort",
+"required": false,
+"description": "relevance, views or rating. For recent videos use \"uploaded\"; there is no date sort."
+},
+{
+"field": "uploaded",
+"required": false,
+"description": "Only videos uploaded in the last hour, today, week, month or year."
+},
+{
+"field": "duration",
+"required": false,
+"description": "short, medium or long."
+}
+],
+"health": "working",
+"topic": "social",
+"antseedModels": [
+{
+"id": "sippar-video-search"
+}
+]
+},
+{
+"id": "3d-models",
+"name": "3D model search and model details (Sketchfab)",
+"priceUSD": 0.02,
+"description": "Public 3D models on Sketchfab. Send search words for up to 24 matching models (title, link, creator, licence, thumbnail, downloadable or not, face and vertex counts, animations, views, likes, publish date, categories, tags, file formats offered), or one model's link for its details (adds the licence's URL and terms, downloads, materials, textures). Files and descriptions are not included; downloading needs a Sketchfab account. Optional search filters: sort_by, license, downloadable, file_format (e.g. stl), categories, cursor. Models provided by Sketchfab.",
+"input": {
+"query": "cable clip"
+},
+"inputOptions": [
+{
+"field": "sort_by",
+"required": false,
+"description": "likeCount, viewCount, publishedAt or processedAt, with a leading - for descending. Omit for relevance."
+},
+{
+"field": "license",
+"required": false,
+"description": "Only models under this licence: by, by-sa, by-nd, by-nc, by-nc-sa, by-nc-nd, cc0, ed (editorial) or st (standard)."
+},
+{
+"field": "downloadable",
+"required": false,
+"description": "true for models whose files Sketchfab lets account holders download."
+},
+{
+"field": "file_format",
+"required": false,
+"description": "Only models the creator uploaded in this format, e.g. stl, obj or fbx."
+},
+{
+"field": "categories",
+"required": false,
+"description": "One Sketchfab category, e.g. electronics-gadgets or furniture-home."
+},
+{
+"field": "cursor",
+"required": false,
+"description": "The next.cursor value from a previous answer, for the next page."
+}
+],
+"health": "working",
+"topic": "more",
+"antseedModels": [
+{
+"id": "3d-model-search"
+}
+]
+},
+{
+"id": "motion-components",
+"name": "Animated UI components (open-source shadcn registries)",
+"priceUSD": 0.02,
+"description": "Animated React components (Tailwind CSS, Motion) from nine MIT-licensed shadcn registries: Magic UI, Motion Primitives, Kokonut UI, Cult UI, Eldora UI, SmoothUI, UI Layouts, Lucide Animated and Heroicons Animated. Send search words for up to 24 matching components (id, title, description, type, npm dependencies, licence, install line), \"@registry\" for one registry's components, or \"@registry/item\" (e.g. @magicui/marquee) for its full source files, CSS keyframes, dependencies and MIT licence notice. Optional search filters: registry, cursor.",
+"input": {
+"query": "text reveal"
+},
+"inputOptions": [
+{
+"field": "registry",
+"required": false,
+"description": "Only this registry's components: @magicui, @motion-primitives, @kokonutui, @cult-ui, @eldoraui, @smoothui, @ui-layouts, @lucide-animated or @heroicons-animated."
+},
+{
+"field": "cursor",
+"required": false,
+"description": "The next.cursor value from a previous answer, for the next page."
+}
+],
+"health": "working",
+"topic": "more",
+"antseedModels": [
+{
+"id": "ui-animation-search"
+}
+]
+},
+{
+"id": "skills",
+"name": "Agent Skills (CryptoSkill + Sippar)",
+"priceUSD": 0.02,
+"description": "Agent skill files as their authors publish them: CryptoSkill's crypto skills (SKILL.md, SOURCE.md and its risk index entry) or a search of its index, plus Sippar's own skill for buying its data. Source: CryptoSkill (cryptoskill.org) and Sippar. On AntSeed the sippar-skills id serves skills.sh's open directory as well (SKILL.md from the author's repo, its license line, skills.sh's audit verdicts, a search of both indexes); the crypto-skills id and this door stay CryptoSkill-only.",
+"input": {
+"query": "aave lending"
+},
+"health": "working",
+"topic": "workflows",
+"antseedModels": [
+{
+"id": "crypto-skills"
+}
+]
+},
+{
+"id": "token-intel",
+"name": "Token Market Data",
+"priceUSD": 0.1,
+"description": "Canonical token market data for a ticker: price, market cap, FDV, liquidity, 24h change + volume with buy/sell split and netflow, launch date, on-chain total supply (Nansen token-screener + on-chain reads; response includes the required \"Powered by Nansen API\" attribution). Optionally pin the exact contract address (body field \"address\") to skip ticker resolution \u2014 tickers are not unique. Neutral facts only \u2014 no ratings, no predictions, not investment advice.",
+"input": {
+"ticker": "BONK"
+},
+"health": "working",
+"topic": "crypto",
+"shortName": "Token data",
+"source": "Nansen",
+"summary": "Price, market cap, liquidity and flows for one token."
+},
+{
+"id": "top-tokens",
+"name": "Top On-Chain Token Contracts by Fully Diluted Value",
+"priceUSD": 0.08,
+"description": "Up to the twenty-five largest on-chain token CONTRACTS by fully diluted value on Solana, Ethereum, Base, BNB Chain and Arbitrum, above a stated liquidity floor, with price, FDV, market cap, liquidity, volume, buy/sell flow and price change for each over a stated window (24h unless you choose another). Ranked on FDV, which is the price times that contract's own total supply on that chain \u2014 so this orders CONTRACTS, and one asset can appear more than once when it holds a large contract on several chains; every response says approximately how many distinct assets its rows cover. The market cap reported beside it is the asset's GLOBAL figure across all chains, never ranked on, carried unchanged where it is published and annotated on any row where it contradicts that row's own FDV \u2014 and WITHHELD (null, with the row's marketCapWithheld saying why) on any row where the upstream reported it exactly equal to that row's own FDV, because there it cannot be told from the upstream's no-circulating-supply fallback; the FDV itself is unaffected. Fully diluted value has no circulating-supply brake, so on the FDV ranking two stated floors guard it: the liquidity floor, and a depth floor that leaves out any contract whose liquidity is under 1/10,000 of its own FDV and names each one it leaves out (ranking.depthExcluded, and a line under the table). Neither checks that a figure is right, and every row publishes its own liquidity next to its own FDV. The request text is not interpreted. SIX OPTIONAL ARGUMENTS, top-level in the request body, each refused before anything is bought when invalid: \"rows\", a whole number from 5 to 50 (from 10 when more than five chains are named), the most ranked rows the page publishes (default 25; a contract the depth floor leaves out is not replaced, so a page can carry fewer; above 25 the one upstream request asks for that many); \"sort\", one of fdv, volume, netflow, liquidity, priceChange, buyVolume, sellVolume, the column the page is ranked on, highest first (default fdv; ranking.requestedSort and ranking.scope state it); \"chains\", an array or comma-separated string naming any of solana, ethereum, base, bnb, arbitrum, sui (every response lists them in chainsCovered; default solana, ethereum, base, bnb and arbitrum); and \"timeframe\", one of 5m, 10m, 1h, 6h, 24h, 7d, 30d, the window that volumeUsd, buyVolumeUsd, sellVolumeUsd, netflowUsd and changePct cover (every response states it in timeframe; default 24h). \"symbols\": up to 25 token symbols, such as tokenized stocks (TSLAX, NVDAX, SPYX), as a list or a comma string; it narrows which rows can appear and does not change the order, and a ticker with no row is named in symbolsNotFound; a symbol is not unique, so check each row's contract address. \"view\": \"perp-screener\" serves Nansen's Hyperliquid perpetuals screener instead of the token ranking, as Nansen returns it (no table); send it alone, since any other argument beside it is refused free. FDV, market cap and liquidity are point-in-time whatever the window. The wash-trading note is calibrated on 24h volume and is only computed on the 24h window. The row set for a given selection is fixed, never the numbers: every call is bought fresh from the upstream at the moment you ask, nothing is held between calls and no answer is re-served to a second buyer, so two calls can return different figures. Named \"on-chain\" precisely: this indexes tokens on the chains named, so native coins (Bitcoin, native ETH, native SOL) are not tokens and never appear, and nothing outside those chains is in scope. Every response states the basis of the ranking, meaning whether the page arrived ranked upstream by FDV or was only ranked among the rows the call bought, and how many rows that observation rests on, so the claim can be checked rather than trusted. Nansen token-screener data, including the required \"Powered by Nansen API\" attribution. Neutral facts and stated rules only: a ranking is not an endorsement, inclusion is not a safety signal, and this is not investment advice.",
+"input": {
+"query": "top tokens by market cap"
+},
+"inputOptions": [
+{
+"field": "chains",
+"required": false,
+"description": "Any of solana, ethereum, base, bnb, arbitrum, sui, in any grouping, as a list or a comma string. Default: solana, ethereum, base, bnb and arbitrum."
+},
+{
+"field": "rows",
+"required": false,
+"description": "How many ranked rows, a whole number from 5 to 50 (from 10 when more than five chains are named). Default 25."
+},
+{
+"field": "sort",
+"required": false,
+"description": "The ranking column, highest first: fdv, volume, netflow, liquidity, priceChange, buyVolume or sellVolume. Default fdv."
+},
+{
+"field": "symbols",
+"required": false,
+"description": "Up to 25 token symbols, such as tokenized stocks (TSLAX, NVDAX, SPYX), as a list or a comma string. Narrows which rows can appear; check each row's contract address, since symbols are not unique."
+},
+{
+"field": "timeframe",
+"required": false,
+"description": "The window volume, flow and price change cover: 5m, 10m, 1h, 6h, 24h, 7d or 30d. Default 24h."
+},
+{
+"field": "view",
+"required": false,
+"description": "\"perp-screener\": Nansen's Hyperliquid perpetuals screener instead of the token ranking. Send it alone."
+}
+],
+"health": "working",
+"topic": "crypto",
+"antseedModels": [
+{
+"id": "nansen-crypto-screener"
+}
+]
+},
+{
+"id": "chain-state",
+"name": "Chain Data (QuickNode): Ethereum, Base and other EVM chains",
+"priceUSD": 0.0821,
+"description": "Live data on Ethereum, Base, Arbitrum and dozens more EVM chains, read from QuickNode at the moment you ask and served as QuickNode returns it. SIX OPTIONAL ARGUMENTS, top-level in the request body. \"network\": which chain (ethereum, base, arbitrum, bnb, polygon, optimism, blast, celo, mantle, unichain, ink, soneium, world chain, gnosis, scroll, linea, fantom, sonic, berachain, monad, and through \"rpc\" also avalanche, zksync, hyperevm, sei, kaia, xlayer and the other EVM chains this product serves; QuickNode's own network names work too); omit it and you get Ethereum. \"fields\": which rows of the summary page you want, for example [\"gasPrice\", \"baseFeePerGas\"]; omit it for the whole page. \"address\": one 0x account, which adds its native balance, ERC-20 balances and transaction count. \"tokens\": with \"address\", up to 10 ERC-20 contracts to read its balance of. \"blocks\": with \"address\", 1 scans its transactions in the newest block. \"rpc\": one read-only JSON-RPC command, answered as QuickNode returns it: eth_getLogs (transfer logs for a token, or every token a wallet sent or received), eth_getBlockByNumber, eth_getTransactionReceipt, eth_getTransactionByHash, eth_getBalance (a balance at any block), trace_filter or eth_call; send it alone, with \"network\" for a chain other than Ethereum, or with \"networks\" (two to eight chains) to run one eth_getLogs on each chain over its newest 10,000 blocks, each chain answered on its own. PRICE: the whole page costs priceUSD; a \"fields\" slice costs slicePriceUSD and one \"rpc\" command rpcPriceUSD (with \"networks\", three rpcPriceUSD reads per chain), and the 402 quotes the price of the request you send. THE SUMMARY PAGE (the first 20 chains above, without \"rpc\"): block number and time, gas price, base fee, priority fee, block gas used and limit, transaction count and chain id, then for well-known infrastructure contracts their native balance, transaction count and USDC, USDT, DAI and WBTC balances. The legal \"fields\" names are on every narrowed page as selection.fieldsAvailable. An invalid argument, an unknown chain, or a page asked of a chain that serves \"rpc\" only is refused before anything is bought, and the payment stays yours to present again. Every call is read live: nothing is cached between calls and no previous answer is stored, and no answer is re-served to another buyer. The words of the request are not interpreted: for a given choice of arguments the row set is fixed, never the values, so two calls can return different numbers in the same rows. A row whose read failed is served as null with the reason. Read at the latest block, which can be reorganised. Balances only: no prices or USD values. An ERC-20 balance is the token contract's own ledger entry and says nothing about ownership, custody or control. Neutral facts, not investment, legal or business advice.",
+"input": {
+"query": "ethereum chain state"
+},
+"inputOptions": [
+{
+"field": "address",
+"required": false,
+"description": "One 0x account (40 hex). Adds its native balance, ERC-20 balances and transaction count; name \"fields\" to keep the page narrow."
+},
+{
+"field": "blocks",
+"required": false,
+"description": "With \"address\": 1 scans that account's transactions in the newest block."
+},
+{
+"field": "fields",
+"required": false,
+"description": "Which rows of the summary page you want, e.g. [\"gasPrice\",\"baseFeePerGas\"]; omit for the whole page. Legal names: selection.fieldsAvailable on any narrowed page. A slice costs slicePriceUSD."
+},
+{
+"field": "network",
+"required": false,
+"description": "Which chain: ethereum, base, arbitrum, bnb, polygon, optimism and the other chains this product serves (QuickNode's own network names work too). Default ethereum. Sui is served for its own sui_* and suix_* commands."
+},
+{
+"field": "rpc",
+"required": false,
+"description": "One read-only JSON-RPC command as an object {\"method\",\"params\"}: eth_getLogs, eth_getBlockByNumber, eth_getTransactionReceipt, eth_getTransactionByHash, eth_getBalance, trace_filter or eth_call; on Sui (\"network\": \"sui\") its own commands: sui_getLatestCheckpointSequenceNumber, suix_getReferenceGasPrice, sui_getChainIdentifier, sui_getCheckpoint, suix_getAllBalances, suix_getBalance, suix_getCoinMetadata, suix_getTotalSupply, sui_getTransactionBlock. Send it alone (with \"network\" for another chain). Costs rpcPriceUSD."
+},
+{
+"field": "tokens",
+"required": false,
+"description": "With \"address\": up to 10 ERC-20 contracts to read its balance of, as a list or a comma string."
+},
+{
+"field": "networks",
+"required": false,
+"description": "With an \"rpc\" eth_getLogs command: two to eight chains to run it on, as a list or a comma string, for example [\"ethereum\",\"base\",\"arbitrum\"]. Each chain reads its newest 10,000 blocks (leave fromBlock and toBlock out) and is answered on its own. Costs three rpc reads per chain: the newest block, the transfers, and each token's own name, symbol and decimals."
+}
+],
+"health": "working",
+"topic": "crypto",
+"antseedModels": [
+{
+"id": "quicknode-blockchain-data"
+}
+]
+},
+{
+"id": "company-intel",
+"name": "Company Enrichment",
+"priceUSD": 0.15,
+"priceFrom": true,
+"description": "Enrich a company by domain. Pass a company domain (e.g. \"stripe.com\") in the \"company\" field and get firmographic data (CompanyEnrich, sold by StableEnrich): industry, employee range, revenue range, country, founding year, technologies, NAICS codes and funding. One call, no account, pay from your own wallet. Firmographic facts only, no person-level data. A domain maps to a single company so there is no name-ambiguity. No domain? A LinkedIn company URL is the next-best input \u2014 it is a unique key and resolves reliably; a bare name is accepted but is best-effort. Every record carries the supplier's own \"dataUpdatedAt\" so you can see how fresh it is.",
+"input": {
+"company": "stripe.com"
+},
+"inputOptions": [
+{
+"field": "include",
+"required": false,
+"description": "\"funding\" adds the company's Funding history (SEC Form D filings, GLEIF legal entity and parent company) to the same purchase, priced as the two products together. Leave it out for the profile alone."
+}
+],
+"health": "working",
+"topic": "company",
+"shortName": "Company profile",
+"source": "CompanyEnrich",
+"summary": "Industry, size, revenue range and more for one company domain."
+},
+{
+"id": "property-intel",
+"name": "Property Solar & Roof Insights",
+"priceUSD": 0.06,
+"description": "Building-level solar/roof data for a lat/lng (StableEnrich \u2192 Google Solar API): roof segments, sunshine hours, panel capacity estimate, at the best imagery quality Google holds for the spot (imageryQuality in the response says HIGH, MEDIUM or LOW). Coverage follows Google's roof imagery, strongest in the US and Europe; real-estate/solar/field-service SDR use case. Requires both \"latitude\" and \"longitude\" body fields.",
+"input": {
+"latitude": "37.4220",
+"longitude": "-122.0841"
+},
+"health": "working",
+"topic": "company",
+"shortName": "Roof & solar",
+"source": "Google Solar",
+"summary": "Roof and solar potential for one building."
+},
+{
+"id": "web-content",
+"name": "Web Content Extraction",
+"priceUSD": 0.0035,
+"description": "The text of one web page, as clean Markdown. One URL per call: pull a company's site, press page or about page for context. Read by an Apify Actor (Smart Page Fetcher, by Scott Helvick); a page it cannot read is read by Exa through StableEnrich instead, at the same price. The answer is ONE document, not a table of rows, and `provider` says which reader served it: from `apify`, `content.outputs.markdown` is the page text and `content.status` is `success`; from `exa`, `content.results[0].text` is the page text and `content.statuses` says whether the page was fetched (read it first: a page Exa could not reach comes back as an error status on a paid call). Read the text as prose, never as a table cell. Optional `include` adds, at the same price and from the same read, the page's tables, links, images, preview (its own title, description and preview picture) and headings, each under `content.outputs` (Apify reads only).",
+"input": {
+"url": "https://stripe.com/about"
+},
+"inputOptions": [
+{
+"field": "include",
+"required": false,
+"description": "Optional, comma-separated: tables, links, images, preview, headings. Same price; each lands under content.outputs (tables, links, media, og, headings) when the Apify reader serves the page."
+}
+],
+"health": "working",
+"topic": "search",
+"shortName": "Page text",
+"source": "Apify",
+"summary": "The clean text of one web page."
+},
+{
+"id": "company-funding",
+"name": "Company Funding Depth",
+"priceUSD": 0.05,
+"description": "A company's Reg D offering history straight from SEC EDGAR \u2014 per round: amount offered, amount sold, date of first sale, number of investors, and the officers and directors named on the filing \u2014 plus its GLEIF legal-entity identity and corporate ownership graph (direct parent, ultimate parent, direct subsidiaries). Round-level depth, not a stage label. US Reg D coverage only: a non-US issuer, or one that raised under Section 4(a)(2) without Reg D, has nothing on file, and no filings is reported as exactly that rather than as an error. Form D reports how much was raised and how many investors took part, never WHO invested; the closest it comes is investor-affiliated board seats among the named directors.",
+"input": {
+"company": "Stripe"
+},
+"health": "working",
+"topic": "company",
+"shortName": "Funding history",
+"source": "SEC EDGAR",
+"summary": "A company's Reg D funding rounds from SEC filings."
+},
+{
+"id": "paper-search",
+"name": "Scholarly Papers (open metadata)",
+"priceUSD": 0.08,
+"description": "Scholarly paper records from open sources, values as returned: title, authors, year, venue, DOI, PubMed id, OpenAlex id, abstract where the source gives one, citation count where it carries one, and the legal open-access copy when one is known. Send a DOI (10.1038/nature12373) for one paper with its open-access link, a PubMed id (PMID:31452104) for one PubMed record, or search words for ranked papers from arXiv and PubMed, with OpenAlex as the fallback. Metadata only: never paywalled full text, and no text a model wrote. A field the source did not return is null. Sources: Crossref, arXiv, PubMed (courtesy of the U.S. National Library of Medicine), OpenAlex and Unpaywall, bought through x402 resellers named on every row.",
+"input": {
+"query": "10.1038/nature12373"
+},
+"inputOptions": [
+{
+"field": "rows",
+"required": false,
+"description": "How many papers a search returns: a whole number from 5 to 25. Leave it out for 10. Ignored for a DOI or PubMed lookup."
+},
+{
+"field": "sources",
+"required": false,
+"description": "Where a search looks: \"pubmed\" for medicine and life sciences, \"arxiv\" for physics, maths, computer science and AI, or leave it out for both. Same price. Ignored for a DOI or PubMed lookup."
+}
+],
+"health": "working",
+"topic": "search",
+"shortName": "Papers",
+"source": "Crossref \u00b7 arXiv \u00b7 PubMed",
+"summary": "Scholarly paper records for a DOI, a PubMed id or a search."
+},
+{
+"id": "apify-actors",
+"name": "Apify Store data",
+"priceUSD": 0.02,
+"priceFrom": true,
+"description": "The results of any eligible Apify Store Actor (a scraper for Instagram, TikTok, Google Maps, e-commerce, real estate, travel and thousands of other sites), run live for this request and returned unmodified. Name the Actor as owner/name in \"query\", put the Actor's own input in \"input\" as a JSON object, and choose how many results with \"maxItems\" (1 to 100, default 10). The price depends on the Actor and maxItems: twice what those results cost on Apify, at least $0.02; the 402 quotes it before you pay. Find an Actor, with Sippar's price for 10 results, at GET https://sippar.network/api/sippar/sell/apify-actors/search?q=<words> (free). Contact data is never sold: an Actor whose main charge is contacts, emails or phones is refused, contact add-ons are always sent switched off, and a request that turns one on is refused before payment. LinkedIn and Reddit are sold through their own products. Every answer names the Actor and its developer.",
+"input": {
+"query": "compass/crawler-google-places"
+},
+"inputOptions": [
+{
+"field": "input",
+"required": false,
+"description": "The Actor's own input, as a JSON object following its input schema on the Apify Store, e.g. {\"searchStringsArray\":[\"coffee shop\"],\"locationQuery\":\"Lisbon, Portugal\"}. Leave it out to run the Actor with its defaults."
+},
+{
+"field": "maxItems",
+"required": false,
+"description": "How many results to pay for: a whole number from 1 to 100. Leave it out for 10. The price scales with it."
+}
+],
+"health": "working",
+"topic": "more",
+"shortName": "Apify Store",
+"source": "Apify",
+"summary": "Live results from any eligible Apify Store scraper: Instagram, TikTok, Google Maps and more."
+},
+{
+"id": "funding-events",
+"name": "Funding Events Feed",
+"priceUSD": 0.25,
+"description": "Which companies filed a new Regulation D offering in a date window \u2014 criteria in, list out, the inverse of Company Funding Depth's name-in lookup. Every row is an operating company: the SEC industry field that every VC, PE, hedge and SPV vehicle fills in itself removes ~59% of a day's filings, and property vehicles are removed by industry group after that. Rows carry the entity, jurisdiction, CIK, filing date, amount sold, offering ceiling, investor count and a link to the filing itself. Corporate fields only \u2014 no officers, directors or addresses are ever read. Coverage is by OFFERING, not by nationality: Form D follows a Regulation D offering sold into the US, whatever the issuer's own place of incorporation, and over a measured 5-day window 9.6% of the operating companies here were incorporated outside the US (Canada, Australia, Israel, Luxembourg, Jersey, Cayman Islands). What is missing is a raise with no Reg D offering into the US at all, and that silence is about the instrument rather than the company. Form D is due 15 days after the first sale so a row can trail the news, and a window with no filings is reported as exactly that rather than as an error.",
+"input": {
+"since": "2026-08-17"
+},
+"health": "working",
+"topic": "company",
+"shortName": "New raises",
+"source": "SEC EDGAR",
+"summary": "Companies that filed a new Reg D offering in a date window."
+},
+{
+"id": "social-search",
+"name": "Social Listening",
+"priceUSD": 0.5,
+"description": "What people are publicly saying about a topic, across Reddit, YouTube and LinkedIn in one call. Returns Sippar's own cited answer plus links to the posts, not the posts themselves. Follow the citations to read them at the source. Optionally narrow the run with \"platforms\" and \"window\"; both are optional, neither changes the price, and every platform reports the time window it actually searched. No account, API key or contract on any platform. Coverage is best-effort and point-in-time; a platform with nothing to say is reported as such rather than dropped.",
+"input": {
+"query": "what are developers saying about paying per API call instead of subscriptions"
+},
+"inputOptions": [
+{
+"field": "platforms",
+"required": false,
+"description": "Optional. Which platforms to search, as an array or a comma-separated string. Omit to search all of them, which is the default and costs the same. THE PRICE IS THE PRODUCT'S, NOT THE SUM OF THE LEGS: narrowing to one platform does not cost less, it buys a narrower answer for the same amount. Narrowing also makes an empty run more likely, and an empty run is charged. Platforms: reddit, youtube, linkedin."
+},
+{
+"field": "window",
+"required": false,
+"description": "Optional. How far back to search. Omit and each platform keeps the window it has always used, which is NOT an all-time sweep: Reddit is pinned to the last month and the other platforms take their supplier's own default. Every platform reports the window it actually searched in its `window` block, including when it could not honour the one you asked for. Two suppliers publish no all-time option, so `all` is reported as not honoured on those legs rather than silently ignored."
+}
+],
+"health": "working",
+"topic": "social",
+"shortName": "Social listening",
+"source": "Reddit \u00b7 YouTube \u00b7 LinkedIn",
+"summary": "What people say about a topic, with links to every post cited."
+},
+{
+"id": "free-openalex",
+"name": "Scholarly works search (OpenAlex), free",
+"priceUSD": 0,
+"description": "Scholarly papers, books and datasets in OpenAlex matching search words: title, year, type, venue, citation count, authors, DOI and open-access link. Free on AntSeed. Data from OpenAlex, CC0.",
+"input": {
+"query": "large language model agents"
+},
+"inputOptions": [
+{
+"field": "limit",
+"required": false,
+"description": "How many rows, 1 to 10 (default 10)."
+}
+],
+"health": "working",
+"topic": "free",
+"shortName": "OpenAlex",
+"source": "OpenAlex",
+"summary": "Scholarly works: papers, books and datasets, free.",
+"antseedModels": [
+{
+"id": "openalex-search"
+}
+]
+},
+{
+"id": "free-crossref",
+"name": "Publication records search (Crossref), free",
+"priceUSD": 0,
+"description": "Journal articles, preprints and books registered with Crossref that match search words: title, type, date, venue, publisher, authors, citation count, DOI and link. Free on AntSeed. Metadata from Crossref.",
+"input": {
+"query": "stablecoin payments"
+},
+"inputOptions": [
+{
+"field": "limit",
+"required": false,
+"description": "How many rows, 1 to 10 (default 10)."
+}
+],
+"health": "working",
+"topic": "free",
+"shortName": "Crossref",
+"source": "Crossref",
+"summary": "Publication records: articles, preprints and books, free.",
+"antseedModels": [
+{
+"id": "crossref-search"
+}
+]
+},
+{
+"id": "free-arxiv",
+"name": "Preprint search (arXiv), free",
+"priceUSD": 0,
+"description": "Preprints on arXiv matching every search word: title, authors, dates, category, abstract, and links to the paper and its PDF on arXiv. Free on AntSeed. Metadata from arXiv, CC0. Thank you to arXiv for use of its open access interoperability. This service was not reviewed or approved by, nor does it necessarily express or reflect the policies or opinions of, arXiv.",
+"input": {
+"query": "threshold signatures"
+},
+"inputOptions": [
+{
+"field": "limit",
+"required": false,
+"description": "How many rows, 1 to 10 (default 10)."
+}
+],
+"health": "working",
+"topic": "free",
+"shortName": "arXiv",
+"source": "arXiv",
+"summary": "Preprints, with links to the papers, free.",
+"antseedModels": [
+{
+"id": "arxiv-search"
+}
+]
+},
+{
+"id": "free-sec-edgar",
+"name": "SEC filing full-text search (EDGAR), free",
+"priceUSD": 0,
+"description": "US company filings on SEC EDGAR whose text contains an exact phrase: company, CIK, form, filing date, period and a link to the filing. Optional form types (e.g. 10-K,8-K). Free on AntSeed. Data from the U.S. SEC.",
+"input": {
+"query": "stablecoin"
+},
+"inputOptions": [
+{
+"field": "limit",
+"required": false,
+"description": "How many rows, 1 to 10 (default 10)."
+},
+{
+"field": "forms",
+"required": false,
+"description": "Only these form types, separated by commas, e.g. 10-K,8-K."
+}
+],
+"health": "working",
+"topic": "free",
+"shortName": "SEC filings",
+"source": "SEC EDGAR",
+"summary": "US company filings that contain a phrase, free.",
+"antseedModels": [
+{
+"id": "sec-edgar-search"
+}
+]
+},
+{
+"id": "free-usgs-earthquakes",
+"name": "Earthquakes (USGS), free",
+"priceUSD": 0,
+"description": "Recent earthquakes worldwide from the USGS catalog, newest first: magnitude, place, time, depth, location and the USGS event page. Name a minimum magnitude and a number of days (up to 30). Free on AntSeed. Credit: U.S. Geological Survey.",
+"input": {
+"query": "M5 7 days"
+},
+"inputOptions": [
+{
+"field": "limit",
+"required": false,
+"description": "How many rows, 1 to 10 (default 10)."
+},
+{
+"field": "minmagnitude",
+"required": false,
+"description": "Smallest magnitude, 0 to 9.9 (default 4.5)."
+},
+{
+"field": "days",
+"required": false,
+"description": "How many days back, 1 to 30 (default 7)."
+}
+],
+"health": "working",
+"topic": "free",
+"shortName": "Earthquakes",
+"source": "USGS",
+"summary": "Recent earthquakes worldwide, free.",
+"antseedModels": [
+{
+"id": "usgs-earthquakes"
+}
+]
+},
+{
+"id": "free-nasa-power",
+"name": "Daily weather and solar data (NASA POWER), free",
+"priceUSD": 0,
+"description": "Daily temperature, rainfall, solar irradiance and wind for a latitude and longitude over up to 31 days, from NASA POWER satellite and model data. Free on AntSeed. Data from NASA Langley Research Center's POWER project.",
+"input": {
+"query": "32.08 34.78 2026-10-01 2026-10-07"
+},
+"inputOptions": [
+{
+"field": "latitude",
+"required": false,
+"description": "Latitude, -90 to 90."
+},
+{
+"field": "longitude",
+"required": false,
+"description": "Longitude, -180 to 180."
+},
+{
+"field": "start",
+"required": false,
+"description": "First day, YYYY-MM-DD."
+},
+{
+"field": "end",
+"required": false,
+"description": "Last day, YYYY-MM-DD, at most 31 days after start."
+}
+],
+"health": "working",
+"topic": "free",
+"shortName": "Weather data",
+"source": "NASA POWER",
+"summary": "Daily weather and solar data for a place, free.",
+"antseedModels": [
+{
+"id": "nasa-power-weather"
+}
+]
+},
+{
+"id": "free-world-bank",
+"name": "Development indicators (World Bank), free",
+"priceUSD": 0,
+"description": "One World Bank indicator for one country by year, newest first: e.g. GDP (NY.GDP.MKTP.CD), population (SP.POP.TOTL) or inflation (FP.CPI.TOTL.ZG). Country is a 2 or 3 letter code. Free on AntSeed. Data from World Bank Open Data, CC BY 4.0.",
+"input": {
+"query": "IL NY.GDP.MKTP.CD"
+},
+"inputOptions": [
+{
+"field": "limit",
+"required": false,
+"description": "How many rows, 1 to 10 (default 10)."
+},
+{
+"field": "country",
+"required": false,
+"description": "A 2 or 3 letter World Bank country code, e.g. IL, USA or WLD."
+},
+{
+"field": "indicator",
+"required": false,
+"description": "A World Bank indicator code, e.g. NY.GDP.MKTP.CD."
+}
+],
+"health": "working",
+"topic": "free",
+"shortName": "Country data",
+"source": "World Bank",
+"summary": "A development indicator for a country, by year, free.",
+"antseedModels": [
+{
+"id": "country-indicators"
+}
+]
+},
+{
+"id": "free-wikipedia",
+"name": "Wikipedia article search, free",
+"priceUSD": 0,
+"description": "English Wikipedia articles matching search words: title, the matching snippet, word count, last edit and the article link. Free on AntSeed. Text from Wikipedia, CC BY-SA 4.0.",
+"input": {
+"query": "stablecoin"
+},
+"inputOptions": [
+{
+"field": "limit",
+"required": false,
+"description": "How many rows, 1 to 10 (default 10)."
+}
+],
+"health": "working",
+"topic": "free",
+"shortName": "Wikipedia",
+"source": "Wikipedia",
+"summary": "Wikipedia articles matching your words, free.",
+"antseedModels": [
+{
+"id": "wikipedia-search"
+}
+]
+},
+{
+"id": "free-npm",
+"name": "npm package search, free",
+"priceUSD": 0,
+"description": "JavaScript packages on the npm registry matching search words: name, version, description, keywords, licence, last publish, downloads and links. Package metadata only. Free on AntSeed. Metadata from the npm registry.",
+"input": {
+"query": "x402"
+},
+"inputOptions": [
+{
+"field": "limit",
+"required": false,
+"description": "How many rows, 1 to 10 (default 10)."
+}
+],
+"health": "working",
+"topic": "free",
+"shortName": "npm packages",
+"source": "npm",
+"summary": "JavaScript packages on the npm registry, free.",
+"antseedModels": [
+{
+"id": "package-search-for-npm"
+}
+]
+},
+{
+"id": "free-open-library",
+"name": "Book search (Open Library), free",
+"priceUSD": 0,
+"description": "Books in Open Library matching search words: title, authors, first publication year, editions, languages, ISBNs and the Open Library page. Free on AntSeed. Data from Open Library, a project of the Internet Archive.",
+"input": {
+"query": "the pragmatic programmer"
+},
+"inputOptions": [
+{
+"field": "limit",
+"required": false,
+"description": "How many rows, 1 to 10 (default 10)."
+}
+],
+"health": "working",
+"topic": "free",
+"shortName": "Books",
+"source": "Open Library",
+"summary": "Books matching your words, free.",
+"antseedModels": [
+{
+"id": "open-library-search"
+}
+]
+},
+{
+"id": "voice-chatterbox-hd",
+"name": "Voice: Chatterbox HD (via AntSeed)",
+"priceUSD": 0.03,
+"priceFrom": true,
+"description": "Text read aloud by Chatterbox HD (Resemble AI), bought on AntSeed and returned as the seller sent it (an audio file). Send the text, up to 4096 characters; pick one of its own voices. Languages: English (other languages were misread in Sippar's tests). Priced per character of the text, never under $0.03; the 402 quotes this exact text, and a text in a language the model cannot speak is still charged. This model is slow (up to about two minutes): if the answer does not come back, present the same payment again to collect it, never pay twice. Source: Chatterbox HD via AntSeed.",
+"input": {
+"query": "Hello from Sippar. This voice was bought on AntSeed and paid per character."
+},
+"inputOptions": [
+{
+"field": "voice",
+"required": false,
+"description": "One of Chatterbox HD's own voices (default Aurora). Custom or cloned voices are not offered."
+},
+{
+"field": "format",
+"required": false,
+"description": "Audio format: wav (default wav). wav and flac take up to 1500 characters."
+},
+{
+"field": "speed",
+"required": false,
+"description": "Optional: reading speed from 0.25 to 4 (1 is normal). Measured: 0.5 and 2 halve and double the length exactly."
+}
+],
+"health": "working"
+},
+{
+"id": "voice-elevenlabs-turbo-v2-5",
+"name": "Voice: ElevenLabs Turbo v2.5 (via AntSeed)",
+"priceUSD": 0.03,
+"priceFrom": true,
+"description": "Text read aloud by ElevenLabs Turbo v2.5 (ElevenLabs), bought on AntSeed and returned as the seller sent it (an audio file). Send the text, up to 4096 characters; pick one of its own voices. Languages: English (other languages were misread in Sippar's tests). Priced per character of the text, never under $0.03; the 402 quotes this exact text, and a text in a language the model cannot speak is still charged. Source: ElevenLabs Turbo v2.5 via AntSeed.",
+"input": {
+"query": "Hello from Sippar. This voice was bought on AntSeed and paid per character."
+},
+"inputOptions": [
+{
+"field": "voice",
+"required": false,
+"description": "One of ElevenLabs Turbo v2.5's own voices (default Alice). Custom or cloned voices are not offered."
+},
+{
+"field": "format",
+"required": false,
+"description": "Audio format: mp3 (default mp3)."
+},
+{
+"field": "speed",
+"required": false,
+"description": "Optional: reading speed from 0.25 to 4 (1 is normal). Measured: 0.5 and 2 halve and double the length exactly."
+}
+],
+"health": "working"
+},
+{
+"id": "voice-gemini-3-1-flash",
+"name": "Voice: Gemini 3.1 Flash TTS (via AntSeed)",
+"priceUSD": 0.03,
+"priceFrom": true,
+"description": "Text read aloud by Gemini 3.1 Flash TTS (Google), bought on AntSeed and returned as the seller sent it (an audio file). Send the text, up to 1000 characters; pick one of its own voices. Languages: multilingual: it reads the text in the language it is written in. Priced per character of the text, never under $0.03; the 402 quotes this exact text, and a text in a language the model cannot speak is still charged. Source: Gemini 3.1 Flash TTS via AntSeed.",
+"input": {
+"query": "Hello from Sippar. This voice was bought on AntSeed and paid per character."
+},
+"inputOptions": [
+{
+"field": "voice",
+"required": false,
+"description": "One of Gemini 3.1 Flash TTS's own voices (default Achernar). Custom or cloned voices are not offered."
+},
+{
+"field": "format",
+"required": false,
+"description": "Audio format: mp3, opus, wav (default mp3). wav and flac take up to 1500 characters."
+},
+{
+"field": "speed",
+"required": false,
+"description": "Optional: reading speed from 0.25 to 4 (1 is normal). Measured: 0.5 and 2 halve and double the length exactly."
+}
+],
+"health": "working"
+},
+{
+"id": "voice-gradium-v1",
+"name": "Voice: Gradium TTS (via AntSeed)",
+"priceUSD": 0.03,
+"priceFrom": true,
+"description": "Text read aloud by Gradium TTS (Gradium), bought on AntSeed and returned as the seller sent it (an audio file). Send the text, up to 4096 characters; pick one of its own voices. Languages: English (other languages were misread in Sippar's tests). Priced per character of the text, never under $0.03; the 402 quotes this exact text, and a text in a language the model cannot speak is still charged. Source: Gradium TTS via AntSeed.",
+"input": {
+"query": "Hello from Sippar. This voice was bought on AntSeed and paid per character."
+},
+"inputOptions": [
+{
+"field": "voice",
+"required": false,
+"description": "One of Gradium TTS's own voices (default Alice). Custom or cloned voices are not offered."
+},
+{
+"field": "format",
+"required": false,
+"description": "Audio format: opus, wav (default opus). wav and flac take up to 1500 characters."
+},
+{
+"field": "speed",
+"required": false,
+"description": "Optional: reading speed from 0.25 to 4 (1 is normal). Measured: 0.5 and 2 halve and double the length exactly."
+}
+],
+"health": "working"
+},
+{
+"id": "voice-inworld-1-5-max",
+"name": "Voice: Inworld TTS-1.5 Max (via AntSeed)",
+"priceUSD": 0.03,
+"priceFrom": true,
+"description": "Text read aloud by Inworld TTS-1.5 Max (Inworld), bought on AntSeed and returned as the seller sent it (an audio file). Send the text, up to 4096 characters; pick one of its own voices. Languages: English (other languages were misread in Sippar's tests). Priced per character of the text, never under $0.03; the 402 quotes this exact text, and a text in a language the model cannot speak is still charged. Source: Inworld TTS-1.5 Max via AntSeed.",
+"input": {
+"query": "Hello from Sippar. This voice was bought on AntSeed and paid per character."
+},
+"inputOptions": [
+{
+"field": "voice",
+"required": false,
+"description": "One of Inworld TTS-1.5 Max's own voices (default Alex). Custom or cloned voices are not offered."
+},
+{
+"field": "format",
+"required": false,
+"description": "Audio format: wav (default wav). wav and flac take up to 1500 characters."
+},
+{
+"field": "speed",
+"required": false,
+"description": "Optional: reading speed from 0.25 to 4 (1 is normal). Measured: 0.5 and 2 halve and double the length exactly."
+}
+],
+"health": "working"
+},
+{
+"id": "voice-kokoro",
+"name": "Voice: Kokoro (via AntSeed)",
+"priceUSD": 0.03,
+"priceFrom": true,
+"description": "Text read aloud by Kokoro (Kokoro (open-weight)), bought on AntSeed and returned as the seller sent it (an audio file). Send the text, up to 4096 characters; pick one of its own voices. Languages: English (American af_/am_, British bf_/bm_), Spanish (e), French (f), Hindi (h), Italian (i), Japanese (j), Portuguese (p) and Chinese (z), by the voice name's first letter; other languages are misread. Priced per character of the text, never under $0.03; the 402 quotes this exact text, and a text in a language the model cannot speak is still charged. Source: Kokoro via AntSeed.",
+"input": {
+"query": "Hello from Sippar. This voice was bought on AntSeed and paid per character."
+},
+"inputOptions": [
+{
+"field": "voice",
+"required": false,
+"description": "One of Kokoro's own voices (default af_alloy). Custom or cloned voices are not offered."
+},
+{
+"field": "format",
+"required": false,
+"description": "Audio format: mp3, opus, aac, flac, wav (default mp3). wav and flac take up to 1500 characters."
+},
+{
+"field": "speed",
+"required": false,
+"description": "Optional: reading speed from 0.25 to 4 (1 is normal). Measured: 0.5 and 2 halve and double the length exactly."
+}
+],
+"health": "working"
+},
+{
+"id": "voice-minimax-speech-02-hd",
+"name": "Voice: MiniMax Speech-02 HD (via AntSeed)",
+"priceUSD": 0.03,
+"priceFrom": true,
+"description": "Text read aloud by MiniMax Speech-02 HD (MiniMax), bought on AntSeed and returned as the seller sent it (an audio file). Send the text, up to 4096 characters; pick one of its own voices. Languages: multilingual: it reads the text in the language it is written in (best without diacritics). Priced per character of the text, never under $0.03; the 402 quotes this exact text, and a text in a language the model cannot speak is still charged. Source: MiniMax Speech-02 HD via AntSeed.",
+"input": {
+"query": "Hello from Sippar. This voice was bought on AntSeed and paid per character."
+},
+"inputOptions": [
+{
+"field": "voice",
+"required": false,
+"description": "One of MiniMax Speech-02 HD's own voices (default CalmWoman). Custom or cloned voices are not offered."
+},
+{
+"field": "format",
+"required": false,
+"description": "Audio format: mp3, flac (default mp3). wav and flac take up to 1500 characters."
+},
+{
+"field": "speed",
+"required": false,
+"description": "Optional: reading speed from 0.25 to 4 (1 is normal). Measured: 0.5 and 2 halve and double the length exactly."
+}
+],
+"health": "working"
+},
+{
+"id": "voice-qwen3-0-6b",
+"name": "Voice: Qwen 3 TTS 0.6B (via AntSeed)",
+"priceUSD": 0.03,
+"priceFrom": true,
+"description": "Text read aloud by Qwen 3 TTS 0.6B (Qwen), bought on AntSeed and returned as the seller sent it (an audio file). Send the text, up to 4096 characters; pick one of its own voices. Languages: English (other languages were misread in Sippar's tests). Priced per character of the text, never under $0.03; the 402 quotes this exact text, and a text in a language the model cannot speak is still charged. This model is slow (up to about two minutes): if the answer does not come back, present the same payment again to collect it, never pay twice. Source: Qwen 3 TTS 0.6B via AntSeed.",
+"input": {
+"query": "Hello from Sippar. This voice was bought on AntSeed and paid per character."
+},
+"inputOptions": [
+{
+"field": "voice",
+"required": false,
+"description": "One of Qwen 3 TTS 0.6B's own voices (default Aiden). Custom or cloned voices are not offered."
+},
+{
+"field": "format",
+"required": false,
+"description": "Audio format: mp3 (default mp3)."
+},
+{
+"field": "speed",
+"required": false,
+"description": "Optional: reading speed from 0.25 to 4 (1 is normal). Measured: 0.5 and 2 halve and double the length exactly."
+}
+],
+"health": "working"
+},
+{
+"id": "voice-qwen3-1-7b",
+"name": "Voice: Qwen 3 TTS 1.7B (via AntSeed)",
+"priceUSD": 0.03,
+"priceFrom": true,
+"description": "Text read aloud by Qwen 3 TTS 1.7B (Qwen), bought on AntSeed and returned as the seller sent it (an audio file). Send the text, up to 4096 characters; pick one of its own voices. Languages: English (other languages were misread in Sippar's tests). Priced per character of the text, never under $0.03; the 402 quotes this exact text, and a text in a language the model cannot speak is still charged. This model is slow (up to about two minutes): if the answer does not come back, present the same payment again to collect it, never pay twice. Source: Qwen 3 TTS 1.7B via AntSeed.",
+"input": {
+"query": "Hello from Sippar. This voice was bought on AntSeed and paid per character."
+},
+"inputOptions": [
+{
+"field": "voice",
+"required": false,
+"description": "One of Qwen 3 TTS 1.7B's own voices (default Aiden). Custom or cloned voices are not offered."
+},
+{
+"field": "format",
+"required": false,
+"description": "Audio format: mp3 (default mp3)."
+},
+{
+"field": "speed",
+"required": false,
+"description": "Optional: reading speed from 0.25 to 4 (1 is normal). Measured: 0.5 and 2 halve and double the length exactly."
+}
+],
+"health": "working"
+},
+{
+"id": "voice-xai-v1",
+"name": "Voice: xAI TTS v1 (via AntSeed)",
+"priceUSD": 0.03,
+"priceFrom": true,
+"description": "Text read aloud by xAI TTS v1 (xAI), bought on AntSeed and returned as the seller sent it (an audio file). Send the text, up to 4096 characters; pick one of its own voices. Languages: multilingual: it reads the text in the language it is written in (some voices keep a slight accent). Priced per character of the text, never under $0.03; the 402 quotes this exact text, and a text in a language the model cannot speak is still charged. Source: xAI TTS v1 via AntSeed.",
+"input": {
+"query": "Hello from Sippar. This voice was bought on AntSeed and paid per character."
+},
+"inputOptions": [
+{
+"field": "voice",
+"required": false,
+"description": "One of xAI TTS v1's own voices (default altair). Custom or cloned voices are not offered."
+},
+{
+"field": "format",
+"required": false,
+"description": "Audio format: mp3, wav (default mp3). wav and flac take up to 1500 characters."
+},
+{
+"field": "speed",
+"required": false,
+"description": "Optional: reading speed from 0.25 to 4 (1 is normal). Measured: 0.5 and 2 halve and double the length exactly."
+}
+],
+"health": "working"
+},
+{
+"id": "translate-video",
+"name": "Translate a video: subtitles in another language",
+"priceUSD": 0.15,
+"description": "Subtitles for a video in another language. Send a public, direct link to the video file (ending in mp4, webm, m4a, mp3, wav, ogg, flac; up to 4 minutes and 25 MB) and the language to translate into. You get the transcript with who spoke when, subtitle files (SRT and WebVTT) in the original language and in yours, and every line with its time and speaker. To hear the video in your language, buy voiceover-video next with those lines: one voice per speaker, each at its line's time, priced on the translated text before you pay. A link to a page that plays the video, or a site that blocks downloaders, cannot be read, and is not charged. A file too long or with no speech is refused before the paid steps and not charged. Source: Agent402 (transcript and translation, named on the result); the subtitle files are written by Sippar from the timed words. The video is read by Agent402 and not kept by Sippar.",
+"input": {
+"url": "https://archive.org/download/nasa_tv-BeAnAstronaut_-_Why_Did_You_Want_to_Be_an_Astronaut/BeAnAstronaut_-_Why_Did_You_Want_to_Be_an_Astronaut.mp4"
+},
+"inputOptions": [
+{
+"field": "language",
+"required": false,
+"description": "The language to translate into: a name or code (Spanish, French, Hebrew, pt-BR). Required."
+},
+{
+"field": "genders",
+"required": false,
+"description": "optional: the speakers' genders when you know them, speaker=female|male pairs (0=female,4=male), numbered as the transcript numbers them. Sets the grammatical gender of the translation and, later, the voice. Otherwise the translator picks one per speaker and keeps it."
+}
+],
+"health": "working",
+"topic": "videos"
+},
+{
+"id": "voiceover-video",
+"name": "Voice a translated video, one voice per speaker",
+"priceUSD": 0.03,
+"priceFrom": true,
+"description": "A voice-over for a video you translated with translate-video. Send that result's cues (the lines with their times and speakers, as JSON) and the language. Each speaker turn is read aloud in a different preset voice (or name them: voices=0=sarah,1=george) and comes back as its own audio file with the time it starts at, so you can play it over the video with the video's sound lowered, or lay it in with any editor. Up to 60 speaker turns. Priced from the text you send, before you pay: twice the voice supplier's own quote, never under $0.03. If at least half the turns are voiced you get them, each missing one named; under half, nothing is charged. Source: Agent402 (ElevenLabs voices, named on the result). The words are the ones you send.",
+"input": {
+"cues": "[{\"start\":400,\"end\":2780,\"speaker\":0,\"translated\":\"Creo que hab\u00eda muchas razones por las que quer\u00eda ser astronauta.\"}]"
+},
+"inputOptions": [
+{
+"field": "language",
+"required": false,
+"description": "The language of the lines, for the result's label (the voices read whatever language the text is in)."
+},
+{
+"field": "voices",
+"required": false,
+"description": "optional: a voice per speaker, speaker=voice pairs (0=sarah,1=george). Default: a different voice for each speaker."
+}
+],
+"health": "working",
+"topic": "videos"
+}
+]
+}

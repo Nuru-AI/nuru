@@ -1,0 +1,82 @@
+{
+ "query": "Breville Barista Express Impress review",
+ "source": "Google search results, read by the Apify Actor Google Search Results (~$0.05/1K Results) by ScraperLink, live for this request.",
+ "asOf": "2026-11-04T13:22:13.612Z",
+ "response": {
+  "page_number": 1,
+  "search_term": "Breville Barista Express Impress review",
+  "results": [
+   {
+    "position": 1,
+    "url": "https://www.reddit.com/r/espresso/comments/1hcq145/breville_barista_express_impress_worth_it/",
+    "title": "Breville Barista Express Impress - worth it? : r/espresso - Reddit",
+    "description": "Dec 12, 2024 · In my opinion this is a great all-around machine. This grinds my fresh beans, auto-tamps and pulls great shots. Super bland, practically coffee ...",
+    "date": "Dec 12, 2024"
+   },
+   {
+    "position": 2,
+    "url": "https://www.coffeeness.de/en/breville-barista-express-impress-review/",
+    "title": "Breville Barista Express Impress Review 2026: All Smiles!",
+    "description": "First the good news: the Barista Express Impress is really quiet in operation and heats up extremely quickly. Plus, the thing is as intuitive and easy to use ..."
+   },
+   {
+    "position": 3,
+    "url": "https://homecoffeeexpert.com/breville-barista-express-impress-review/",
+    "title": "Breville Barista Express Impress Review - Home Coffee Expert",
+    "description": "Jul 23, 2026 · We recommend the Barista Express Impress for beginners who want real espresso with minimal puck prep frustration. The honest caveat is that the ...",
+    "date": "Jul 23, 2026"
+   },
+   {
+    "position": 4,
+    "url": "https://lifestylelab.ca/breville-barista-express-impress-review/",
+    "title": "Breville Barista Express Impress Review - LifeStyle Lab",
+    "description": "Oct 13, 2022 · Final Word So with a mix of excellent workflow, good espresso performance, and slightly underwhelming steaming, who is this machine for?",
+    "date": "Oct 13, 2022"
+   },
+   {
+    "position": 5,
+    "url": "https://coffeegeek.com/reviews/firstlooks/breville-barista-express-espresso-machine/",
+    "title": "Breville Barista Express First Look - CoffeeGeek",
+    "description": "The Barista Express is very quiet overall, especially considering how much noise is possible: you're grinding coffee, you're running a vibration pump. Some ..."
+   },
+   {
+    "position": 6,
+    "url": "https://www.seriouseats.com/breville-barista-express-impress-espresso-machine-review-7093527",
+    "title": "Breville Barista Express Impress Espresso Machine Review",
+    "description": "Dec 15, 2025 · Because it has a built-in grinder, intelligent dosing, and assisted tamping, we recommend the Breville Barista Express Impress for beginners. It ...",
+    "date": "Dec 15, 2025"
+   },
+   {
+    "position": 7,
+    "url": "https://coffeekev.com/breville-barista-express-impress-review/",
+    "title": "Breville Barista Express Impress: True Espresso, No Hassle",
+    "description": "7 days ago · In day-to-day use, the Express Impress feels very similar to the Barista Express in terms of heat-up, steaming, and general espresso performance ...",
+    "date": "7 days ago"
+   },
+   {
+    "position": 8,
+    "url": "https://www.youtube.com/watch?v=TNj0-OcKXc4",
+    "title": "Sage (Breville) Barista Comparison - Express vs Express Impress vs ...",
+    "description": "Jul 11, 2024 · Comments · Breville Barista Express Impress: Amazon's Best Selling Integrated Tamper Espresso Machine · Ninja Luxe Cafe vs Sage (Breville) Barista ...",
+    "date": "Jul 11, 2024"
+   },
+   {
+    "position": 9,
+    "url": "https://coffeegeek.com/reviews/firstlooks/breville-bes881-barista-touch-impress-first-look-review/",
+    "title": "The Breville Barista Touch Impress - CoffeeGeek",
+    "description": "It feels solid and mechanical, almost like pulling a gear shift. The Impress tamping system presses the coffee with even pressure and finishes with a small ..."
+   }
+  ],
+  "related_keywords": {
+   "spelling_suggestion": null,
+   "keywords": [
+    {
+     "position": 1,
+     "keyword": "Breville barista express impress review reddit"
+    }
+   ]
+  },
+  "next_page": 2,
+  "next_start": 10
+ }
+}

@@ -601,6 +601,8 @@ function notices(run) {
   const docs = run.steps.flatMap((s) => s.documents || []);
   if ((run.claims || []).some((c) => c.verified && docs.find((d) => d.id === c.doc)?.titleOnly)) lines.push("Some quotes are only the titles of papers: their abstracts and full text were not read, so a title says what a paper is about, not what it found.");
   if (used(MARKET_SOURCES)) lines.push("Prices and figures are from the moment they were read and can change quickly. This is not investment advice.");
+  // A search whose seller was not serving was asked of another one, and the brief says so (#7065).
+  for (const n of run.notes || []) lines.push(n);
   // The credit each free public source asks for, once per source the run called.
   if (run.credits?.length) lines.push(`Free public sources: ${run.credits.join("; ")}.`);
   return `<div class="notices">${lines.map((l) => `<p>${esc(l)}</p>`).join("")}</div>`;
@@ -633,11 +635,15 @@ function render(run) {
     btn.setAttribute("aria-expanded", "true");
     const s = docStep(c.doc);
     const paid = s?.payment?.tx ? `Bought for ${usd(s.payment.priceUsd)} from ${esc(s.seller)}, payment ${tx(s.payment.tx)}` : `Found with ${esc(s?.seller || "Tavily")} ${esc(LABEL[s?.tool] ? LABEL[s.tool].toLowerCase() : "")}, not charged`;
-    box.innerHTML = `<div class="evidence"><q>${esc(c.quote)}</q><div class="meta"><a href="${esc(c.url)}" target="_blank" rel="noopener">${esc(c.publisher || c.url)}</a> · quote checked word for word in the source · ${paid}</div></div>`;
+    // A source with no page of its own (data bought whole) names its seller, with no link (#7065).
+    const src = /^https?:\/\//i.test(String(c.url || "")) ? `<a href="${esc(c.url)}" target="_blank" rel="noopener">${esc(c.publisher || c.url)}</a>` : `<span>${esc(c.publisher || "source")}</span>`;
+    box.innerHTML = `<div class="evidence"><q>${esc(c.quote)}</q><div class="meta">${src}${c.rank != null ? ` · Google result #${esc(c.rank)}` : ""} · quote checked word for word in the source · ${paid}</div></div>`;
   }));
   const L = run.ledger;
   $("ledger").innerHTML = Object.entries(L.bySeller).map(([k, v]) => `<tr><td>${esc(k)}</td><td class="n">${usd(v)}</td></tr>`).join("") +
-    `<tr class="total"><td>Total, ${L.paidReads} ${L.paidReads === 1 ? "purchase" : "purchases"}</td><td class="n">${usd(L.spentUsd)}</td></tr>`;
+    `<tr class="total"><td>Total, ${L.paidReads} ${L.paidReads === 1 ? "purchase" : "purchases"}</td><td class="n">${usd(L.spentUsd)}</td></tr>` +
+    // Paid, but the seller failed after the payment, so it bought nothing (#7065); it is in the total above.
+    (L.undeliveredUsd ? `<tr><td>Of which paid, but the seller failed and nothing came back</td><td class="n">${usd(L.undeliveredUsd)}</td></tr>` : "");
   // Which provider served each model (a run saved before 2026-10-30 has no byProvider and shows only the models).
   const WHERE = { blockrun: "BlockRun (free)", tokenfactory: "Nebius Token Factory", openrouter: "OpenRouter (free)" };
   $("models").innerHTML = Object.entries(run.nemotron.byModel).map(([m, u]) => `<div><span>${esc(m.split("/")[1])}</span><span>${u.calls} calls · ${(u.inputTokens + u.outputTokens).toLocaleString()} tokens</span></div>`).join("") +
@@ -687,7 +693,7 @@ $("steps").addEventListener("click", (e) => {
   if (wfRun) drawStages(wfRun);
 });
 
-const MSG = { "plan:start": "Planning the reading", "step:start": "Buying and reading sources", "read:start": "Pulling quotes from each source", "write:start": "Writing the brief" };
+const MSG = { "plan:start": "Planning the reading", "plan:sippar-skipped": "Nuru's own planner is planning", "step:start": "Buying and reading sources", "read:start": "Pulling quotes from each source", "write:start": "Writing the brief" };
 
 $("f").addEventListener("submit", async (e) => {
   e.preventDefault();

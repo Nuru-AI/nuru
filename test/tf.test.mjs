@@ -122,3 +122,24 @@ test("valid JSON in the wrong shape passes to the next provider; the free route 
   assert.match(calls[0].body.messages.at(-1).content, /matching this JSON Schema/);
   assert.equal(calls[1].body.messages.at(-1).content, "q", "Token Factory gets the schema as a response format, not in the prompt");
 });
+
+// #7065: the free route's Nemotron reasons inside max_tokens; at 6,000 the brief's writer ran out mid-JSON on BlockRun.
+test("the free Nemotron route gets at least 16,000 tokens; a picked model and the paid route keep the caller's", async () => {
+  process.env.NEBIUS_API_KEY = "k";
+  fake((host) => answer(host.includes("blockrun") ? "nvidia/nemotron-3-ultra-550b" : "nvidia/Nemotron-3-Ultra-550b-a55b", '{"a":1}'));
+  await chat(MODELS.writer, [{ role: "user", content: "q" }], { json: true, maxTokens: 6000 });
+  assert.equal(calls[0].body.max_tokens, 16000);
+  process.env.NEMOTRON_PROVIDERS = "tokenfactory";
+  await chat(MODELS.writer, [{ role: "user", content: "q" }], { json: true, maxTokens: 6000 });
+  assert.equal(calls[1].body.max_tokens, 6000, "the paid route is billed per token and keeps its cap");
+  delete process.env.NEMOTRON_PROVIDERS;
+  fake(() => answer("cohere/north-mini-code", '{"a":1}'));
+  await chat(MODELS.writer, [{ role: "user", content: "q" }], { json: true, maxTokens: 6000, pick: "cohere/north-mini-code" });
+  assert.equal(calls.at(-1).body.max_tokens, 6000, "a picked model keeps the caller's allowance");
+});
+
+test("an answer cut off at its allowance says so in the failure", async () => {
+  process.env.NEMOTRON_PROVIDERS = "blockrun";
+  fake(() => new Response(JSON.stringify({ model: "nvidia/nemotron-3-ultra-550b", choices: [{ message: { content: '{\n  "title": "Pre-seed' }, finish_reason: "length" }], usage: { prompt_tokens: 3, completion_tokens: 16000 } }), { status: 200 }));
+  await assert.rejects(chat(MODELS.writer, [{ role: "user", content: "q" }], { json: true }), /no JSON object in the answer.*\(cut off at 16000 tokens\)/s);
+});
