@@ -177,7 +177,7 @@ const stOfSteps = (xs, live) => !xs.length ? (live ? "planned" : "done")
 /** A step's row: its logo, its name over what it asked, its state; one with documents opens into them. */
 function stepRow(s, ui, liveN) {
   const id = productId(s), m = metaOf(id, s);
-  const what = s.error ? s.error : s.skipped ? s.skipped : asked(s);
+  const what = s.error ? s.error : s.skipped ? s.skipped : s.note ? `${asked(s)}. ${s.note}` : asked(s);
   // Since #6408 a run keeps which documents were read (what the plan's code steps kept); an older run read them all.
   const k = s.documents?.length && ui.readSet ? s.documents.filter((d) => ui.readSet.has(d.id)).length : s.documents?.length ?? 0;
   const n = s.documents?.length ? (k === s.documents.length ? ` · ${k} read` : ` · ${s.documents.length} found, ${k} read`) : typeof s.items === "number" ? ` · ${s.items} items` : "";
@@ -214,6 +214,8 @@ export function stages(run, ui = {}, who = (s) => s?.model ?? "") {
     out: plan ? `${plural(plan.steps.length, "step")}${planFailed ? `. Sippar's plan cost ${usd(planBuy.payment?.priceUsd)} and could not be used, so Nuru's own planner wrote this one` : planBuy?.payment?.priceUsd ? `; the plan cost ${usd(planBuy.payment.priceUsd)}` : ", planned free"}` : phase === "plan" ? "Writing" : "No plan; Nuru read its fixed list",
     body: () => [
       planBuy ? `<ul class="wf-rows">${stepRow({ ...planBuy, input: {}, error: planFailed ? `${planFailWords(planBuy.error)} Nuru's own planner wrote the plan instead.` : "" , documents: [] }, ui, ui.live)}</ul>` : "",
+      // Sippar's planner not asked at all, and why (#7065: it was skipped without a word when the list grew too long).
+      run.sipparPlan?.asked === false ? `<p class="hint">Sippar's workflow planner was not asked: ${esc(run.sipparPlan.reason)}. Nuru's own planner wrote the plan.</p>` : "",
       sipparPlanned && by.skills?.length ? `<p class="hint">Guided by the skill${by.skills.length > 1 ? "s" : ""} ${by.skills.map((k) => esc(k.name || k.id)).join(" and ")}.</p>` : "",
       plan?.summary ? `<p>${esc(plan.summary)}</p>` : "",
       plan?.ask_first?.length ? `<h3 class="wf-h">What the plan assumed</h3><ul class="wf-list">${plan.ask_first.map((a) => `<li>${esc(a)}</li>`).join("")}</ul>` : "",
@@ -240,7 +242,7 @@ export function stages(run, ui = {}, who = (s) => s?.model ?? "") {
   const s3 = { n: 3, title: "Sort it in code", who: "Nuru's code, no model", st: !moves.length ? (at >= 2 ? "done" : "planned") : moves.every((s) => typeof s.items === "number") ? "done" : "running",
     out: moves.length ? `${moves.length} ${moves.length === 1 ? "step" : "steps"}` : at >= 2 ? "None" : "Waiting",
     body: () => moves.length ? `<ul class="wf-rows">${moves.map((s) => { const mv = String(s.tool).replace(/^code:\s*/, ""), name = MOVE_WORDS[mv] ?? mv;
-      return `<li class="wf-row lg">${letterTile(name)}<span class="pt-main"><span class="pt-name">${esc(name)}</span><span class="pt-src">${esc(moveWords(mv, s.input))}</span>${s.why ? `<span class="pt-src wf-said">${esc(s.why)}</span>` : ""}</span>${typeof s.items === "number" ? `<span class="wf-st ok"><span aria-hidden="true">✓</span> ${s.items} kept</span>` : `<span class="wf-st muted">Waiting</span>`}</li>`; }).join("")}</ul>` : `<p class="hint">This plan sorts nothing in code.</p>` };
+      return `<li class="wf-row lg">${letterTile(name)}<span class="pt-main"><span class="pt-name">${esc(name)}</span><span class="pt-src">${esc(moveWords(mv, s.input))}</span>${s.why ? `<span class="pt-src wf-said">${esc(s.why)}</span>` : ""}${s.note ? `<span class="pt-src wf-said">${esc(s.note)}</span>` : ""}</span>${typeof s.items === "number" ? `<span class="wf-st ok"><span aria-hidden="true">✓</span> ${s.items} kept</span>` : `<span class="wf-st muted">Waiting</span>`}</li>`; }).join("")}</ul>` : `<p class="hint">This plan sorts nothing in code.</p>` };
 
   // 4. The reading: quotes pulled from each source, kept only when found word for word in what was bought.
   const claims = run.claims ?? [];

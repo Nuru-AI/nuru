@@ -71,7 +71,7 @@ Tests: `npm test` (the plan check, the free sources against recorded answers, an
 
 Settings: `MAX_SPEND_USD` (per-run ceiling, default 0.50), `PLANNER` (`catalog`, the default, or
 `fixed`), `CATALOG_URL` (any marketplace's catalog; Sippar's free catalog by default),
-`PLANNER_MODEL`, `WORKER_MODEL`, `WRITER_MODEL`, `TOKEN_FACTORY_BASE_URL`, `MAX_STEPS`, `MAX_DOCS`.
+`PLANNER_MODEL`, `WORKER_MODEL`, `WRITER_MODEL`, `TOKEN_FACTORY_BASE_URL`, `MAX_STEPS`, `MAX_DOCS` (documents read per brief, spread across the steps), `FREE_MIN_TOKENS` (the least room a free Nemotron route gets to reason and answer, default 16000).
 On the page: `RUNS_PER_IP_PER_DAY` (default 3) and `DAILY_SPEND_USD` (spend shared by every
 visitor, default 1), counted per UTC day.
 
