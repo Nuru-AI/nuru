@@ -187,3 +187,29 @@ test("fault 8: plan B asks the same words only, of a search that is not down", (
   assert.equal(planBFor("tavily-web-search", { url: "x" }, catalog, new Set()), null, "no words, no plan B");
   assert.equal(planBFor("paper-search", { query: "q" }, catalog, new Set()), null, "only web searches stand in for each other");
 });
+
+/* Found by the check brief after the deploy (2026-11-07 19:36 UTC): five paid page reads gave nothing. */
+test("a page read whole by Sippar's Apify reader is a page: its text and its own link", () => {
+  const page = fx("paid/web-content-apify.json");
+  const items = itemsOf("web-content", page);
+  assert.equal(items.length, 1);
+  const docs = docsFrom(catalog.byId["web-content"], items, page, 3);
+  assert.equal(docs.length, 1);
+  assert.equal(docs[0].generated, undefined, "a page is not a written summary");
+  assert.match(docs[0].url, /^https:\/\//);
+  assert.ok(docs[0].text.length > 200);
+});
+
+test("when the step reading a search delivers nothing, the search itself is read", async () => {
+  doors = {
+    "google-results": { probe: () => offer(0.0025), paid: () => delivered(google, "0xg", 0.0025) },
+    "web-content": { probe: () => offer(0.0035), paid: () => delivered({ content: { results: [] } }, "0xw", 0.0035) },
+  };
+  const run = run0();
+  await runCatalogPlan({ run, plan: { steps: [
+    { id: "s1", product: "sippar-web-search", input: { query: "agent payments" } },
+    { id: "s2", move: "for_each", from: ["s1"], args: { product: "web-content", input: { url: "{{item.url}}" }, max: 3 } },
+  ] }, catalog, wallet, emit: () => {} });
+  assert.equal(run.steps.find((s) => s.id === "s2").items, 0);
+  assert.ok(run.readDocIds.length > 0 && run.readDocIds.every((id) => id.startsWith("S1.")), run.readDocIds.join(" "));
+});
