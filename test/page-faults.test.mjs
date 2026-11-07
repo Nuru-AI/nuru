@@ -213,3 +213,19 @@ test("when the step reading a search delivers nothing, the search itself is read
   assert.equal(run.steps.find((s) => s.id === "s2").items, 0);
   assert.ok(run.readDocIds.length > 0 && run.readDocIds.every((id) => id.startsWith("S1.")), run.readDocIds.join(" "));
 });
+
+/* Found by the last check brief (2026-11-07 19:47 UTC): Google's top pages were read, and the brief called the ranking unknown. */
+test("a page read from a Google result keeps that result's place in Google", async () => {
+  const page = fx("paid/web-content-apify.json");
+  doors = {
+    "google-results": { probe: () => offer(0.0025), paid: () => delivered(google, "0xg", 0.0025) },
+    "web-content": { probe: () => offer(0.0035), paid: () => delivered(page, "0xw", 0.0035) },
+  };
+  const run = run0();
+  await runCatalogPlan({ run, plan: { steps: [
+    { id: "s1", product: "sippar-web-search", input: { query: "agent payments" } },
+    { id: "s2", move: "for_each", from: ["s1"], args: { product: "web-content", input: { url: "{{item.url}}" }, max: 3 } },
+  ] }, catalog, wallet, emit: () => {} });
+  const read = run.steps.find((s) => s.id === "s2").documents;
+  assert.deepEqual(read.map((d) => d.rank), google.response.results.slice(0, 3).map((r) => r.position));
+});
