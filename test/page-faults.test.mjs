@@ -78,7 +78,7 @@ test("faults 2 and 8: Tavily not serving is searched on Google with the same wor
     "grounded-search": { probe: () => offer(0.05), paid: () => delivered(grounded, "0xgr", 0.05) },
   };
   const plan = { steps: [
-    { id: "s1", product: "tavily-web-search", input: { query: "x402 Express middleware", max_results: 10 }, why: "code" },
+    { id: "s1", product: "tavily-web-search", input: { query: "x402 Express middleware", max_results: 20 }, why: "code" },
     { id: "s2", product: "grounded-search", input: { query: "x402 Express USDC Base" }, why: "overview" },
     { id: "s3", product: "tavily-web-search", input: { query: "x402 USDC Base guide" }, why: "guides" },
     { id: "s4", move: "merge", from: ["s1", "s2", "s3"], args: {}, why: "all" },
