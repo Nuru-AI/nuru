@@ -117,9 +117,10 @@ test("a plan with free steps costs only its paid steps, and the budget still bin
   assert.equal(checkPlan(plan, shelf, 0.04).ok, false);
 });
 
-test("the planner's sheet lists each free source at $0 with the fields it returns", () => {
+test("the planner's sheet marks each free source Free, in Sippar's own words, with the fields it returns (#7589)", () => {
   const sheet = plannerSheet(FREE_SOURCES.map(freeRow));
-  for (const s of FREE_SOURCES) assert.match(sheet, new RegExp(`- ${s.id}: .*\\$0 a call`));
+  for (const s of FREE_SOURCES) assert.match(sheet, new RegExp(`- ${s.id}: .*Free: no payment, costs the run nothing`));
+  assert.doesNotMatch(sheet, /\$0 a call/);
   assert.ok(sheet.length < 12_000, `the free rows add ${sheet.length} characters to the sheet`);
 });
 

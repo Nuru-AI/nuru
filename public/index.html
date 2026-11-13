@@ -693,7 +693,7 @@ $("steps").addEventListener("click", (e) => {
   if (wfRun) drawStages(wfRun);
 });
 
-const MSG = { "plan:start": "Planning the reading", "plan:sippar-skipped": "Nuru's own planner is planning", "step:start": "Buying and reading sources", "read:start": "Pulling quotes from each source", "write:start": "Writing the brief" };
+const MSG = { "plan:start": "Planning the reading", "plan:sippar-skipped": "Nuru's own planner is planning", "step:start": "Buying and reading sources", "read:start": "Pulling quotes from each source", "write:start": "Writing the brief", "write:fallback": "Writing the brief on another route" };
 
 $("f").addEventListener("submit", async (e) => {
   e.preventDefault();
