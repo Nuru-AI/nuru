@@ -1,15 +1,33 @@
 # Nuru
 
-With a pay-per-call budget, the digital world is flat: Nuru reaches any data and asks its AI
-friends for their knowledge, opinions and creations.
+Nuru is an agent that answers a question about a market with a short brief where every point
+opens to its quote, its source and its payment. It plans with NVIDIA Nemotron on Nebius Token
+Factory and pays for each source per call, from the chat app you already use or from its own page.
 
-Nuru owns its stack and runs natively from your preferred harness. It plans the job, pays per
-call with no subscription and no key, keeps to its budget, and does its searching and reading
-outside the chat, so the harness receives a short summary.
+**For:** a founder sizing a market, an analyst checking who buys, anyone who needs sourced answers
+for a few cents without signing up for each data source.
 
-Built for the Nebius x NVIDIA Global AI Hackathon, Best Apps and Agents track.
+**Proof:** on Nuru's own page, Nemotron on Token Factory planned, bought and read a job for $0.11,
+and all 18 of its quotes were found word for word in what it paid for. Try it at
+https://agent.sippar.network.
 
-![Nuru's own page: a brief where every point opens to its quote, its source and its payment on Base](docs/page.png)
+**Nuru and Sippar:** Nuru is the agent, built for the Nebius x NVIDIA Global AI Hackathon (Best
+Apps and Agents track). Sippar is the payment rail it pays through; it existed before the
+hackathon, and Nuru calls its public endpoints the way any agent can. The judged version is the
+tag `devpost-submission-2026-10-30`.
+
+![A question on Nuru's own page, with Nemotron 3 Ultra as the default model and the paid and free sources Nuru can read](docs/screens/1-ask.png)
+
+*A question in plain words. Nemotron is the default model; the menu shows each source and its price.*
+
+![How the brief was made: Nemotron writes the plan, Nuru buys five sources for $0.13, code sorts them, Nemotron reads them and checks each quote](docs/screens/2-steps.png)
+
+*How the brief was made: the plan, each purchase with its price, and how many quotes were found word for word.*
+
+![The brief, with one point opened to its quote, its source and its payment on Base, beside who was paid and the Nemotron calls on Nebius Token Factory](docs/screens/3-brief-paid.png)
+
+*Every point opens to its quote, its source and its payment. Who was paid, and the Nemotron calls on Nebius Token Factory, sit beside the brief. Run of 13 November 2026, $0.23.*
+
 
 ## How it works
 
