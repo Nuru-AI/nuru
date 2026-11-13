@@ -56,6 +56,8 @@ test("fault 1: Sippar's planner is asked with a sheet it takes, told how Nuru re
   assert.ok(sent.query.length <= 60_000 && Number(sent.size) >= sent.query.length, `${sent.query.length} characters, size ${sent.size}`);
   assert.match(sent.query, /^NOTES FROM NURU/);
   assert.match(sent.query, /only sippar-web-search returns Google's own results/);
+  // Sippar's planner is told what the free sources are, by topic (#7589).
+  assert.match(sent.query, /FREE SOURCES: .*research: free-openalex-works, free-crossref-works, free-arxiv-papers/);
   assert.equal(got.served.provider, "sippar");
   assert.equal(run.sipparPlan.asked, true);
   assert.equal(run.steps[0].payment.tx, "0xplan");

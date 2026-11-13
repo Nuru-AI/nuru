@@ -15,6 +15,9 @@ const MIN_BALANCE_USD = Math.max(0.2, Number(process.env.MAX_SPEND_USD || 0.5));
 const PUBLIC = new URL("./public/", import.meta.url).pathname;
 const RUNS = new URL("./runs/", import.meta.url).pathname;
 mkdirSync(RUNS, { recursive: true });
+// A run that failed is kept here, outside the page's list of briefs, with its full reason (#7589: nothing was kept).
+const FAILED = new URL("./runs-failed/", import.meta.url).pathname;
+mkdirSync(FAILED, { recursive: true });
 const LIMITS_DIR = new URL("./limits/", import.meta.url).pathname;
 mkdirSync(LIMITS_DIR, { recursive: true });
 const daily = limits(LIMITS_DIR);
@@ -105,8 +108,14 @@ createServer(async (req, res) => {
         const after = await wallet.balance().catch(() => bal);
         const spent = Math.max(Number(e.spentUsd) || 0, bal - after, 0);
         daily.spent(spent);
-        const reason = String(e.message || e).slice(0, 200);
-        push("failed", { error: `The brief could not be finished: ${reason}${spent > 0 ? ` The sources already bought cost $${spent.toFixed(2)}.` : ""} Try again, or pick another free model.` });
+        // A failed brief is not one of the visitor's runs for the day.
+        daily.giveBack(ip);
+        const full = String(e.message || e);
+        const at = new Date().toISOString();
+        try { writeFileSync(join(FAILED, `${at.replace(/[:.]/g, "-")}.json`), JSON.stringify({ failed: { at, error: full, spentUsd: spent }, ...(e.run || { question }) }, null, 2)); }
+        catch (w) { console.error("could not keep the failed run:", w.message); }
+        console.error(`run failed at ${at}: ${full}`);
+        push("failed", { error: `The brief could not be finished: ${full.slice(0, 900)}${spent > 0 ? ` The sources already bought cost $${spent.toFixed(2)}.` : ""} This brief does not count toward your ${RUNS_PER_IP_PER_DAY} a day. Try again, or pick another free model.` });
       } finally {
         busy = false; res.end();
       }
